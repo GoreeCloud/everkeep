@@ -60,6 +60,8 @@ This SVG is the sole authoritative artwork. PNG, WebP, ICO, Android adaptive-ico
 
 ## Approval record
 
-The canonical SVG has been committed at the required asset path and the machine-readable identity contract records the visual identity as `approved`.
+The canonical SVG is explicitly approved by the GoreeCloud project owner as the official GoreeCloud Continuity icon. Approval was recorded on 2026-08-19.
+
+The approved SVG is committed at the required canonical asset path, and the machine-readable identity contract records the visual identity as `approved`.
 
 Future visual changes require an intentional revision of both the canonical SVG and this contract. A derived asset must never silently redefine the Continuity identity.
