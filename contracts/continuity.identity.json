@@ -3,9 +3,14 @@
   "identity": {
     "official_name": "GoreeCloud Continuity",
     "short_name": "Continuity",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "role": "Platform-wide resilience, recovery, preservation, portability, succession, and digital-legacy identity",
     "design_language": "Glaze UI"
+  },
+  "visual_identity": {
+    "status": "pending",
+    "canonical_asset": "assets/continuity.svg",
+    "canonical_asset_required_for_showcase": true
   },
   "boundaries": {
     "is_backup_engine": false,
@@ -32,10 +37,15 @@
     "unavailable_required_evidence_blocks_ready": true,
     "unverified_required_evidence_blocks_ready": true
   },
+  "contracts": {
+    "status_schema": "contracts/continuity.status.schema.json"
+  },
   "required_documents": [
     "README.md",
     "CONTINUITY.md",
+    "STATUS.md",
     "ADOPTION.md",
-    "SECURITY.md"
+    "SECURITY.md",
+    "ICON.md"
   ]
 }
