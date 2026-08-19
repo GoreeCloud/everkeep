@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "project": "GoreeCloud Manager",
+  "repository": "GoreeCloud/goreecloud-manager",
+  "role": "consumer",
+  "dimensions": [
+    "backup_coverage",
+    "restore_capability",
+    "recovery_freshness",
+    "portability",
+    "dependency_recovery",
+    "documentation",
+    "preservation"
+  ],
+  "read_only": true,
+  "fail_closed": true,
+  "status_schema": "contracts/continuity.status.schema.json",
+  "authoritative_sources": [
+    "Continuity-conformant GoreeCloud application and service producers"
+  ],
+  "notes": "Reference adoption manifest only. Manager may aggregate and present Continuity evidence but must not become authoritative for the underlying backup, restore, storage, or application state."
+}
