@@ -10,6 +10,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_PATH = ROOT / "contracts" / "continuity.identity.json"
 STATUS_SCHEMA_PATH = ROOT / "contracts" / "continuity.status.schema.json"
+ADOPTION_SCHEMA_PATH = ROOT / "contracts" / "continuity.adoption.schema.json"
 
 EXPECTED_NAME = "GoreeCloud Continuity"
 EXPECTED_SHORT = "Continuity"
@@ -19,6 +20,20 @@ EXPECTED_STATES = [
     "degraded",
     "unknown",
     "not_applicable",
+]
+EXPECTED_DIMENSIONS = [
+    "backup_coverage",
+    "restore_capability",
+    "recovery_freshness",
+    "portability",
+    "migration",
+    "dependency_recovery",
+    "redundancy",
+    "documentation",
+    "ownership_custody",
+    "succession",
+    "preservation",
+    "provenance",
 ]
 
 
@@ -39,14 +54,48 @@ def load_json(path: Path, label: str) -> dict:
     return value
 
 
+def validate_reference_adoption(path: Path, adoption_schema: dict) -> None:
+    manifest = load_json(path, f"adoption manifest {path.name}")
+    required = set(adoption_schema.get("required", []))
+    if not required.issubset(manifest):
+        fail(f"{path.name} is missing required adoption fields")
+
+    properties = adoption_schema.get("properties", {})
+    allowed_roles = set(properties.get("role", {}).get("enum", []))
+    allowed_dimensions = set(
+        properties.get("dimensions", {}).get("items", {}).get("enum", [])
+    )
+
+    if manifest.get("schema_version") != 1:
+        fail(f"{path.name} schema_version must be 1")
+    if manifest.get("role") not in allowed_roles:
+        fail(f"{path.name} has an unsupported adoption role")
+    if manifest.get("read_only") is not True:
+        fail(f"{path.name} must preserve the read-only Continuity boundary")
+    if manifest.get("fail_closed") is not True:
+        fail(f"{path.name} must fail closed")
+    if manifest.get("status_schema") != "contracts/continuity.status.schema.json":
+        fail(f"{path.name} does not pin the canonical status schema")
+
+    dimensions = manifest.get("dimensions")
+    if not isinstance(dimensions, list) or not dimensions:
+        fail(f"{path.name} must declare at least one continuity dimension")
+    if len(dimensions) != len(set(dimensions)):
+        fail(f"{path.name} contains duplicate continuity dimensions")
+    if any(dimension not in allowed_dimensions for dimension in dimensions):
+        fail(f"{path.name} declares an unsupported continuity dimension")
+
+
 def main() -> None:
     contract = load_json(CONTRACT_PATH, "identity contract")
     status_schema = load_json(STATUS_SCHEMA_PATH, "status schema")
+    adoption_schema = load_json(ADOPTION_SCHEMA_PATH, "adoption schema")
 
     identity = contract.get("identity", {})
     boundaries = contract.get("boundaries", {})
     fail_closed = contract.get("fail_closed", {})
     visual_identity = contract.get("visual_identity", {})
+    contracts = contract.get("contracts", {})
 
     if identity.get("official_name") != EXPECTED_NAME:
         fail("official identity name drifted")
@@ -54,6 +103,11 @@ def main() -> None:
         fail("short identity name drifted")
     if contract.get("normalized_states") != EXPECTED_STATES:
         fail("normalized state contract drifted")
+
+    if contracts.get("status_schema") != "contracts/continuity.status.schema.json":
+        fail("identity contract must pin the canonical status schema")
+    if contracts.get("adoption_schema") != "contracts/continuity.adoption.schema.json":
+        fail("identity contract must pin the canonical adoption schema")
 
     forbidden_true = (
         "is_backup_engine",
@@ -86,9 +140,11 @@ def main() -> None:
         if EXPECTED_NAME not in text and relative_path != "SECURITY.md":
             fail(f"required document does not identify {EXPECTED_NAME}: {relative_path}")
 
-    state_property = status_schema.get("properties", {}).get("state", {})
-    if state_property.get("enum") != EXPECTED_STATES:
+    status_properties = status_schema.get("properties", {})
+    if status_properties.get("state", {}).get("enum") != EXPECTED_STATES:
         fail("status schema state enum drifted from identity contract")
+    if status_properties.get("dimension", {}).get("enum") != EXPECTED_DIMENSIONS:
+        fail("status schema dimension enum drifted")
 
     required_status_fields = {
         "record_id",
@@ -102,6 +158,21 @@ def main() -> None:
     }
     if not required_status_fields.issubset(set(status_schema.get("required", []))):
         fail("status schema is missing required continuity evidence fields")
+
+    adoption_dimensions = (
+        adoption_schema.get("properties", {})
+        .get("dimensions", {})
+        .get("items", {})
+        .get("enum")
+    )
+    if adoption_dimensions != EXPECTED_DIMENSIONS:
+        fail("adoption schema dimension enum drifted from status contract")
+
+    reference_adoptions = contract.get("reference_adoptions", [])
+    if not reference_adoptions:
+        fail("identity contract must declare reference adoption manifests")
+    for relative_path in reference_adoptions:
+        validate_reference_adoption(ROOT / relative_path, adoption_schema)
 
     canonical_asset = visual_identity.get("canonical_asset")
     visual_status = visual_identity.get("status")
