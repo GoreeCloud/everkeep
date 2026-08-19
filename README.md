@@ -51,8 +51,17 @@ Continuity favors:
 - `ICON.md` — visual-identity concept, canonical-asset path, and approval gate.
 - `contracts/continuity.identity.json` — machine-readable identity and governance contract.
 - `contracts/continuity.status.schema.json` — machine-readable status-record schema.
+- `contracts/continuity.adoption.schema.json` — machine-readable adoption-manifest schema.
+- `examples/goreecloud-backup.adoption.json` — reference producer manifest for GoreeCloud Backup.
+- `examples/goreecloud-manager.adoption.json` — reference consumer manifest for GoreeCloud Manager.
 - `scripts/validate_continuity.py` — deterministic repository validator.
 - `.github/workflows/validate.yml` — CI validation.
+
+## Adoption model
+
+Continuity now distinguishes **producers**, **consumers**, and future **producer-consumers** through a versioned adoption manifest. An adoption manifest declares the dimensions a project represents, its authoritative-source boundary, read-only behavior, fail-closed requirement, and the shared status schema it consumes or emits.
+
+The included Backup and Manager manifests are reference contracts, not claims that either application has completed runtime Continuity acceptance. Actual adoption remains evidence-gated and must satisfy `ADOPTION.md` at an exact source revision.
 
 ## Visual identity
 
@@ -60,4 +69,4 @@ The Continuity visual identity is currently **pending**. The canonical source as
 
 ## Status
 
-**Foundation 0.2.** The identity contract, normalized status model, machine-readable status schema, fail-closed validator, and visual-identity approval gate are established. Application-level adoption and canonical icon approval remain evidence-gated implementation steps.
+**Foundation 0.3.** The identity contract, normalized status model, machine-readable status and adoption schemas, reference Backup and Manager adoption manifests, fail-closed governance, validator foundation, and visual-identity approval gate are established. Runtime adoption and canonical icon approval remain evidence-gated implementation steps.
