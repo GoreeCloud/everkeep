@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "identity": {
+    "official_name": "GoreeCloud Continuity",
+    "short_name": "Continuity",
+    "version": "0.1.0",
+    "role": "Platform-wide resilience, recovery, preservation, portability, succession, and digital-legacy identity",
+    "design_language": "Glaze UI"
+  },
+  "boundaries": {
+    "is_backup_engine": false,
+    "is_storage_platform": false,
+    "is_secret_store": false,
+    "is_generic_remediation_api": false,
+    "read_only_by_default": true
+  },
+  "related_identities": {
+    "security": "Wardveil Security",
+    "privacy": "Privacy Shield",
+    "suite": "GoreeCloud Suite"
+  },
+  "normalized_states": [
+    "ready",
+    "attention",
+    "degraded",
+    "unknown",
+    "not_applicable"
+  ],
+  "fail_closed": {
+    "missing_required_evidence_blocks_ready": true,
+    "stale_required_evidence_blocks_ready": true,
+    "unavailable_required_evidence_blocks_ready": true,
+    "unverified_required_evidence_blocks_ready": true
+  },
+  "required_documents": [
+    "README.md",
+    "CONTINUITY.md",
+    "ADOPTION.md",
+    "SECURITY.md"
+  ]
+}
