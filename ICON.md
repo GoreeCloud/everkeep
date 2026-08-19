@@ -2,61 +2,64 @@
 
 ## Status
 
-Canonical icon artwork is **not yet approved**. This document defines the design and acceptance boundary for future GoreeCloud Continuity artwork.
+The GoreeCloud Continuity icon is **approved and canonical**. Its authoritative source is `assets/continuity.svg`.
 
-No application, website, dashboard, release asset, or documentation hero should present provisional artwork as the canonical Continuity mark.
+Derived raster, launcher, favicon, monochrome, and adaptive-icon assets must be generated from the canonical SVG and must not become independent authorities.
 
-## Identity goal
+## Concept
 
-The Continuity mark should communicate endurance, recoverability, preservation, transfer, and long-term survival of information without looking like a generic backup, sync, cloud-storage, shield, lock, or recycle icon.
+The mark is a continuous layered form built around a preserved central record.
 
-## Preferred concept
+Two opposing paths travel around and through the composition. They do not form a generic circular-arrow, recycle, cloud, shield, lock, database, or backup symbol. Instead, they represent information continuing through infrastructure replacement, migration, failure, recovery, and long-term technology change.
 
-The preferred concept is a continuous layered form built around a protected central record or memory. Two or more softly connected paths should suggest that information can move through failure, migration, and technology change while remaining intact.
+The central rounded record represents the information that must remain meaningful and recoverable. Its horizontal interior mark suggests a stable piece of recorded information rather than a server, disk, or storage device.
 
-The mark should feel calm, durable, and forward-moving rather than defensive or alarming. It should visually belong beside Glaze UI, Wardveil Security, Privacy Shield, and other GoreeCloud identities without duplicating their symbols.
+The paths approach the central record from different directions and continue beyond it. This communicates that Continuity is not a destination or one backup event: information has a life before and after any individual application, host, storage system, or recovery operation.
 
-## Design requirements
+## Meaning
+
+The visual language maps directly to the Continuity identity:
+
+- **Central record** — preserved information, context, metadata, and history.
+- **Two continuous paths** — independent recovery layers, portability, migration, succession, and survival across change.
+- **Opposing movement** — recovery can move information forward into replacement systems or backward toward an earlier verified state.
+- **Open spatial structure** — Continuity coordinates evidence and preservation without becoming the storage or backup engine itself.
+- **Rounded geometry** — calm, durable Glaze UI character rather than an alarm-oriented security symbol.
+- **Gradient path** — transition across time, systems, and technology while the protected record remains identifiable.
+
+## Relationship to other GoreeCloud identities
+
+The mark is intentionally distinct from Wardveil Security and Privacy Shield because Continuity is not represented by a shield, perimeter, lock, or defensive boundary. It is also distinct from GoreeCloud Backup because it does not use storage media, archive boxes, circular restore arrows, or database stacks.
+
+Continuity represents the survival and transferability of information across time and change. GoreeCloud Backup may produce evidence used by Continuity, but Backup remains the operational backup and restore product.
+
+## Construction
+
+The canonical artwork uses a 512 × 512 view box with generous safe space for launcher and adaptive-icon use. Major paths use rounded caps and joins. The central record uses a rounded square geometry that remains readable at reduced sizes.
+
+The canonical SVG supports Glaze UI surfaces through a restrained blue-to-indigo-to-violet path gradient. The central record uses `currentColor`, allowing host applications to provide an appropriate foreground color for light, dark, high-contrast, and monochrome presentations without changing the geometry.
+
+## Usage requirements
 
 The canonical icon must:
 
-- remain recognizable at small launcher and favicon sizes,
-- work in square and adaptive-icon-safe compositions,
-- use simple geometry with limited fine detail,
-- support monochrome and full-color presentations,
-- remain legible on light and dark surfaces,
-- avoid text inside the icon,
-- avoid stock cloud, floppy-disk, shield, padlock, circular-arrow, infinity-only, or database-stack metaphors,
-- preserve sufficient interior spacing for Glaze UI presentation,
-- be suitable for SVG as the canonical source asset.
-
-## Conceptual distinction
-
-The mark must remain distinct from:
-
-- Wardveil Security, which represents security and protection,
-- Privacy Shield, which represents privacy controls,
-- GoreeCloud Backup, which is an operational backup product,
-- GoreeCloud Suite, which represents the unified application collection.
-
-Continuity represents the survival and transferability of information across time and change.
+- preserve the geometry and proportions of `assets/continuity.svg`,
+- remain recognizable at launcher and favicon sizes,
+- retain adequate clear space around the mark,
+- use the canonical full-color form when appropriate,
+- use a geometry-identical monochrome derivation where color is unavailable,
+- remain legible on light and dark Glaze UI surfaces,
+- contain no text or additional emblem inside the mark,
+- never be replaced with a generic cloud, floppy-disk, shield, padlock, circular-arrow, infinity-only, recycle, or database-stack metaphor.
 
 ## Canonical asset path
 
-When approved, the canonical source asset should be stored at:
-
 `assets/continuity.svg`
 
-Derived raster assets may be generated from that source, but they must not become independent authorities.
+This SVG is the sole authoritative artwork. PNG, WebP, ICO, Android adaptive-icon layers, application icons, social graphics, and other derived assets must trace back to it.
 
-## Approval gate
+## Approval record
 
-The icon is considered canonical only after:
+The canonical SVG has been committed at the required asset path and the machine-readable identity contract records the visual identity as `approved`.
 
-1. the artwork is explicitly approved,
-2. the approved SVG is committed at the canonical asset path,
-3. automated validation confirms required SVG properties,
-4. repository documentation and the machine-readable identity contract record the canonical asset state,
-5. visual acceptance confirms legibility at representative small and large sizes.
-
-Until all five conditions are satisfied, the visual identity state remains `pending`.
+Future visual changes require an intentional revision of both the canonical SVG and this contract. A derived asset must never silently redefine the Continuity identity.
