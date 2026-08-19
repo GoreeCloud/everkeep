@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "project": "GoreeCloud Backup",
+  "repository": "GoreeCloud/goreecloud-backup",
+  "role": "producer",
+  "dimensions": [
+    "backup_coverage",
+    "restore_capability",
+    "recovery_freshness",
+    "dependency_recovery"
+  ],
+  "read_only": true,
+  "fail_closed": true,
+  "status_schema": "contracts/continuity.status.schema.json",
+  "authoritative_sources": [
+    "GoreeCloud Backup backup-job state",
+    "GoreeCloud Backup restore-test evidence",
+    "GoreeCloud Backup repository verification evidence"
+  ],
+  "notes": "Reference adoption manifest only. This file does not assert that GoreeCloud Backup has completed Continuity acceptance."
+}
