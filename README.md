@@ -42,15 +42,22 @@ Continuity favors:
 - clear ownership and succession paths over undocumented dependency on one administrator,
 - preservation of meaning, context, metadata, and history—not merely raw bytes.
 
-## Initial repository structure
+## Repository contracts
 
 - `CONTINUITY.md` — identity, scope, terminology, and evidence model.
+- `STATUS.md` — normalized Continuity state semantics and aggregation rules.
 - `ADOPTION.md` — minimum requirements for GoreeCloud applications and services that integrate Continuity.
 - `SECURITY.md` — security, privacy, and sensitive-information boundaries.
-- `contracts/continuity.identity.json` — machine-readable identity contract.
+- `ICON.md` — visual-identity concept, canonical-asset path, and approval gate.
+- `contracts/continuity.identity.json` — machine-readable identity and governance contract.
+- `contracts/continuity.status.schema.json` — machine-readable status-record schema.
 - `scripts/validate_continuity.py` — deterministic repository validator.
 - `.github/workflows/validate.yml` — CI validation.
 
+## Visual identity
+
+The Continuity visual identity is currently **pending**. The canonical source asset is reserved as `assets/continuity.svg`, but no provisional artwork is treated as approved. The acceptance boundary is defined in `ICON.md`.
+
 ## Status
 
-Foundation 0.1. The identity and repository contract are established. Application-level adoption and visual identity work remain separate, evidence-gated implementation steps.
+**Foundation 0.2.** The identity contract, normalized status model, machine-readable status schema, fail-closed validator, and visual-identity approval gate are established. Application-level adoption and canonical icon approval remain evidence-gated implementation steps.
