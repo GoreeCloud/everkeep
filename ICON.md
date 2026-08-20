@@ -1,8 +1,8 @@
-# GoreeCloud Continuity Visual Identity Contract
+# Everkeep Visual Identity Contract
 
 ## Status
 
-The GoreeCloud Continuity icon is **approved and canonical**. Its authoritative source is `assets/continuity.svg`.
+The Everkeep icon is **approved and canonical**. Its authoritative source is `assets/everkeep.svg`.
 
 Derived raster, launcher, favicon, monochrome, and adaptive-icon assets must be generated from the canonical SVG and must not become independent authorities.
 
@@ -14,24 +14,24 @@ Two opposing paths travel around and through the composition. They do not form a
 
 The central rounded record represents the information that must remain meaningful and recoverable. Its horizontal interior mark suggests a stable piece of recorded information rather than a server, disk, or storage device.
 
-The paths approach the central record from different directions and continue beyond it. This communicates that Continuity is not a destination or one backup event: information has a life before and after any individual application, host, storage system, or recovery operation.
+The paths approach the central record from different directions and continue beyond it. This communicates that Everkeep is not a destination or one backup event: information has a life before and after any individual application, host, storage system, or recovery operation.
 
 ## Meaning
 
-The visual language maps directly to the Continuity identity:
+The visual language maps directly to the Everkeep identity:
 
 - **Central record** — preserved information, context, metadata, and history.
 - **Two continuous paths** — independent recovery layers, portability, migration, succession, and survival across change.
 - **Opposing movement** — recovery can move information forward into replacement systems or backward toward an earlier verified state.
-- **Open spatial structure** — Continuity coordinates evidence and preservation without becoming the storage or backup engine itself.
+- **Open spatial structure** — Everkeep coordinates evidence and preservation without becoming the storage or backup engine itself.
 - **Rounded geometry** — calm, durable Glaze UI character rather than an alarm-oriented security symbol.
 - **Gradient path** — transition across time, systems, and technology while the protected record remains identifiable.
 
 ## Relationship to other GoreeCloud identities
 
-The mark is intentionally distinct from Wardveil Security and Privacy Shield because Continuity is not represented by a shield, perimeter, lock, or defensive boundary. It is also distinct from GoreeCloud Backup because it does not use storage media, archive boxes, circular restore arrows, or database stacks.
+The mark is intentionally distinct from Wardveil Security and Privacy Shield because Everkeep is not represented by a shield, perimeter, lock, or defensive boundary. It is also distinct from GoreeCloud Backup because it does not use storage media, archive boxes, circular restore arrows, or database stacks.
 
-Continuity represents the survival and transferability of information across time and change. GoreeCloud Backup may produce evidence used by Continuity, but Backup remains the operational backup and restore product.
+Everkeep represents the survival and transferability of information across time and change. GoreeCloud Backup may produce evidence used by Everkeep, but Backup remains the operational backup and restore product.
 
 ## Construction
 
@@ -43,7 +43,7 @@ The canonical SVG supports Glaze UI surfaces through a restrained blue-to-indigo
 
 The canonical icon must:
 
-- preserve the geometry and proportions of `assets/continuity.svg`,
+- preserve the geometry and proportions of `assets/everkeep.svg`,
 - remain recognizable at launcher and favicon sizes,
 - retain adequate clear space around the mark,
 - use the canonical full-color form when appropriate,
@@ -54,14 +54,14 @@ The canonical icon must:
 
 ## Canonical asset path
 
-`assets/continuity.svg`
+`assets/everkeep.svg`
 
 This SVG is the sole authoritative artwork. PNG, WebP, ICO, Android adaptive-icon layers, application icons, social graphics, and other derived assets must trace back to it.
 
 ## Approval record
 
-The canonical SVG is explicitly approved by the GoreeCloud project owner as the official GoreeCloud Continuity icon. Approval was recorded on 2026-08-19.
+The canonical SVG is explicitly approved by the GoreeCloud project owner as the official Everkeep icon. Approval was recorded on 2026-08-19.
 
 The approved SVG is committed at the required canonical asset path, and the machine-readable identity contract records the visual identity as `approved`.
 
-Future visual changes require an intentional revision of both the canonical SVG and this contract. A derived asset must never silently redefine the Continuity identity.
+Future visual changes require an intentional revision of both the canonical SVG and this contract. A derived asset must never silently redefine the Everkeep identity.
