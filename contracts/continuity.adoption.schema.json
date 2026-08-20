@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://goreecloud.com/schemas/continuity.adoption.schema.json",
-  "title": "GoreeCloud Continuity Adoption Manifest",
+  "title": "Everkeep Adoption Manifest",
   "type": "object",
   "additionalProperties": false,
   "required": [
