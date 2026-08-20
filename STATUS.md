@@ -1,8 +1,8 @@
-# GoreeCloud Continuity Status Contract
+# Everkeep Status Contract
 
 ## Purpose
 
-This document defines the normalized continuity states used across GoreeCloud Continuity integrations. The contract exists so applications, dashboards, reports, APIs, and future clients present continuity evidence consistently without weakening the authority of the source system.
+This document defines the normalized continuity states used across Everkeep integrations. The contract exists so applications, dashboards, reports, APIs, and future clients present continuity evidence consistently without weakening the authority of the source system.
 
 ## States
 
@@ -36,7 +36,7 @@ The represented continuity dimension does not apply to the explicit scope. This 
 
 ## Aggregation rule
 
-A Continuity summary must never be more favorable than the weakest required evidence in its represented scope.
+An Everkeep summary must never be more favorable than the weakest required evidence in its represented scope.
 
 For required evidence, the conservative ordering is:
 
@@ -66,8 +66,8 @@ A status record must become non-ready when required evidence exceeds its defined
 
 ## Security and privacy
 
-Continuity status records must not contain reusable credentials, private keys, tokens, recovery codes, encryption secrets, unrestricted backup contents, personal data that is unnecessary for the continuity decision, or raw diagnostic material that creates avoidable exposure.
+Everkeep status records must not contain reusable credentials, private keys, tokens, recovery codes, encryption secrets, unrestricted backup contents, personal data that is unnecessary for the continuity decision, or raw diagnostic material that creates avoidable exposure.
 
 ## Accessibility and Glaze UI
 
-Continuity state must be understandable without relying on color alone. Glaze UI integrations should pair state with text, accessible naming, and consistent iconography. Machine-readable state must remain the source for automation and aggregation.
+Everkeep state must be understandable without relying on color alone. Glaze UI integrations should pair state with text, accessible naming, and consistent iconography. Machine-readable state must remain the source for automation and aggregation.
