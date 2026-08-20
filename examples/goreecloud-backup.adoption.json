@@ -17,5 +17,5 @@
     "GoreeCloud Backup restore-test evidence",
     "GoreeCloud Backup repository verification evidence"
   ],
-  "notes": "Reference adoption manifest only. This file does not assert that GoreeCloud Backup has completed Continuity acceptance."
+  "notes": "Reference adoption manifest only. This file does not assert that GoreeCloud Backup has completed Everkeep acceptance."
 }
