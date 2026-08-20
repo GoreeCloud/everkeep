@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the GoreeCloud Continuity identity repository."""
+"""Validate the Everkeep identity repository."""
 
 from __future__ import annotations
 
@@ -12,8 +12,8 @@ CONTRACT_PATH = ROOT / "contracts" / "continuity.identity.json"
 STATUS_SCHEMA_PATH = ROOT / "contracts" / "continuity.status.schema.json"
 ADOPTION_SCHEMA_PATH = ROOT / "contracts" / "continuity.adoption.schema.json"
 
-EXPECTED_NAME = "GoreeCloud Continuity"
-EXPECTED_SHORT = "Continuity"
+EXPECTED_NAME = "Everkeep"
+EXPECTED_SHORT = "Everkeep"
 EXPECTED_STATES = [
     "ready",
     "attention",
@@ -71,7 +71,7 @@ def validate_reference_adoption(path: Path, adoption_schema: dict) -> None:
     if manifest.get("role") not in allowed_roles:
         fail(f"{path.name} has an unsupported adoption role")
     if manifest.get("read_only") is not True:
-        fail(f"{path.name} must preserve the read-only Continuity boundary")
+        fail(f"{path.name} must preserve the read-only Everkeep boundary")
     if manifest.get("fail_closed") is not True:
         fail(f"{path.name} must fail closed")
     if manifest.get("status_schema") != "contracts/continuity.status.schema.json":
@@ -120,7 +120,7 @@ def main() -> None:
             fail(f"boundary {key} must remain false")
 
     if boundaries.get("read_only_by_default") is not True:
-        fail("Continuity integrations must remain read-only by default")
+        fail("Everkeep integrations must remain read-only by default")
 
     for key in (
         "missing_required_evidence_blocks_ready",
@@ -137,7 +137,7 @@ def main() -> None:
         if not path.is_file():
             fail(f"required document missing: {relative_path}")
         text = path.read_text(encoding="utf-8")
-        if EXPECTED_NAME not in text and relative_path != "SECURITY.md":
+        if EXPECTED_NAME not in text:
             fail(f"required document does not identify {EXPECTED_NAME}: {relative_path}")
 
     status_properties = status_schema.get("properties", {})
@@ -186,7 +186,7 @@ def main() -> None:
     if visual_status == "pending" and asset_path.is_file():
         fail("canonical asset exists while visual identity is still marked pending")
 
-    print("GoreeCloud Continuity validation passed.")
+    print("Everkeep validation passed.")
 
 
 if __name__ == "__main__":
