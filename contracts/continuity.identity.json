@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "identity": {
-    "official_name": "GoreeCloud Continuity",
-    "short_name": "Continuity",
-    "version": "0.3.0",
+    "official_name": "Everkeep",
+    "short_name": "Everkeep",
+    "version": "0.4.0",
     "role": "Platform-wide resilience, recovery, preservation, portability, succession, and digital-legacy identity",
     "design_language": "Glaze UI"
   },
   "visual_identity": {
     "status": "approved",
-    "canonical_asset": "assets/continuity.svg",
+    "canonical_asset": "assets/everkeep.svg",
     "canonical_asset_required_for_showcase": true
   },
   "boundaries": {
