@@ -16,7 +16,7 @@
   "fail_closed": true,
   "status_schema": "contracts/continuity.status.schema.json",
   "authoritative_sources": [
-    "Continuity-conformant GoreeCloud application and service producers"
+    "Everkeep-conformant GoreeCloud application and service producers"
   ],
-  "notes": "Reference adoption manifest only. Manager may aggregate and present Continuity evidence but must not become authoritative for the underlying backup, restore, storage, or application state."
+  "notes": "Reference adoption manifest only. Manager may aggregate and present Everkeep evidence but must not become authoritative for the underlying backup, restore, storage, or application state."
 }
