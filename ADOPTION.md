@@ -1,6 +1,6 @@
-# GoreeCloud Continuity Adoption
+# Everkeep Adoption
 
-A GoreeCloud application or service must not claim Continuity integration based on branding alone.
+A GoreeCloud application or service must not claim Everkeep integration based on branding alone.
 
 ## Minimum adoption requirements
 
@@ -59,8 +59,8 @@ An application that reports portability should distinguish among:
 
 ## Succession integrations
 
-Succession or digital-legacy readiness should be reported only when the represented scope has explicit custody and recovery documentation appropriate to that information. Reusable credentials, recovery codes, private keys, or secret values must not be embedded in Continuity evidence.
+Succession or digital-legacy readiness should be reported only when the represented scope has explicit custody and recovery documentation appropriate to that information. Reusable credentials, recovery codes, private keys, or secret values must not be embedded in Everkeep evidence.
 
 ## Acceptance
 
-A project may describe itself as **Continuity-integrated** only after its declared integration requirements and fail-closed tests pass. A project may describe a specific scope as **Continuity ready** only when the current required evidence for that scope supports the `ready` state.
+A project may describe itself as **Everkeep-integrated** only after its declared integration requirements and fail-closed tests pass. A project may describe a specific scope as **Everkeep ready** only when the current required continuity evidence for that scope supports the `ready` state.
