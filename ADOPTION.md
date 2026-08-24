@@ -61,6 +61,24 @@ An application that reports portability should distinguish among:
 
 Succession or digital-legacy readiness should be reported only when the represented scope has explicit custody and recovery documentation appropriate to that information. Reusable credentials, recovery codes, private keys, or secret values must not be embedded in Everkeep evidence.
 
+## Compact and wearable continuity presentation
+
+Everkeep may present continuity status on compact, glanceable, wearable, notification, tile, complication, or similarly constrained Glaze UI surfaces, but the smaller surface must not turn incomplete recovery evidence into reassurance.
+
+A constrained Everkeep surface must:
+
+- preserve the normalized continuity state and never convert `unknown`, unavailable, stale, incomplete, or failed evidence into `ready`;
+- distinguish a configured backup from verified restore readiness when that distinction is relevant to the represented scope;
+- preserve freshness meaning, including the age of restore, export, integrity, or recovery validation when freshness affects the state;
+- retain enough scope and authoritative-source context to identify what data, application, repository, or recovery path is represented, directly or through an accessible focused detail path;
+- avoid exposing backup contents, recovery codes, private keys, credentials, personal records, detailed storage paths, or other sensitive recovery material on a glanceable surface;
+- use a focused deep link to the authoritative recovery, backup, export, or continuity workflow when detailed action is required;
+- follow the current Stable Glaze UI contract for the target form factor before the consuming application claims production conformance.
+
+A compact Everkeep card is a presentation of existing continuity evidence. It is not proof that a restore will succeed, does not replace the authoritative backup or recovery system, and does not create continuity evidence of its own.
+
 ## Acceptance
 
 A project may describe itself as **Everkeep-integrated** only after its declared integration requirements and fail-closed tests pass. A project may describe a specific scope as **Everkeep ready** only when the current required continuity evidence for that scope supports the `ready` state.
+
+A project that adds a compact or wearable Everkeep surface must additionally validate state truthfulness, freshness visibility, scope/authority discoverability, sensitive-evidence exclusion, and non-ready fail-closed rendering at the exact intended source revision.
