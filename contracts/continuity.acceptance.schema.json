@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.com/schemas/continuity.acceptance.schema.json",
+  "title": "Everkeep Acceptance Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "application",
+    "producer",
+    "status_schema",
+    "freshness",
+    "failure_behavior",
+    "required_ready_evidence",
+    "sensitive_evidence",
+    "acceptance"
+  ],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "application": {"type": "string", "minLength": 1, "maxLength": 160},
+    "producer": {"type": "string", "minLength": 1, "maxLength": 240},
+    "status_schema": {
+      "type": "string",
+      "const": "contracts/continuity.status.schema.json"
+    },
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_for_ready", "rule"],
+      "properties": {
+        "required_for_ready": {"type": "boolean", "const": true},
+        "rule": {"type": "string", "minLength": 1, "maxLength": 1000}
+      }
+    },
+    "failure_behavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "producer_unavailable",
+        "malformed_evidence",
+        "missing_required_evidence",
+        "failed_restore_validation",
+        "summary_rule"
+      ],
+      "properties": {
+        "producer_unavailable": {"type": "string", "enum": ["unknown", "degraded", "attention"]},
+        "malformed_evidence": {"type": "string", "enum": ["unknown", "degraded", "attention"]},
+        "missing_required_evidence": {"type": "string", "enum": ["unknown", "degraded", "attention"]},
+        "failed_restore_validation": {"type": "string", "enum": ["unknown", "degraded", "attention"]},
+        "summary_rule": {"type": "string", "minLength": 1, "maxLength": 1000}
+      }
+    },
+    "required_ready_evidence": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 12,
+      "propertyNames": {
+        "enum": [
+          "backup_coverage",
+          "restore_capability",
+          "recovery_freshness",
+          "portability",
+          "migration",
+          "dependency_recovery",
+          "redundancy",
+          "documentation",
+          "ownership_custody",
+          "succession",
+          "preservation",
+          "provenance"
+        ]
+      },
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 30,
+        "uniqueItems": true,
+        "items": {"type": "string", "minLength": 1, "maxLength": 500}
+      }
+    },
+    "sensitive_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["forbidden"],
+      "properties": {
+        "forbidden": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 200}
+        }
+      }
+    },
+    "acceptance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "everkeep_integrated",
+        "everkeep_ready",
+        "target_runtime_acceptance_required",
+        "exact_revision_acceptance_required"
+      ],
+      "properties": {
+        "everkeep_integrated": {"type": "boolean"},
+        "everkeep_ready": {"type": "boolean"},
+        "target_runtime_acceptance_required": {"type": "boolean"},
+        "exact_revision_acceptance_required": {"type": "boolean"}
+      }
+    }
+  }
+}
