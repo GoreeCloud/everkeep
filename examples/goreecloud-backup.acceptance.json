@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "application": "goreecloud-backup",
+  "producer": "GoreeCloud/goreecloud-backup",
+  "status_schema": "contracts/continuity.status.schema.json",
+  "freshness": {
+    "required_for_ready": true,
+    "rule": "required continuity evidence that depends on freshness must carry an explicit freshness boundary; missing or expired evidence is non-ready"
+  },
+  "failure_behavior": {
+    "producer_unavailable": "unknown",
+    "malformed_evidence": "unknown",
+    "missing_required_evidence": "unknown",
+    "failed_restore_validation": "degraded",
+    "summary_rule": "summary state may never be more favorable than any required child evidence"
+  },
+  "required_ready_evidence": {
+    "backup_coverage": [
+      "backup execution succeeded",
+      "backup artifact exists",
+      "artifact integrity was verified"
+    ],
+    "restore_capability": [
+      "restore was tested",
+      "restored state was verified"
+    ],
+    "recovery_freshness": [
+      "freshness remains within the approved recovery evidence window"
+    ],
+    "documentation": [
+      "current backup and recovery documentation is present"
+    ],
+    "provenance": [
+      "evidence identifies the exact authoritative source or revision"
+    ]
+  },
+  "sensitive_evidence": {
+    "forbidden": [
+      "passwords",
+      "tokens",
+      "recovery codes",
+      "private keys",
+      "secret values",
+      "backup contents"
+    ]
+  },
+  "acceptance": {
+    "everkeep_integrated": false,
+    "everkeep_ready": false,
+    "target_runtime_acceptance_required": true,
+    "exact_revision_acceptance_required": true
+  }
+}
