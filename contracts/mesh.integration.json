@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "platform": "everkeep",
   "producer_repository": "GoreeCloud/goreecloud-everkeep",
   "consumer_repository": "GoreeCloud/goreecloud-mesh",
@@ -9,5 +9,10 @@
   "runtime_acceptance_implied": false,
   "stable_acceptance_implied": false,
   "sensitive_information_allowed": false,
-  "purpose": "Allows GoreeCloud Mesh to consume bounded Everkeep continuity evidence while Everkeep remains authoritative for resilience, recovery, preservation, portability, succession, and digital-legacy state."
+  "evidence_validity": {
+    "authority": "producer-or-applicable-policy",
+    "valid_until_required_for_validated": true,
+    "consumer_override_allowed": false
+  },
+  "purpose": "Allows GoreeCloud Mesh to consume bounded Everkeep continuity evidence while Everkeep remains authoritative for resilience, recovery, preservation, portability, succession, digital-legacy state, and evidence validity."
 }
