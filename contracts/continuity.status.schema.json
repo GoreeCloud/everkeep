@@ -89,5 +89,22 @@
       },
       "maxItems": 25
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"state": {"const": "ready"}},
+        "required": ["state"]
+      },
+      "then": {
+        "required": ["fresh_until"],
+        "properties": {
+          "fresh_until": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  ]
 }
