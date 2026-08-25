@@ -20,3 +20,5 @@ jobs:
           python-version: '3.13'
       - name: Validate Everkeep identity contract
         run: python3 scripts/validate_continuity.py
+      - name: Validate evidence validity contract
+        run: python3 scripts/validate_evidence_validity.py
