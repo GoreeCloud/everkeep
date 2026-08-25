@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 STATUS_SCHEMA = ROOT / "contracts" / "continuity.status.schema.json"
 ACCEPTANCE_SCHEMA = ROOT / "contracts" / "continuity.acceptance.schema.json"
-DOC = ROOT / "EVIDENCE-VALIDITY.md"
+DOC = ROOT / "docs" / "evidence-validity.md"
 
 
 def fail(message: str) -> None:
