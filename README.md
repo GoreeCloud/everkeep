@@ -52,8 +52,10 @@ Everkeep favors:
 - `contracts/continuity.identity.json` — machine-readable Everkeep identity and governance contract.
 - `contracts/continuity.status.schema.json` — machine-readable continuity status-record schema.
 - `contracts/continuity.adoption.schema.json` — machine-readable Everkeep adoption-manifest schema.
+- `contracts/continuity.acceptance.schema.json` — machine-readable fail-closed application acceptance-policy schema.
 - `examples/goreecloud-backup.adoption.json` — reference producer manifest for GoreeCloud Backup.
 - `examples/goreecloud-manager.adoption.json` — reference consumer manifest for GoreeCloud Manager.
+- `examples/goreecloud-backup.acceptance.json` — reference acceptance policy showing freshness, non-ready failure behavior, restore evidence, and sensitive-evidence exclusion.
 - `scripts/validate_continuity.py` — deterministic Everkeep repository validator.
 - `.github/workflows/validate.yml` — CI validation.
 
@@ -61,7 +63,9 @@ Everkeep favors:
 
 Everkeep distinguishes **producers**, **consumers**, and future **producer-consumers** through a versioned adoption manifest. An adoption manifest declares the continuity dimensions a project represents, its authoritative-source boundary, read-only behavior, fail-closed requirement, and the shared status schema it consumes or emits.
 
-The included Backup and Manager manifests are reference contracts, not claims that either application has completed runtime Everkeep acceptance. Actual adoption remains evidence-gated and must satisfy `ADOPTION.md` at an exact source revision.
+An application that intends to claim Everkeep integration must also define an acceptance policy compatible with `contracts/continuity.acceptance.schema.json`. The policy makes freshness, unavailable or malformed evidence behavior, required-ready evidence, sensitive-evidence exclusion, and target/exact-revision acceptance explicit. The manifest describes what the application represents; the acceptance policy defines what must be true before that representation may become an integration or readiness claim.
+
+The included reference manifests and acceptance policy are contract examples, not claims that an application has completed runtime Everkeep acceptance. Actual adoption remains evidence-gated and must satisfy `ADOPTION.md` at an exact source revision.
 
 ## Visual identity
 
@@ -69,4 +73,4 @@ The Everkeep visual identity is **approved and canonical**. Its authoritative so
 
 ## Status
 
-**Foundation 0.4.** The Everkeep rename is authoritative across the identity contract, documentation, validation workflow, reference adoption model, and canonical visual identity. The normalized continuity status model, machine-readable status and adoption schemas, reference Backup and Manager adoption manifests, fail-closed governance, and validator foundation remain intact. Runtime adoption remains evidence-gated.
+**Foundation 0.4.** The Everkeep identity is authoritative across the identity contract, documentation, validation workflow, reference adoption model, canonical acceptance policy, and canonical visual identity. The normalized continuity status model, machine-readable status/adoption/acceptance schemas, reference adoption manifests, fail-closed governance, and validator foundation remain intact. Runtime adoption remains evidence-gated.
