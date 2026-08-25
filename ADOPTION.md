@@ -2,6 +2,16 @@
 
 A GoreeCloud application or service must not claim Everkeep integration based on branding alone.
 
+## Canonical machine-readable contracts
+
+An adopting project should separate what it represents from what must be true before it may claim integration or readiness:
+
+- `contracts/continuity.adoption.schema.json` defines the adoption manifest: project identity, producer/consumer role, represented continuity dimensions, authoritative evidence sources, read-only behavior, and fail-closed status-schema use.
+- `contracts/continuity.acceptance.schema.json` defines the acceptance policy: freshness requirements, unavailable/malformed/missing-evidence behavior, dimension-scoped required-ready evidence, sensitive-evidence exclusions, and integration/readiness acceptance gates.
+- `contracts/continuity.status.schema.json` defines normalized continuity evidence records.
+
+The manifest and acceptance policy do not replace application-owned evidence. They make the application's claims and gates explicit and reviewable.
+
 ## Minimum adoption requirements
 
 An integration must define:
@@ -16,6 +26,8 @@ An integration must define:
 8. How the integration behaves when the producer is unreachable or returns invalid data.
 9. How continuity status is presented accessibly through Glaze UI.
 10. How the integration is tested and validated at an exact source revision.
+
+A source-side acceptance policy should remain non-accepted until the evidence required by the application and target environment has actually passed. Declaring an acceptance policy is not itself runtime acceptance.
 
 ## Required behavioral tests
 
@@ -80,5 +92,7 @@ A compact Everkeep card is a presentation of existing continuity evidence. It is
 ## Acceptance
 
 A project may describe itself as **Everkeep-integrated** only after its declared integration requirements and fail-closed tests pass. A project may describe a specific scope as **Everkeep ready** only when the current required continuity evidence for that scope supports the `ready` state.
+
+For projects that use the canonical acceptance policy, `everkeep_ready=true` must never be asserted while `everkeep_integrated=false`. Target-runtime and exact-revision acceptance requirements must remain true until those acceptance steps have actually been completed and recorded.
 
 A project that adds a compact or wearable Everkeep surface must additionally validate state truthfulness, freshness visibility, scope/authority discoverability, sensitive-evidence exclusion, and non-ready fail-closed rendering at the exact intended source revision.
