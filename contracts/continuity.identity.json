@@ -39,11 +39,15 @@
   },
   "contracts": {
     "status_schema": "contracts/continuity.status.schema.json",
-    "adoption_schema": "contracts/continuity.adoption.schema.json"
+    "adoption_schema": "contracts/continuity.adoption.schema.json",
+    "acceptance_schema": "contracts/continuity.acceptance.schema.json"
   },
   "reference_adoptions": [
     "examples/goreecloud-backup.adoption.json",
     "examples/goreecloud-manager.adoption.json"
+  ],
+  "reference_acceptance_policies": [
+    "examples/goreecloud-backup.acceptance.json"
   ],
   "required_documents": [
     "README.md",
