@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.goreecloud.dev/everkeep/runtime-config/v1",
+  "title": "Everkeep Runtime Configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "environment", "database", "platform", "outbox", "adapters"],
+  "properties": {
+    "schemaVersion": {"const": "1.0.0"},
+    "environment": {"enum": ["development", "staging", "production"]},
+    "database": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["driver", "dsnSecretRef"],
+      "properties": {
+        "driver": {"enum": ["sqlite", "postgresql"]},
+        "dsnSecretRef": {"type": "string", "minLength": 1}
+      }
+    },
+    "platform": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identityAudience", "privacyShieldEndpointRef", "wardveilEndpointRef", "meshEndpointRef"],
+      "properties": {
+        "identityAudience": {"type": "string", "minLength": 1},
+        "privacyShieldEndpointRef": {"type": "string", "minLength": 1},
+        "wardveilEndpointRef": {"type": "string", "minLength": 1},
+        "meshEndpointRef": {"type": "string", "minLength": 1}
+      }
+    },
+    "outbox": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["batchSize", "maxAttempts"],
+      "properties": {
+        "batchSize": {"type": "integer", "minimum": 1, "maximum": 500},
+        "maxAttempts": {"type": "integer", "minimum": 1, "maximum": 100}
+      }
+    },
+    "adapters": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    }
+  }
+}
