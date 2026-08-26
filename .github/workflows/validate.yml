@@ -60,3 +60,6 @@ jobs:
 
       - name: Validate restore verification evidence contract
         run: python3 scripts/validate_restore_verification.py
+
+      - name: Test Everkeep Mesh evidence envelope adapter
+        run: python3 scripts/test_mesh_evidence.py
