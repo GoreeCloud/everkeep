@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.goreecloud.dev/everkeep/staging-evidence.schema.json",
+  "title": "Everkeep Staging Evidence",
+  "type": "object",
+  "required": ["schemaVersion", "environment", "capturedAt", "checks", "operational"],
+  "properties": {
+    "schemaVersion": {"const": "1.0.0"},
+    "environment": {"const": "staging"},
+    "capturedAt": {"type": "string", "format": "date-time"},
+    "sourceRevision": {"type": "string", "minLength": 7},
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "status", "authoritative"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "status": {"enum": ["pass", "fail", "unknown"]},
+          "authoritative": {"type": "boolean"},
+          "detail": {"type": "string"},
+          "evidenceRef": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "operational": {"type": "boolean"}
+  },
+  "additionalProperties": false
+}
