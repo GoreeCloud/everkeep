@@ -6,8 +6,18 @@
   "mesh_envelope": {
     "version": "goreecloud.evidence-envelope.v1",
     "repository": "GoreeCloud/goreecloud-mesh",
-    "revision": "5ed62b849ef4e70c1da95bfe912892f46d3f1dd8",
+    "revision": "d7809ccee889cb4166925a0747459f34290a5144",
     "path": "contracts/mesh.evidence-envelope.schema.json"
+  },
+  "runtime_delivery": {
+    "producer_service_id": "everkeep",
+    "write_scope": "mesh.evidence.write",
+    "read_scope": "mesh.evidence.read",
+    "delivery_client": "runtime/mesh_delivery.py",
+    "producer_identity_must_match_envelope": true,
+    "https_required_except_loopback": true,
+    "credential_issuer": "GoreeCloud Identity",
+    "production_acceptance": false
   },
   "producer_contracts": [
     "contracts/everkeep.evidence.schema.json",
