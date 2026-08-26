@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0.0",
+  "system": "everkeep",
+  "producer_repository": "GoreeCloud/goreecloud-everkeep",
+  "authority_domains": ["resilience", "recovery", "preservation", "continuity"],
+  "mesh_envelope": {
+    "version": "goreecloud.evidence-envelope.v1",
+    "repository": "GoreeCloud/goreecloud-mesh",
+    "revision": "f1b1b8256773f67ce6ac10a9a9a682ee5192a5fa",
+    "path": "contracts/mesh.evidence-envelope.schema.json"
+  },
+  "producer_contracts": [
+    "contracts/everkeep.evidence.schema.json",
+    "contracts/everkeep.recovery-point.schema.json",
+    "contracts/everkeep.protection-policy.schema.json",
+    "contracts/everkeep.resource.schema.json"
+  ],
+  "permitted_assertion_families": [
+    "protection-evidence",
+    "recovery-point-state",
+    "integrity-verification",
+    "restore-verification",
+    "recovery-readiness",
+    "retention-compliance",
+    "rpo-compliance",
+    "rto-readiness",
+    "copy-assurance",
+    "dependency-readiness",
+    "continuity-readiness",
+    "preservation-integrity",
+    "portability-readiness",
+    "succession-readiness"
+  ],
+  "minimization": {
+    "allowed_data_classes": ["public", "operational", "derived"],
+    "raw_backup_content": "prohibited",
+    "archive_or_snapshot_payloads": "prohibited",
+    "credentials_keys_tokens": "prohibited",
+    "private_file_or_message_content": "prohibited",
+    "preferred_content": "resource-scoped derived readiness, verification results, reason codes, recovery-point metadata, freshness, opaque evidence references, and optional digests"
+  },
+  "authority_rules": [
+    "Everkeep remains authoritative for resilience, recovery, preservation, continuity, portability, and succession evidence.",
+    "Mesh may persist and transport bounded Everkeep evidence but cannot convert backup existence into verified recoverability.",
+    "Privacy Shield remains authoritative for retention, deletion, export, and succession privacy authority that constrains Everkeep actions.",
+    "Wardveil remains authoritative for security findings used during recovery or post-restore verification.",
+    "A valid Mesh envelope is not by itself recovery-ready evidence; the applicable Everkeep contract must also pass."
+  ],
+  "status": "source-profile",
+  "production_acceptance": false
+}
