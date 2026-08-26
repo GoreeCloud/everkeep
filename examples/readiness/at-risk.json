@@ -1,0 +1,12 @@
+{
+  "resourceId": "document:example-risk",
+  "checks": {
+    "protectionFresh": true,
+    "integrityVerified": true,
+    "policyCompliant": true,
+    "restoreTestFresh": false,
+    "dependenciesReady": true,
+    "keysReady": true,
+    "copyRequirementsMet": true
+  }
+}
