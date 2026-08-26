@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/everkeep/contracts/everkeep.recovery-point.schema.json",
+  "title": "Everkeep Recovery Point",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "recoveryPointId", "resourceId", "createdAt", "state", "integrity", "copies"],
+  "properties": {
+    "schemaVersion": {"const": "1.0.0"},
+    "recoveryPointId": {"type": "string", "minLength": 1},
+    "resourceId": {"type": "string", "minLength": 1},
+    "parentRecoveryPointId": {"type": ["string", "null"]},
+    "kind": {"type": "string", "enum": ["full", "incremental", "differential", "snapshot", "version", "application-state", "database-pitr", "configuration", "archive"]},
+    "state": {"type": "string", "enum": ["creating", "available", "verification-pending", "verified", "warning", "failed", "expired", "quarantined"]},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "completedAt": {"type": ["string", "null"], "format": "date-time"},
+    "sourceVersion": {"type": ["string", "null"]},
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "digest", "verified"],
+      "properties": {
+        "algorithm": {"type": "string", "minLength": 1},
+        "digest": {"type": "string", "minLength": 1},
+        "verified": {"type": "boolean"},
+        "verifiedAt": {"type": ["string", "null"], "format": "date-time"},
+        "verificationMethod": {"type": ["string", "null"]}
+      }
+    },
+    "encryption": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "encrypted": {"type": "boolean"},
+        "profile": {"type": ["string", "null"]},
+        "keyReference": {"type": ["string", "null"]}
+      }
+    },
+    "copies": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["copyId", "failureDomain", "state"],
+        "properties": {
+          "copyId": {"type": "string", "minLength": 1},
+          "provider": {"type": ["string", "null"]},
+          "region": {"type": ["string", "null"]},
+          "failureDomain": {"type": "string", "minLength": 1},
+          "immutable": {"type": "boolean", "default": false},
+          "isolated": {"type": "boolean", "default": false},
+          "offsite": {"type": "boolean", "default": false},
+          "state": {"type": "string", "enum": ["available", "verifying", "degraded", "missing", "failed", "expired"]}
+        }
+      }
+    },
+    "retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "policyId": {"type": ["string", "null"]},
+        "expiresAt": {"type": ["string", "null"], "format": "date-time"},
+        "immutableUntil": {"type": ["string", "null"], "format": "date-time"}
+      }
+    },
+    "cleanState": {"type": "string", "enum": ["unknown", "suspect", "clean", "compromised"]},
+    "recoveryEligibility": {"type": "string", "enum": ["unknown", "eligible", "blocked", "expired", "policy-denied"]}
+  }
+}
