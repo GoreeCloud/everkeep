@@ -57,3 +57,6 @@ jobs:
 
       - name: Validate live acceptance layer
         run: python3 scripts/validate_live_acceptance.py
+
+      - name: Validate Phase 2 Recovery Center
+        run: python3 scripts/validate_phase2_recovery_center.py
