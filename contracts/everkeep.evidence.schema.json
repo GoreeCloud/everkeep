@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/everkeep/contracts/everkeep.evidence.schema.json",
+  "title": "Everkeep Protection Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "evidenceId", "resourceId", "generatedAt", "protectionState", "verificationState", "recoveryState", "policyCompliance"],
+  "properties": {
+    "schemaVersion": {"const": "1.0.0"},
+    "evidenceId": {"type": "string", "minLength": 1},
+    "resourceId": {"type": "string", "minLength": 1},
+    "recoveryPointId": {"type": ["string", "null"]},
+    "policyId": {"type": ["string", "null"]},
+    "policyVersion": {"type": ["string", "null"]},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "protectionState": {"type": "string", "enum": ["not-protected", "pending", "in-progress", "protected", "failed", "warning"]},
+    "verificationState": {"type": "string", "enum": ["not-verified", "pending", "verified", "stale", "failed"]},
+    "recoveryState": {"type": "string", "enum": ["unknown", "available", "ready", "blocked", "testing", "test-passed", "test-failed", "unavailable"]},
+    "policyCompliance": {"type": "string", "enum": ["unknown", "compliant", "at-risk", "violated"]},
+    "rpo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "targetSeconds": {"type": "integer", "minimum": 0},
+        "measuredSeconds": {"type": ["integer", "null"], "minimum": 0},
+        "state": {"type": "string", "enum": ["unknown", "met", "at-risk", "missed"]}
+      }
+    },
+    "rto": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "targetSeconds": {"type": "integer", "minimum": 0},
+        "lastMeasuredSeconds": {"type": ["integer", "null"], "minimum": 0},
+        "state": {"type": "string", "enum": ["unknown", "met", "at-risk", "missed"]}
+      }
+    },
+    "copyAssurance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "availableCopies": {"type": "integer", "minimum": 0},
+        "independentFailureDomains": {"type": "integer", "minimum": 0},
+        "immutableCopyAvailable": {"type": "boolean"},
+        "isolatedCopyAvailable": {"type": "boolean"},
+        "offsiteCopyAvailable": {"type": "boolean"}
+      }
+    },
+    "lastIntegrityVerificationAt": {"type": ["string", "null"], "format": "date-time"},
+    "lastRestoreTestAt": {"type": ["string", "null"], "format": "date-time"},
+    "lastSuccessfulRestoreTestAt": {"type": ["string", "null"], "format": "date-time"},
+    "dependencyReadiness": {"type": "string", "enum": ["unknown", "ready", "degraded", "blocked"]},
+    "keyMaterialReadiness": {"type": "string", "enum": ["unknown", "ready", "degraded", "blocked"]},
+    "readinessScore": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+  }
+}
