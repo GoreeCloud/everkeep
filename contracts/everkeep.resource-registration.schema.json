@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/everkeep/contracts/everkeep.resource-registration.schema.json",
+  "title": "Everkeep Resource Registration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "registrationId", "resourceId", "sourceApplication", "resourceClass", "owner", "preservationTier", "registeredAt"],
+  "properties": {
+    "schemaVersion": {"const": "1.0.0"},
+    "registrationId": {"type": "string", "minLength": 1},
+    "resourceId": {"type": "string", "minLength": 1},
+    "sourceApplication": {"type": "string", "minLength": 1},
+    "resourceClass": {"type": "string", "minLength": 1},
+    "owner": {"type": "string", "minLength": 1},
+    "preservationTier": {"enum": ["working", "protected", "archive", "permanent", "ephemeral"]},
+    "parentResourceId": {"type": ["string", "null"]},
+    "explicitPolicyId": {"type": ["string", "null"]},
+    "tags": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "registeredAt": {"type": "string", "format": "date-time"},
+    "metadata": {"type": "object"}
+  }
+}

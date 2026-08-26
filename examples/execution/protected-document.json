@@ -1,0 +1,16 @@
+{
+  "resource": {
+    "schemaVersion": "1.0.0",
+    "registrationId": "reg-doc-001",
+    "resourceId": "doc-001",
+    "sourceApplication": "goreecloud-documents",
+    "resourceClass": "document",
+    "owner": "user-001",
+    "preservationTier": "protected",
+    "registeredAt": "2026-08-26T18:00:00Z"
+  },
+  "expectedEffectivePolicy": "documents-specific",
+  "expectedRetentionWithoutOverrides": "retain",
+  "expectedPrivacyDeletionDecision": "delete",
+  "expectedProtectedAfterRecoveryPoint": true
+}

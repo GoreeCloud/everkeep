@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/everkeep/contracts/everkeep.recovery-center.query.schema.json",
+  "title": "Everkeep Recovery Center Query",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "queryId", "requestedAt", "filters"],
+  "properties": {
+    "schemaVersion": {"const": "1.0.0"},
+    "queryId": {"type": "string"},
+    "requestedAt": {"type": "string", "format": "date-time"},
+    "filters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resourceIds": {"type": "array", "items": {"type": "string"}},
+        "applications": {"type": "array", "items": {"type": "string"}},
+        "readinessStates": {"type": "array", "items": {"enum": ["recovery_ready", "at_risk", "recovery_blocked", "unknown"]}},
+        "preservationTiers": {"type": "array", "items": {"enum": ["working", "protected", "archive", "permanent", "ephemeral"]}},
+        "includeUnprotected": {"type": "boolean", "default": true}
+      }
+    },
+    "limit": {"type": "integer", "minimum": 1, "maximum": 500, "default": 100},
+    "cursor": {"type": ["string", "null"]}
+  }
+}

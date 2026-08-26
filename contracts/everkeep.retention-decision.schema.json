@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/everkeep/contracts/everkeep.retention-decision.schema.json",
+  "title": "Everkeep Retention Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "resourceId", "evaluatedAt", "decision", "authority", "reasons"],
+  "properties": {
+    "schemaVersion": {"const": "1.0.0"},
+    "resourceId": {"type": "string"},
+    "evaluatedAt": {"type": "string", "format": "date-time"},
+    "decision": {"enum": ["retain", "expire", "delete", "hold", "conflict"]},
+    "authority": {"enum": ["privacy_shield", "everkeep_policy", "legal_or_operational_hold", "combined"]},
+    "effectiveUntil": {"type": ["string", "null"], "format": "date-time"},
+    "reasons": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "conflicts": {"type": "array", "items": {"type": "string"}}
+  }
+}
