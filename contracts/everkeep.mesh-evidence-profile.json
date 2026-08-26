@@ -6,7 +6,7 @@
   "mesh_envelope": {
     "version": "goreecloud.evidence-envelope.v1",
     "repository": "GoreeCloud/goreecloud-mesh",
-    "revision": "f1b1b8256773f67ce6ac10a9a9a682ee5192a5fa",
+    "revision": "522b42dc1a60ea0161e3c0f5397f8d2879065049",
     "path": "contracts/mesh.evidence-envelope.schema.json"
   },
   "producer_contracts": [
