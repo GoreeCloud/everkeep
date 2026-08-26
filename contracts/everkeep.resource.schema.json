@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/everkeep/contracts/everkeep.resource.schema.json",
+  "title": "Everkeep Protected Resource",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "resourceId", "resourceType", "owner", "source", "preservationTier", "createdAt"],
+  "properties": {
+    "schemaVersion": {"const": "1.0.0"},
+    "resourceId": {"type": "string", "minLength": 1},
+    "resourceType": {"type": "string", "minLength": 1},
+    "resourceClass": {"type": "string", "enum": ["user-data", "application-state", "database", "device", "configuration", "infrastructure", "identity-material", "archive", "other"]},
+    "owner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id"],
+      "properties": {
+        "type": {"type": "string", "enum": ["user", "service", "application", "organization", "system"]},
+        "id": {"type": "string", "minLength": 1}
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["application"],
+      "properties": {
+        "application": {"type": "string", "minLength": 1},
+        "service": {"type": "string"},
+        "locator": {"type": "string"},
+        "version": {"type": "string"}
+      }
+    },
+    "preservationTier": {"type": "string", "enum": ["working", "protected", "archive", "permanent", "ephemeral"]},
+    "sensitivity": {"type": "string", "enum": ["public", "internal", "private", "sensitive", "restricted"]},
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "resourceId"],
+        "properties": {
+          "type": {"type": "string", "enum": ["parent", "child", "dependency", "derived-from", "attachment", "member-of", "references"]},
+          "resourceId": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "protectionPolicyId": {"type": ["string", "null"]},
+    "retentionPolicyId": {"type": ["string", "null"]},
+    "privacyPolicyRefs": {"type": "array", "items": {"type": "string"}},
+    "securityPolicyRefs": {"type": "array", "items": {"type": "string"}},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "updatedAt": {"type": "string", "format": "date-time"}
+  }
+}
