@@ -39,3 +39,6 @@ jobs:
 
       - name: Validate Phase 1 execution layer
         run: python3 scripts/validate_execution_layer.py
+
+      - name: Validate persistent service layer
+        run: python3 scripts/validate_persistence.py

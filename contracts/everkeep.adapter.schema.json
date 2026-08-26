@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/everkeep/contracts/everkeep.adapter.schema.json",
+  "title": "Everkeep Application Adapter",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "adapterId", "application", "resourceClasses", "capabilities", "eventCursor"],
+  "properties": {
+    "schemaVersion": {"const": "1.0.0"},
+    "adapterId": {"type": "string", "minLength": 1},
+    "application": {"type": "string", "minLength": 1},
+    "resourceClasses": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "enum": ["discover", "register", "snapshot", "restore", "export", "verify", "retention", "version-history"]},
+      "uniqueItems": true
+    },
+    "eventCursor": {"type": ["string", "null"]},
+    "authoritativeFor": {"type": "array", "items": {"type": "string"}},
+    "readOnly": {"type": "boolean", "default": false}
+  }
+}

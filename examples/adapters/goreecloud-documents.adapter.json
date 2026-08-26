@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0.0",
+  "adapterId": "goreecloud-documents",
+  "application": "goreecloud-documents",
+  "resourceClasses": ["document", "document-version"],
+  "capabilities": ["discover", "register", "snapshot", "restore", "export", "verify", "retention", "version-history"],
+  "eventCursor": null,
+  "authoritativeFor": ["document-metadata", "document-version-identity"],
+  "readOnly": false
+}

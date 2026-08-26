@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/everkeep/contracts/everkeep.persistence.schema.json",
+  "title": "Everkeep Persistence Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "engine", "tables", "transactional"],
+  "properties": {
+    "schemaVersion": {"const": "1.0.0"},
+    "engine": {"type": "string", "enum": ["sqlite", "postgresql"]},
+    "transactional": {"const": true},
+    "tables": {
+      "type": "array",
+      "minItems": 6,
+      "items": {"type": "string", "enum": ["resources", "policies", "policy_versions", "recovery_points", "audit_events", "retention_decisions", "adapter_state"]},
+      "uniqueItems": true
+    },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "foreignKeys": {"const": true},
+        "writeAheadLog": {"type": "boolean"},
+        "idempotentIngestion": {"const": true},
+        "appendOnlyAudit": {"const": true},
+        "versionedPolicies": {"const": true}
+      }
+    }
+  }
+}
