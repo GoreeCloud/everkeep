@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.recovery-action.schema.json",
+  "title": "Everkeep Recovery Center Action",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["action", "resourceId", "reason", "authorizedByEvidence"],
+  "properties": {
+    "action": {
+      "enum": [
+        "protect-resource",
+        "verify-integrity",
+        "run-restore-test",
+        "inspect-policy",
+        "inspect-key-readiness",
+        "inspect-dependencies",
+        "restore-resource"
+      ]
+    },
+    "resourceId": {"type": "string", "minLength": 1},
+    "reason": {"type": "string", "minLength": 1},
+    "authorizedByEvidence": {"type": "boolean"},
+    "destructive": {"type": "boolean", "default": false}
+  }
+}
