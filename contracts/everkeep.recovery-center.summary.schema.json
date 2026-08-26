@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.recovery-center.summary.schema.json",
+  "title": "Everkeep Recovery Center Summary",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generatedAt", "totals", "readiness", "protection", "priorityBlockers", "recommendedActions"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "totals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resources"],
+      "properties": {"resources": {"type": "integer", "minimum": 0}}
+    },
+    "readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recoveryReady", "atRisk", "recoveryBlocked", "unknown"],
+      "properties": {
+        "recoveryReady": {"type": "integer", "minimum": 0},
+        "atRisk": {"type": "integer", "minimum": 0},
+        "recoveryBlocked": {"type": "integer", "minimum": 0},
+        "unknown": {"type": "integer", "minimum": 0}
+      }
+    },
+    "protection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protected", "unprotected"],
+      "properties": {
+        "protected": {"type": "integer", "minimum": 0},
+        "unprotected": {"type": "integer", "minimum": 0}
+      }
+    },
+    "priorityBlockers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "count", "severity"],
+        "properties": {
+          "code": {"type": "string", "minLength": 1},
+          "count": {"type": "integer", "minimum": 1},
+          "severity": {"enum": ["critical", "high", "medium", "low"]}
+        }
+      }
+    },
+    "recommendedActions": {
+      "type": "array",
+      "items": {"$ref": "everkeep.recovery-action.schema.json"}
+    }
+  }
+}
