@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/everkeep/contracts/everkeep.effective-policy.schema.json",
+  "title": "Everkeep Effective Protection Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "resourceId", "resolvedAt", "policyId", "resolutionPath", "objectives", "retention", "verification"],
+  "properties": {
+    "schemaVersion": {"const": "1.0.0"},
+    "resourceId": {"type": "string"},
+    "resolvedAt": {"type": "string", "format": "date-time"},
+    "policyId": {"type": "string"},
+    "resolutionPath": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "objectives": {"type": "object"},
+    "retention": {"type": "object"},
+    "verification": {"type": "object"},
+    "placement": {"type": "object"},
+    "authorization": {"type": "object"},
+    "overridesApplied": {"type": "array", "items": {"type": "string"}}
+  }
+}
