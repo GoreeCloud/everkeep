@@ -57,3 +57,6 @@ jobs:
 
       - name: Validate live acceptance layer
         run: python3 scripts/validate_live_acceptance.py
+
+      - name: Validate restore verification evidence contract
+        run: python3 scripts/validate_restore_verification.py
