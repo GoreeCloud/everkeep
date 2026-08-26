@@ -36,3 +36,6 @@ jobs:
 
       - name: Validate Phase 1 Mesh and readiness contracts
         run: python3 scripts/validate_phase1.py
+
+      - name: Validate Phase 1 execution layer
+        run: python3 scripts/validate_execution_layer.py
