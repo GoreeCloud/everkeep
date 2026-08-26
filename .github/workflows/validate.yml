@@ -63,3 +63,6 @@ jobs:
 
       - name: Test Everkeep Mesh evidence envelope adapter
         run: python3 scripts/test_mesh_evidence.py
+
+      - name: Test authenticated Everkeep Mesh evidence delivery
+        run: python3 scripts/test_mesh_delivery.py
