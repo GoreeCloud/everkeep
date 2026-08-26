@@ -51,3 +51,6 @@ jobs:
 
       - name: Validate deployment readiness layer
         run: python3 scripts/validate_deployment_readiness.py
+
+      - name: Validate staging verification layer
+        run: python3 scripts/validate_staging_verification.py
