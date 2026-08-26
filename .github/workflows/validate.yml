@@ -54,3 +54,6 @@ jobs:
 
       - name: Validate staging verification layer
         run: python3 scripts/validate_staging_verification.py
+
+      - name: Validate live acceptance layer
+        run: python3 scripts/validate_live_acceptance.py
