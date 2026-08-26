@@ -1,76 +1,79 @@
 # Everkeep
 
-Everkeep is GoreeCloud's platform-wide identity for resilience, recovery, preservation, portability, succession, and digital legacy.
+Everkeep is GoreeCloud's platform-wide resilience, preservation, backup, recovery, portability, continuity, succession, and digital-legacy subsystem.
 
-It defines how GoreeCloud communicates and evaluates whether protected information can survive failures, migrations, application replacement, infrastructure changes, and long-term technology change without turning Everkeep into a backup engine or storage product.
+It is a foundational technical system, not merely the name of GoreeCloud Backup, a visual identity, or a presentation layer. Everkeep provides shared infrastructure, contracts, evidence, policies, and recovery services that GoreeCloud applications and infrastructure can use without independently implementing complete resilience systems.
 
-## Core boundary
+## Platform boundary
 
-Everkeep is an identity, governance, evidence, and presentation layer.
+- **GoreeCloud Backup** is the user-facing backup and restore application powered by Everkeep.
+- **Everkeep** defines and coordinates shared protection, recovery, preservation, portability, retention, continuity, succession, and assurance capabilities.
+- Storage systems, databases, snapshot engines, replication systems, archive providers, and infrastructure platforms remain implementation components beneath Everkeep and must produce evidence for claims Everkeep surfaces.
 
-It does **not** replace:
+Everkeep must never convert an unsupported capability into a public protection claim. Missing, stale, malformed, unverified, or unavailable recovery evidence fails closed.
 
-- **GoreeCloud Backup**, which performs backup and restore operations.
-- Storage systems such as TrueNAS or ZFS.
-- Application-native export, migration, or recovery mechanisms.
-- Replication and synchronization systems.
-- Disaster-recovery infrastructure.
-- Future succession or digital-legacy applications.
+## Foundational systems
 
-Everkeep may summarize evidence from those systems, but the authoritative system remains responsible for producing and enforcing its own state.
+- **Privacy Shield** — control, consent, minimization, retention authority, transfer authority, and deletion governance.
+- **Wardveil Security** — protection, trust, threat detection, tamper resistance, and security response.
+- **Everkeep** — survival, recoverability, integrity, preservation, continuity, portability, and authorized succession.
+- **GoreeCloud Mesh** — coordination and governance plane connecting applications, services, devices, identities, permissions, events, and shared platform capabilities.
+- **Glaze UI** — interaction, accessibility, responsive behavior, and evidence-backed state presentation.
 
-## Platform identity model
+## Core domains
 
-- **Glaze UI** — design and user experience.
-- **Wardveil Security** — security and protection.
-- **Privacy Shield** — privacy protections and controls.
-- **Everkeep** — resilience, recovery, preservation, portability, succession, and digital legacy.
-- **GoreeCloud Suite** — the unified collection of GoreeCloud applications and services.
+1. **Resilience** — backups, snapshots, versions, replicas, recovery points, rollback, and restoration.
+2. **Preservation** — archives, integrity, provenance, format longevity, preservation metadata, and long-term verification.
+3. **Continuity** — disaster recovery, service recovery, failover, dependency-aware restoration, and recovery exercises.
+4. **Portability** — exports, imports, migration packages, documented formats, manifests, and independent verification.
+5. **Succession** — digital legacy, trusted contacts, successor policies, emergency recovery, selective transfer, and authorized destruction.
+6. **Assurance** — recovery evidence, restore testing, policy compliance, measurable RPO/RTO objectives, and readiness evaluation.
 
-## Everkeep principles
+## Phase 1 core
 
-Everkeep is built around the idea that the information GoreeCloud protects matters more than any particular application, server, vendor, or technology.
+Phase 1 establishes the implementable Everkeep core:
 
-A continuity claim must therefore be evidence-based. Missing, stale, unverified, incomplete, or unavailable recovery evidence must not be presented as healthy or recoverable.
+- Resource Registry
+- Protection Policy Engine
+- Recovery Point Service
+- Evidence Service
+- Retention Engine
+- Verification Service
+- Recovery Orchestrator
+- GoreeCloud Mesh adapter
+- Recovery Center API foundation
 
-Everkeep favors:
+See `docs/PHASE-1-CORE.md`.
 
-- verified restore capability over the existence of a backup,
-- portable data over application lock-in,
-- documented recovery over assumptions,
-- multiple independent recovery layers over a single mechanism,
-- clear ownership and succession paths over undocumented dependency on one administrator,
-- preservation of meaning, context, metadata, and history—not merely raw bytes.
+## Machine-readable contracts
 
-## Repository contracts
+Existing continuity/adoption contracts remain part of the repository. Phase 1 adds platform-core contracts:
 
-- `CONTINUITY.md` — Everkeep identity, scope, terminology, and continuity evidence model.
-- `STATUS.md` — normalized continuity state semantics and aggregation rules.
-- `ADOPTION.md` — minimum requirements for GoreeCloud applications and services that integrate Everkeep.
-- `SECURITY.md` — security, privacy, and sensitive-information boundaries.
-- `ICON.md` — Everkeep visual-identity concept, canonical-asset path, and approval gate.
-- `contracts/continuity.identity.json` — machine-readable Everkeep identity and governance contract.
-- `contracts/continuity.status.schema.json` — machine-readable continuity status-record schema.
-- `contracts/continuity.adoption.schema.json` — machine-readable Everkeep adoption-manifest schema.
-- `contracts/continuity.acceptance.schema.json` — machine-readable fail-closed application acceptance-policy schema.
-- `examples/goreecloud-backup.adoption.json` — reference producer manifest for GoreeCloud Backup.
-- `examples/goreecloud-manager.adoption.json` — reference consumer manifest for GoreeCloud Manager.
-- `examples/goreecloud-backup.acceptance.json` — reference acceptance policy showing freshness, non-ready failure behavior, restore evidence, and sensitive-evidence exclusion.
-- `scripts/validate_continuity.py` — deterministic Everkeep repository validator.
-- `.github/workflows/validate.yml` — CI validation.
+- `contracts/everkeep.resource.schema.json` — protected resource identity, ownership, source, tier, relationships, and governing policy references.
+- `contracts/everkeep.protection-policy.schema.json` — RPO/RTO, redundancy, immutability/isolation, retention, verification, placement, and authorization requirements.
+- `contracts/everkeep.recovery-point.schema.json` — recovery-point type, integrity, protected copies, failure domains, retention, clean-state classification, and recovery eligibility.
+- `contracts/everkeep.evidence.schema.json` — normalized protection, verification, recovery, policy, RPO/RTO, copy assurance, dependency, key-material, and readiness evidence.
 
-## Adoption model
+The prior contracts remain available for continuity state, adoption, acceptance, identity, semantic color, and Mesh integration.
 
-Everkeep distinguishes **producers**, **consumers**, and future **producer-consumers** through a versioned adoption manifest. An adoption manifest declares the continuity dimensions a project represents, its authoritative-source boundary, read-only behavior, fail-closed requirement, and the shared status schema it consumes or emits.
+## Recovery standard
 
-An application that intends to claim Everkeep integration must also define an acceptance policy compatible with `contracts/continuity.acceptance.schema.json`. The policy makes freshness, unavailable or malformed evidence behavior, required-ready evidence, sensitive-evidence exclusion, and target/exact-revision acceptance explicit. The manifest describes what the application represents; the acceptance policy defines what must be true before that representation may become an integration or readiness claim.
+Everkeep distinguishes:
 
-The included reference manifests and acceptance policy are contract examples, not claims that an application has completed runtime Everkeep acceptance. Actual adoption remains evidence-gated and must satisfy `ADOPTION.md` at an exact source revision.
+**Backup Exists**
 
-## Visual identity
+from:
 
-The Everkeep visual identity is **approved and canonical**. Its authoritative source is `assets/everkeep.svg`, and all derived assets must trace back to that source.
+**Backup Exists + Integrity Verified + Policy Compliant + Recovery Tested + Recoverable**
+
+A backup job completing successfully is never sufficient by itself to produce a recovery-ready state.
+
+## Protection principles
+
+Everkeep favors verified restore capability over backup existence, portable and documented data over lock-in, explicit retention over accidental permanence, independent failure domains over a single recovery mechanism, dependency-aware restoration over isolated component recovery, and preservation of meaning, metadata, provenance, and relationships rather than raw bytes alone.
+
+High-value policies may require immutable or isolated copies, off-site protection, multi-party authorization for destructive changes, malware checks before restoration, and a Recovery Sandbox before promotion to production. These are policy capabilities and must not be represented as deployed unless runtime evidence proves them.
 
 ## Status
 
-**Foundation 0.4.** The Everkeep identity is authoritative across the identity contract, documentation, validation workflow, reference adoption model, canonical acceptance policy, and canonical visual identity. The normalized continuity status model, machine-readable status/adoption/acceptance schemas, reference adoption manifests, fail-closed governance, and validator foundation remain intact. Runtime adoption remains evidence-gated.
+**Phase 1 core architecture in development.** The foundational identity, continuity/adoption contracts, canonical visual identity, and evidence-gated integration model remain intact. Protected-resource, protection-policy, recovery-point, and evidence contracts now establish the first implementable Everkeep service boundary. Runtime deployment and application adoption remain evidence-gated.
