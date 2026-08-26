@@ -42,3 +42,6 @@ jobs:
 
       - name: Validate persistent service layer
         run: python3 scripts/validate_persistence.py
+
+      - name: Validate service and API layer
+        run: python3 scripts/validate_service_api.py

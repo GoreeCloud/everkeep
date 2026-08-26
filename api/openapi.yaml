@@ -1,0 +1,129 @@
+openapi: 3.1.0
+info:
+  title: Everkeep Service API
+  version: 0.1.0
+  description: Evidence-gated reference API for GoreeCloud Everkeep.
+servers:
+  - url: https://everkeep.goreecloud.internal
+paths:
+  /health:
+    get:
+      operationId: health
+      responses:
+        '200': {description: Service health}
+  /ready:
+    get:
+      operationId: readiness
+      responses:
+        '200': {description: Service readiness}
+        '503': {description: Service not ready}
+  /v1/resources:
+    get:
+      operationId: listResources
+      parameters:
+        - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 200}}
+        - {name: cursor, in: query, schema: {type: integer, minimum: 0}}
+        - {name: application, in: query, schema: {type: string}}
+        - {name: tier, in: query, schema: {type: string}}
+      responses:
+        '200': {description: Resource page}
+    post:
+      operationId: registerResource
+      parameters:
+        - {name: Idempotency-Key, in: header, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: ../contracts/everkeep.resource.schema.json}
+      responses:
+        '201': {description: Resource registered}
+        '409': {description: Duplicate resource}
+  /v1/resources/{resourceId}:
+    get:
+      operationId: getResource
+      parameters:
+        - {$ref: '#/components/parameters/ResourceId'}
+      responses:
+        '200': {description: Resource}
+        '404': {description: Not found}
+  /v1/resources/{resourceId}/recovery-center:
+    get:
+      operationId: getRecoveryCenterProjection
+      parameters:
+        - {$ref: '#/components/parameters/ResourceId'}
+      responses:
+        '200': {description: Recovery Center projection}
+        '404': {description: Not found}
+  /v1/policies/{policyId}:
+    get:
+      operationId: getPolicy
+      parameters:
+        - {name: policyId, in: path, required: true, schema: {type: string}}
+        - {name: version, in: query, schema: {type: integer, minimum: 1}}
+      responses:
+        '200': {description: Policy}
+        '404': {description: Not found}
+    put:
+      operationId: savePolicy
+      parameters:
+        - {name: policyId, in: path, required: true, schema: {type: string}}
+        - {name: If-Match, in: header, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: ../contracts/everkeep.protection-policy.schema.json}
+      responses:
+        '200': {description: Policy version created}
+        '412': {description: ETag precondition failed}
+  /v1/recovery-points:
+    post:
+      operationId: ingestRecoveryPoint
+      parameters:
+        - {name: Idempotency-Key, in: header, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: ../contracts/everkeep.recovery-point.schema.json}
+      responses:
+        '201': {description: Recovery point recorded}
+  /v1/recovery-points/{recoveryPointId}/state:
+    post:
+      operationId: transitionRecoveryPoint
+      parameters:
+        - {name: recoveryPointId, in: path, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [state]
+              properties:
+                state: {type: string, enum: [available, verifying, blocked, expired]}
+      responses:
+        '200': {description: State transitioned}
+        '409': {description: Invalid lifecycle transition}
+  /v1/audit-events:
+    get:
+      operationId: listAuditEvents
+      parameters:
+        - {name: afterSequence, in: query, schema: {type: integer, minimum: 0}}
+        - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 500}}
+      responses:
+        '200': {description: Audit event page}
+components:
+  parameters:
+    ResourceId:
+      name: resourceId
+      in: path
+      required: true
+      schema: {type: string}
+  securitySchemes:
+    goreecloudIdentity:
+      type: openIdConnect
+      openIdConnectUrl: https://identity.goreecloud.internal/.well-known/openid-configuration
+security:
+  - goreecloudIdentity: []

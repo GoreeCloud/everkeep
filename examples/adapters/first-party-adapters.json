@@ -1,0 +1,53 @@
+[
+  {
+    "schemaVersion": "1.0.0",
+    "adapterId": "everkeep.drive.v1",
+    "application": "goreecloud-drive",
+    "resourceClasses": ["file", "folder", "drive-object"],
+    "capabilities": {"discover": true, "snapshot": true, "restore": true, "verify": true, "export": true, "pointInTime": false, "versionHistory": true},
+    "cursorMode": "opaque",
+    "requiredPermissions": ["drive.read", "drive.restore"],
+    "privacyPurposes": ["backup", "recovery", "preservation"]
+  },
+  {
+    "schemaVersion": "1.0.0",
+    "adapterId": "everkeep.documents.v1",
+    "application": "goreecloud-documents",
+    "resourceClasses": ["document", "document-revision"],
+    "capabilities": {"discover": true, "snapshot": true, "restore": true, "verify": true, "export": true, "pointInTime": false, "versionHistory": true},
+    "cursorMode": "sequence",
+    "requiredPermissions": ["documents.read", "documents.restore"],
+    "privacyPurposes": ["backup", "recovery", "preservation"]
+  },
+  {
+    "schemaVersion": "1.0.0",
+    "adapterId": "everkeep.photos.v1",
+    "application": "goreecloud-photos",
+    "resourceClasses": ["photo", "video", "album", "media-metadata"],
+    "capabilities": {"discover": true, "snapshot": true, "restore": true, "verify": true, "export": true, "pointInTime": false, "versionHistory": true},
+    "cursorMode": "opaque",
+    "requiredPermissions": ["photos.read", "photos.restore"],
+    "privacyPurposes": ["backup", "recovery", "preservation"]
+  },
+  {
+    "schemaVersion": "1.0.0",
+    "adapterId": "everkeep.vault.v1",
+    "application": "goreecloud-vault",
+    "resourceClasses": ["vault-item", "vault-metadata", "recovery-material"],
+    "capabilities": {"discover": true, "snapshot": true, "restore": true, "verify": true, "export": false, "pointInTime": false, "versionHistory": true},
+    "cursorMode": "sequence",
+    "requiredPermissions": ["vault.backup", "vault.restore", "identity.reauthenticate"],
+    "privacyPurposes": ["backup", "recovery"],
+    "notes": "Vault payload handling must preserve end-to-end encryption boundaries; Everkeep should not require plaintext secret material."
+  },
+  {
+    "schemaVersion": "1.0.0",
+    "adapterId": "everkeep.backup.v1",
+    "application": "goreecloud-backup",
+    "resourceClasses": ["backup-job", "device-backup", "application-backup", "repository"],
+    "capabilities": {"discover": true, "snapshot": true, "restore": true, "verify": true, "export": true, "pointInTime": true, "versionHistory": true},
+    "cursorMode": "sequence",
+    "requiredPermissions": ["backup.manage", "backup.restore"],
+    "privacyPurposes": ["backup", "recovery", "disaster-recovery"]
+  }
+]
