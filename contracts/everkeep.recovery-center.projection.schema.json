@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.local/schemas/everkeep.recovery-center.projection.schema.json",
+  "title": "Everkeep Recovery Center Projection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "resourceId", "protectionState", "readiness", "policy", "latestRecoveryPoint"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "resourceId": {"type": "string", "minLength": 1},
+    "protectionState": {"enum": ["protected", "pending", "failed", "not_protected", "unknown"]},
+    "readiness": {"$ref": "everkeep.readiness.schema.json"},
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policyId", "preservationTier"],
+      "properties": {
+        "policyId": {"type": "string"},
+        "preservationTier": {"enum": ["working", "protected", "archive", "permanent", "ephemeral"]},
+        "rpoSeconds": {"type": "integer", "minimum": 0},
+        "rtoSeconds": {"type": "integer", "minimum": 0}
+      }
+    },
+    "latestRecoveryPoint": {
+      "type": ["object", "null"],
+      "properties": {
+        "recoveryPointId": {"type": "string"},
+        "createdAt": {"type": "string", "format": "date-time"},
+        "verified": {"type": "boolean"},
+        "restoreTested": {"type": "boolean"}
+      }
+    },
+    "copySummary": {
+      "type": "object",
+      "properties": {
+        "count": {"type": "integer", "minimum": 0},
+        "independentFailureDomains": {"type": "integer", "minimum": 0},
+        "immutableOrIsolatedAvailable": {"type": "boolean"}
+      }
+    },
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "availableActions": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+  }
+}

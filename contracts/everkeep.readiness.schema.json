@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.local/schemas/everkeep.readiness.schema.json",
+  "title": "Everkeep Recovery Readiness",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "resourceId", "evaluatedAt", "state", "score", "checks"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "resourceId": {"type": "string", "minLength": 1},
+    "evaluatedAt": {"type": "string", "format": "date-time"},
+    "state": {"enum": ["recovery_ready", "at_risk", "recovery_blocked", "unknown"]},
+    "score": {"type": "integer", "minimum": 0, "maximum": 100},
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protectionFresh", "integrityVerified", "policyCompliant", "restoreTestFresh", "dependenciesReady", "keysReady", "copyRequirementsMet"],
+      "properties": {
+        "protectionFresh": {"type": "boolean"},
+        "integrityVerified": {"type": "boolean"},
+        "policyCompliant": {"type": "boolean"},
+        "restoreTestFresh": {"type": "boolean"},
+        "dependenciesReady": {"type": "boolean"},
+        "keysReady": {"type": "boolean"},
+        "copyRequirementsMet": {"type": "boolean"}
+      }
+    },
+    "blockingReasons": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+  }
+}

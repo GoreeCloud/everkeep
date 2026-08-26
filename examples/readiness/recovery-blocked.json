@@ -1,0 +1,12 @@
+{
+  "resourceId": "document:example-blocked",
+  "checks": {
+    "protectionFresh": true,
+    "integrityVerified": false,
+    "policyCompliant": true,
+    "restoreTestFresh": true,
+    "dependenciesReady": true,
+    "keysReady": true,
+    "copyRequirementsMet": true
+  }
+}

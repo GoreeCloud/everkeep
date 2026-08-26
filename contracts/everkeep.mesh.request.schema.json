@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.local/schemas/everkeep.mesh.request.schema.json",
+  "title": "Everkeep Mesh Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "requestId", "operation", "resourceId", "requestedAt", "actor"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "requestId": {"type": "string", "minLength": 8},
+    "operation": {
+      "enum": [
+        "protect_resource", "create_recovery_point", "list_recovery_points", "list_versions",
+        "verify_integrity", "restore_resource", "restore_version", "archive_resource",
+        "unarchive_resource", "export_resource", "import_resource", "apply_retention_policy",
+        "change_preservation_tier", "query_protection_status", "query_recovery_eligibility",
+        "request_recovery_evidence", "perform_recovery_test", "create_recovery_plan",
+        "execute_recovery_plan", "query_recovery_readiness", "create_preservation_capsule"
+      ]
+    },
+    "resourceId": {"type": "string", "minLength": 1},
+    "requestedAt": {"type": "string", "format": "date-time"},
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id"],
+      "properties": {
+        "type": {"enum": ["user", "service", "system"]},
+        "id": {"type": "string", "minLength": 1},
+        "sessionId": {"type": "string"}
+      }
+    },
+    "policyId": {"type": "string"},
+    "recoveryPointId": {"type": "string"},
+    "target": {"type": "object"},
+    "parameters": {"type": "object"},
+    "privacyContextRef": {"type": "string"},
+    "securityContextRef": {"type": "string"},
+    "identityContextRef": {"type": "string"}
+  }
+}
