@@ -33,3 +33,6 @@ jobs:
 
       - name: Validate evidence validity contract
         run: python3 scripts/validate_evidence_validity.py
+
+      - name: Validate Phase 1 Mesh and readiness contracts
+        run: python3 scripts/validate_phase1.py
