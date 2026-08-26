@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/everkeep/contracts/everkeep.protection-policy.schema.json",
+  "title": "Everkeep Protection Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "policyId", "name", "enabled", "scope", "objectives", "retention", "verification"],
+  "properties": {
+    "schemaVersion": {"const": "1.0.0"},
+    "policyId": {"type": "string", "minLength": 1},
+    "name": {"type": "string", "minLength": 1},
+    "enabled": {"type": "boolean"},
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resourceIds": {"type": "array", "items": {"type": "string"}},
+        "resourceClasses": {"type": "array", "items": {"type": "string"}},
+        "applications": {"type": "array", "items": {"type": "string"}},
+        "preservationTiers": {"type": "array", "items": {"type": "string", "enum": ["working", "protected", "archive", "permanent", "ephemeral"]}}
+      }
+    },
+    "objectives": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rpoSeconds", "rtoSeconds", "minimumCopies", "minimumFailureDomains"],
+      "properties": {
+        "rpoSeconds": {"type": "integer", "minimum": 0},
+        "rtoSeconds": {"type": "integer", "minimum": 0},
+        "minimumCopies": {"type": "integer", "minimum": 1},
+        "minimumFailureDomains": {"type": "integer", "minimum": 1},
+        "requireOffsiteCopy": {"type": "boolean", "default": false},
+        "requireImmutableCopy": {"type": "boolean", "default": false},
+        "requireIsolatedCopy": {"type": "boolean", "default": false},
+        "zeroUnverifiedErrors": {"type": "boolean", "default": true}
+      }
+    },
+    "schedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {"type": "string", "enum": ["continuous", "interval", "event", "manual"]},
+        "intervalSeconds": {"type": "integer", "minimum": 60}
+      }
+    },
+    "retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": {
+        "mode": {"type": "string", "enum": ["rolling", "fixed", "indefinite", "ephemeral"]},
+        "minimumSeconds": {"type": "integer", "minimum": 0},
+        "maximumSeconds": {"type": "integer", "minimum": 0},
+        "delayedDeletionSeconds": {"type": "integer", "minimum": 0},
+        "privacyDeletionOverrides": {"type": "boolean", "default": true}
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["integrityIntervalSeconds", "restoreTestIntervalSeconds"],
+      "properties": {
+        "integrityIntervalSeconds": {"type": "integer", "minimum": 60},
+        "restoreTestIntervalSeconds": {"type": "integer", "minimum": 60},
+        "requireMalwareScanBeforeRestore": {"type": "boolean", "default": false},
+        "requireRecoverySandbox": {"type": "boolean", "default": false}
+      }
+    },
+    "placement": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allowedProviders": {"type": "array", "items": {"type": "string"}},
+        "allowedRegions": {"type": "array", "items": {"type": "string"}},
+        "deniedProviders": {"type": "array", "items": {"type": "string"}},
+        "deniedRegions": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "restoreRequiresReauthentication": {"type": "boolean", "default": true},
+        "destructiveChangeRequiresReauthentication": {"type": "boolean", "default": true},
+        "multiPartyDestruction": {"type": "boolean", "default": false}
+      }
+    },
+    "createdAt": {"type": "string", "format": "date-time"},
+    "updatedAt": {"type": "string", "format": "date-time"}
+  }
+}
