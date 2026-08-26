@@ -1,0 +1,27 @@
+services:
+  everkeep:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      EVERKEEP_ENVIRONMENT: staging
+      EVERKEEP_DATABASE_URL: ${EVERKEEP_DATABASE_URL:?required}
+      EVERKEEP_IDENTITY_URL: ${EVERKEEP_IDENTITY_URL:?required}
+      EVERKEEP_PRIVACY_URL: ${EVERKEEP_PRIVACY_URL:?required}
+      EVERKEEP_WARDVEIL_URL: ${EVERKEEP_WARDVEIL_URL:?required}
+      EVERKEEP_MESH_URL: ${EVERKEEP_MESH_URL:?required}
+      EVERKEEP_SERVICE_TOKEN_FILE: /run/secrets/everkeep_service_token
+    secrets:
+      - everkeep_service_token
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+
+secrets:
+  everkeep_service_token:
+    file: ${EVERKEEP_SERVICE_TOKEN_FILE:?required}
