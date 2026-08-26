@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.live-acceptance.schema.json",
+  "title": "Everkeep Live Acceptance Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "environment", "capturedAt", "sourceRevision", "checks", "accepted"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "environment": {"enum": ["staging", "production"]},
+    "capturedAt": {"type": "string", "format": "date-time"},
+    "sourceRevision": {"type": "string", "minLength": 7},
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "status", "authoritative", "evidence"],
+        "properties": {
+          "name": {"type": "string"},
+          "status": {"enum": ["pass", "fail", "unknown"]},
+          "authoritative": {"type": "boolean"},
+          "evidence": {"type": "object"}
+        }
+      }
+    },
+    "accepted": {"type": "boolean"}
+  }
+}
