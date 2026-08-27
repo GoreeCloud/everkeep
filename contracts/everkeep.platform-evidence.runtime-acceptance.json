@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "system": "everkeep",
+  "authority_domains": ["resilience", "recovery", "preservation", "continuity"],
+  "purpose": "Defines runtime acceptance gates for Everkeep evidence delivery through GoreeCloud Mesh without converting backup existence or transport success into recoverability.",
+  "required_gates": [
+    "authenticated producer identity equals everkeep",
+    "mesh.evidence.write scope is verified by GoreeCloud Identity",
+    "delivery uses HTTPS except explicit loopback development",
+    "envelope contains no backup payloads, archive contents, credentials, or private file/message content",
+    "delivery receipt binds to the submitted evidence id",
+    "delivery receipt binds to producer_service_id everkeep",
+    "expired restore or continuity evidence remains auditable but cannot satisfy current readiness",
+    "Mesh transport success never converts backup presence into verified recovery, continuity, or preservation readiness"
+  ],
+  "negative_cases": [
+    "another producer credential attempts Everkeep delivery",
+    "receipt id mismatch",
+    "producer service receipt mismatch",
+    "non-loopback plaintext HTTP destination",
+    "missing bearer credential",
+    "envelope includes raw backup or archive contents",
+    "expired restore pass treated as current recovery readiness"
+  ],
+  "production_acceptance": false
+}
