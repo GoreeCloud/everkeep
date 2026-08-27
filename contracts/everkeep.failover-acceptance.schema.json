@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.failover-acceptance.schema.json",
+  "title": "Everkeep Failover Acceptance Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "acceptanceId", "planId", "planDigest", "executionId", "objectiveId", "targetId", "environment", "expectedRevision", "observedRevision", "observedAt", "state", "authoritative", "checks", "blockerCodes", "evidenceRefs", "exactRevisionBound", "productionMutationAuthorized"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "acceptanceId": {"type": "string", "minLength": 1},
+    "planId": {"type": "string", "minLength": 1},
+    "planDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "executionId": {"type": "string", "minLength": 1},
+    "objectiveId": {"type": "string", "minLength": 1},
+    "targetId": {"type": "string", "minLength": 1},
+    "environment": {"type": "string", "minLength": 1},
+    "expectedRevision": {"type": "string", "minLength": 1},
+    "observedRevision": {"type": "string", "minLength": 1},
+    "observedAt": {"type": "string", "format": "date-time"},
+    "state": {"enum": ["pass", "fail", "unknown"]},
+    "authoritative": {"type": "boolean"},
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["serviceHealth", "dataIntegrity", "dependencies", "security", "privacy", "rollback"],
+      "properties": {
+        "serviceHealth": {"$ref": "#/$defs/check"},
+        "dataIntegrity": {"$ref": "#/$defs/check"},
+        "dependencies": {"$ref": "#/$defs/check"},
+        "security": {"$ref": "#/$defs/check"},
+        "privacy": {"$ref": "#/$defs/check"},
+        "rollback": {"$ref": "#/$defs/check"}
+      }
+    },
+    "blockerCodes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "evidenceRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "exactRevisionBound": {"type": "boolean"},
+    "productionMutationAuthorized": {"const": false}
+  },
+  "$defs": {
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "authority", "evidenceRef"],
+      "properties": {
+        "state": {"enum": ["pass", "fail", "unknown"]},
+        "authority": {"type": "string", "minLength": 1},
+        "evidenceRef": {"type": ["string", "null"]},
+        "reason": {"type": ["string", "null"]}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"state": {"const": "pass"}}},
+      "then": {"properties": {"authoritative": {"const": true}, "exactRevisionBound": {"const": true}}}
+    }
+  ]
+}
