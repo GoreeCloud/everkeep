@@ -1,13 +1,24 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "system": "everkeep",
   "producer_repository": "GoreeCloud/goreecloud-everkeep",
   "authority_domains": ["resilience", "recovery", "preservation", "continuity"],
   "mesh_envelope": {
     "version": "goreecloud.evidence-envelope.v1",
     "repository": "GoreeCloud/goreecloud-mesh",
-    "revision": "d7809ccee889cb4166925a0747459f34290a5144",
     "path": "contracts/mesh.evidence-envelope.schema.json"
+  },
+  "platform_evidence_plane": {
+    "contract": "goreecloud.platform-evidence-plane.v1",
+    "repository": "GoreeCloud/goreecloud-mesh",
+    "path": "contracts/mesh.platform-evidence-plane.v1.json",
+    "authority_transfer": false
+  },
+  "presentation_consumer": {
+    "system": "glaze-ui",
+    "repository": "GoreeCloud/glaze-ui",
+    "path": "contracts/glaze.evidence-presentation.schema.json",
+    "may_upgrade_continuity_truth": false
   },
   "runtime_delivery": {
     "producer_service_id": "everkeep",
@@ -54,6 +65,7 @@
     "Mesh may persist and transport bounded Everkeep evidence but cannot convert backup existence into verified recoverability.",
     "Privacy Shield remains authoritative for retention, deletion, export, and succession privacy authority that constrains Everkeep actions.",
     "Wardveil remains authoritative for security findings used during recovery or post-restore verification.",
+    "Glaze UI may present Everkeep evidence but cannot create, upgrade, or merge resilience, recovery, preservation, or continuity truth.",
     "A valid Mesh envelope is not by itself recovery-ready evidence; the applicable Everkeep contract must also pass."
   ],
   "status": "source-profile",
