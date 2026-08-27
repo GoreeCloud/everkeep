@@ -1,15 +1,19 @@
 {
-  "schema_version": "1.3.0",
+  "schema_version": "1.4.0",
   "system": "everkeep",
   "authority_domains": ["resilience", "recovery", "preservation", "continuity"],
   "purpose": "Defines runtime acceptance gates for Everkeep evidence delivery through GoreeCloud Mesh without converting backup existence or transport success into recoverability.",
   "identity_contract": "GoreeCloud/goreecloud-mesh:contracts/mesh.identity-verification.json",
   "identity_profile": "GoreeCloud/goreecloud-identity:contracts/mesh-service-token.v1.json",
+  "identity_issuer_implementation": "GoreeCloud/goreecloud-identity:authentik/goreecloud/mesh_service_token.py",
   "required_gates": [
     "authenticated producer identity equals everkeep",
+    "service credential is minted by GoreeCloud Identity and not self-signed or locally substituted by Everkeep",
     "identity issuer equals goreecloud-identity",
     "identity audience equals goreecloud-mesh",
-    "mesh.evidence.write scope is verified by GoreeCloud Identity",
+    "mesh.evidence.write is the required producer delivery scope",
+    "credential lifetime does not exceed 900 seconds",
+    "credential kid resolves through the deployed GoreeCloud Identity JWKS endpoint",
     "delivery uses HTTPS except explicit loopback development",
     "delivery refuses HTTP redirects while carrying service identity proof",
     "Mesh base URL contains no user information, query, fragment, or path parameters",
@@ -20,6 +24,8 @@
     "Mesh transport success never converts backup presence into verified recovery, continuity, or preservation readiness"
   ],
   "negative_cases": [
+    "Everkeep mints, self-signs, or substitutes its own Mesh credential",
+    "Identity JWKS or live service-token issuance is unavailable",
     "identity proof outside the approved GoreeCloud Identity profile",
     "another producer identity attempts Everkeep delivery",
     "redirect response from the configured Mesh endpoint",
@@ -31,5 +37,6 @@
     "envelope includes raw backup or archive contents",
     "expired restore pass treated as current recovery readiness"
   ],
+  "deployment_boundary": "Everkeep delivery support is implemented, but production acceptance requires a deployed GoreeCloud Identity JWKS endpoint and live Identity-issued everkeep credentials accepted by GoreeCloud Mesh.",
   "production_acceptance": false
 }
