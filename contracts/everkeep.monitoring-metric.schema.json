@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.monitoring-metric.schema.json",
+  "title": "Everkeep Monitoring Metric Projection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "metricId", "objectiveId", "generatedAt", "metricName", "value", "unit", "labels", "evidenceRefs", "projectionOnly", "sensitivePayloadsExcluded"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "metricId": {"type": "string", "minLength": 1},
+    "objectiveId": {"type": "string", "minLength": 1},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "metricName": {"type": "string", "pattern": "^everkeep\\.continuity\\."},
+    "value": {"type": "number"},
+    "unit": {"enum": ["state", "seconds", "boolean"]},
+    "labels": {"type": "object", "additionalProperties": {"type": "string"}},
+    "evidenceRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "projectionOnly": {"const": true},
+    "sensitivePayloadsExcluded": {"const": true}
+  }
+}

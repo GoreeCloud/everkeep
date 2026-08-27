@@ -20,6 +20,8 @@
         "inspect-failure-domains",
         "inspect-alternate-recovery-target",
         "inspect-recovery-topology",
+        "inspect-continuity-assurance",
+        "evaluate-continuity-now",
         "create-failover-plan",
         "create-recovery-plan",
         "run-recovery-sandbox",
