@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.succession-policy.schema.json",
+  "title": "Everkeep Succession Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "policyId", "ownerSubject", "status", "createdAt", "rules", "activation"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "policyId": {"type": "string", "minLength": 1},
+    "ownerSubject": {"type": "string", "minLength": 1},
+    "status": {"enum": ["draft", "active", "suspended", "revoked"]},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "updatedAt": {"type": ["string", "null"], "format": "date-time"},
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["ruleId", "resourceIds", "disposition", "successorRefs"],
+        "properties": {
+          "ruleId": {"type": "string", "minLength": 1},
+          "resourceIds": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "disposition": {"enum": ["transfer", "archive", "delete", "retain", "no-action"]},
+          "successorRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"disposition": {"const": "transfer"}}},
+            "then": {"properties": {"successorRefs": {"minItems": 1}}}
+          }
+        ]
+      }
+    },
+    "activation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["waitingPeriodSeconds", "requiredSignals", "trustedContactQuorum"],
+      "properties": {
+        "waitingPeriodSeconds": {"type": "integer", "minimum": 0},
+        "trustedContactQuorum": {"type": "integer", "minimum": 0},
+        "requiredSignals": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "owner-status-confirmed",
+              "trusted-contact-quorum",
+              "legal-authority",
+              "manual-emergency-authorized"
+            ]
+          }
+        }
+      }
+    },
+    "privacyPolicyRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "securityPolicyRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  }
+}

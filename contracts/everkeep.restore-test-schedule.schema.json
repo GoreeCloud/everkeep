@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.restore-test-schedule.schema.json",
+  "title": "Everkeep Restore Test Schedule",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "scheduleId", "resourceId", "policyId", "evaluatedAt", "intervalSeconds", "lastSuccessfulTestAt", "nextDueAt", "temporalState", "dispatchState", "dispatchable", "requiresSandbox", "sourceMutationAllowed", "blockers", "evidenceRefs"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "scheduleId": {"type": "string", "minLength": 1},
+    "resourceId": {"type": "string", "minLength": 1},
+    "policyId": {"type": "string", "minLength": 1},
+    "evaluatedAt": {"type": "string", "format": "date-time"},
+    "intervalSeconds": {"type": "integer", "minimum": 60},
+    "lastSuccessfulTestAt": {"type": ["string", "null"], "format": "date-time"},
+    "nextDueAt": {"type": ["string", "null"], "format": "date-time"},
+    "temporalState": {"enum": ["scheduled", "due", "overdue", "unknown"]},
+    "dispatchState": {"enum": ["ready", "blocked", "unknown"]},
+    "dispatchable": {"type": "boolean"},
+    "requiresSandbox": {"type": "boolean"},
+    "sourceMutationAllowed": {"const": false},
+    "blockers": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "evidenceRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  }
+}

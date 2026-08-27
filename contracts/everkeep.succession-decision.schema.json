@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.succession-decision.schema.json",
+  "title": "Everkeep Succession Activation Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "decisionId", "policyId", "evaluatedAt", "state", "activationEligible", "executionAuthorized", "signalResults", "blockers", "evidenceRefs"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "decisionId": {"type": "string", "minLength": 1},
+    "policyId": {"type": "string", "minLength": 1},
+    "evaluatedAt": {"type": "string", "format": "date-time"},
+    "state": {"enum": ["inactive", "eligible", "blocked", "unknown", "revoked"]},
+    "activationEligible": {"type": "boolean"},
+    "executionAuthorized": {"const": false},
+    "signalResults": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["state"],
+        "properties": {
+          "state": {"enum": ["pass", "fail", "unknown"]},
+          "evidenceRef": {"type": ["string", "null"]},
+          "reason": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "blockers": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "evidenceRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "activationEventAt": {"type": ["string", "null"], "format": "date-time"},
+    "waitingPeriodSatisfied": {"type": "boolean"}
+  }
+}
