@@ -118,5 +118,5 @@ jobs:
           test -f dist/sitemap.xml
           test -f dist/assets/everkeep.svg
           grep -Fq 'https://everkeep.goreecloud.com/' dist/index.html
-          grep -Fq 'Everkeep never turns an unsupported capability into a protection claim.' dist/index.html
+          grep -Fq 'without turning an unsupported capability into a protection claim.' dist/index.html
           ! grep -Fq 'GoreeCloud Identity' dist/index.html
