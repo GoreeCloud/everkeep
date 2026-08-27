@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.continuity-assurance-policy.schema.json",
+  "title": "Everkeep Continuity Assurance Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "policyId",
+    "objectiveId",
+    "evaluationIntervalSeconds",
+    "maxTopologyAgeSeconds",
+    "warningLeadSeconds",
+    "monitoringEnabled",
+    "notifyEnabled"
+  ],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "policyId": {"type": "string", "minLength": 1},
+    "objectiveId": {"type": "string", "minLength": 1},
+    "evaluationIntervalSeconds": {"type": "integer", "minimum": 60},
+    "maxTopologyAgeSeconds": {"type": "integer", "minimum": 60},
+    "warningLeadSeconds": {"type": "integer", "minimum": 0},
+    "monitoringEnabled": {"type": "boolean"},
+    "notifyEnabled": {"type": "boolean"}
+  }
+}
