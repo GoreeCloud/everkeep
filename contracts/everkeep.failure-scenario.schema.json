@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.failure-scenario.schema.json",
+  "title": "Everkeep Failure Scenario",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "scenarioId", "name", "failureType", "createdAt", "affectedNodeIds", "affectedFailureDomains", "simulated", "productionMutationAllowed"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "scenarioId": {"type": "string", "minLength": 1},
+    "name": {"type": "string", "minLength": 1},
+    "failureType": {"enum": ["node-loss", "failure-domain-loss", "provider-loss", "region-loss", "network-partition", "dns-loss", "identity-loss", "key-material-loss", "ransomware-isolation", "custom"]},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "affectedNodeIds": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "affectedFailureDomains": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "simulated": {"const": true},
+    "productionMutationAllowed": {"const": false}
+  },
+  "anyOf": [
+    {"properties": {"affectedNodeIds": {"minItems": 1}}},
+    {"properties": {"affectedFailureDomains": {"minItems": 1}}}
+  ]
+}

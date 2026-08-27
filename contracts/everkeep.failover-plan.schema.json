@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.failover-plan.schema.json",
+  "title": "Everkeep Failover Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "planId", "objectiveId", "topologyId", "scenarioId", "createdAt", "state", "target", "impact", "steps", "approvalGates", "blockerCodes", "evidenceRefs", "requiresApproval", "executionAuthorized", "sourceMutationAllowed"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "planId": {"type": "string", "minLength": 1},
+    "objectiveId": {"type": "string", "minLength": 1},
+    "topologyId": {"type": "string", "minLength": 1},
+    "scenarioId": {"type": "string", "minLength": 1},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "state": {"enum": ["ready-for-approval", "blocked", "unknown"]},
+    "target": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["targetId", "environment", "failureDomain", "evidenceRef"],
+      "properties": {
+        "targetId": {"type": "string", "minLength": 1},
+        "environment": {"type": "string", "minLength": 1},
+        "failureDomain": {"type": "string", "minLength": 1},
+        "evidenceRef": {"type": "string", "minLength": 1}
+      }
+    },
+    "impact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["directlyAffectedNodeIds", "transitivelyAffectedNodeIds", "affectedNodeIds", "recoveryNodeIds", "affectedFailureDomains"],
+      "properties": {
+        "directlyAffectedNodeIds": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "transitivelyAffectedNodeIds": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "affectedNodeIds": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "recoveryNodeIds": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "affectedFailureDomains": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}
+      }
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["stepId", "order", "operation", "targetRef", "dependsOn"],
+        "properties": {
+          "stepId": {"type": "string", "minLength": 1},
+          "order": {"type": "integer", "minimum": 1},
+          "operation": {"enum": ["isolate-failed-scope", "validate-recovery-target", "recover-node", "verify-node", "verify-service", "prepare-rollback", "request-promotion"]},
+          "targetRef": {"type": "string", "minLength": 1},
+          "dependsOn": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+        }
+      }
+    },
+    "approvalGates": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"enum": ["operator-approval", "identity-authorized", "privacy-authorized", "wardveil-clear", "continuity-evidence-current", "target-ready", "dependencies-ready", "key-material-ready"]}
+    },
+    "blockerCodes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "evidenceRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "requiresApproval": {"const": true},
+    "executionAuthorized": {"const": false},
+    "sourceMutationAllowed": {"const": false}
+  }
+}

@@ -95,20 +95,23 @@ This is reference persistence. It does not prove that production PostgreSQL, rec
 
 ## Recovery Center expansion
 
-Recovery Center schema version 1.2 adds a continuity section with:
+Recovery Center schema version 1.3 provides:
 
 - ready / attention / degraded / unknown continuity posture counts;
 - RPO compliance coverage;
 - RTO compliance coverage;
 - recovery-exercise freshness coverage;
-- failure-domain diversity coverage.
+- failure-domain diversity coverage;
+- recovery-topology freshness coverage.
 
-Evidence-authorized recommendations now include:
+Evidence-authorized recommendations include:
 
 - inspect continuity objective;
 - run disaster-recovery drill;
 - inspect failure domains;
-- inspect alternate recovery target.
+- inspect alternate recovery target;
+- inspect recovery topology;
+- create a non-executable failover plan when continuity and topology evidence are both ready.
 
 These recommendations do not execute a failover. Restore exposure remains gated by the existing Recovery Ready and `recoveryEligible: true` requirements.
 
@@ -116,15 +119,15 @@ These recommendations do not execute a failover. Restore exposure remains gated 
 
 ### GoreeCloud Mesh
 
-GoreeCloud Mesh may coordinate bounded continuity-objective, posture, and recovery-exercise events. Mesh does not become the authority that decides whether an RPO, RTO, recovery drill, failure domain, or alternate target is valid. The authoritative producer and applicable Everkeep policy remain responsible for the evidence.
+GoreeCloud Mesh may coordinate bounded continuity-objective, posture, recovery-exercise, topology, scenario, and plan events. Mesh does not become the authority that decides whether an RPO, RTO, recovery drill, failure domain, alternate target, topology observation, or failover plan is valid. The authoritative producer and applicable Everkeep policy remain responsible for the evidence.
 
 ### Privacy Shield
 
-Privacy Shield remains authoritative for whether protected information may be copied, retained, restored, migrated, or placed into an alternate environment. A continuity objective cannot override a Privacy Shield denial.
+Privacy Shield remains authoritative for whether protected information may be copied, retained, restored, migrated, or placed into an alternate environment. A continuity objective or failover plan cannot override a Privacy Shield denial.
 
 ### Wardveil Security
 
-Wardveil Security supplies security evidence relevant to recovery exercises, clean recovery, repository protection, suspicious recovery activity, and promotion of recovered state. A continuity posture cannot convert unknown or failed Wardveil evidence into readiness.
+Wardveil Security supplies security evidence relevant to recovery exercises, clean recovery, repository protection, suspicious recovery activity, isolation, and promotion of recovered state. A continuity posture or plan cannot convert unknown or failed Wardveil evidence into readiness.
 
 ### GoreeCloud Identity
 
@@ -132,26 +135,42 @@ GoreeCloud Identity remains responsible for authenticated principals, reauthenti
 
 ### Glaze UI
 
-Glaze UI should present continuity state as evidence-backed status, never as decorative uptime or resilience branding. RPO/RTO measurements, drill freshness, and failure-domain limitations must remain inspectable without relying on color alone.
+Glaze UI should present continuity state as evidence-backed status, never as decorative uptime or resilience branding. RPO/RTO measurements, drill freshness, failure-domain limitations, topology freshness, simulated impact, and plan approval state must remain inspectable without relying on color alone.
+
+## Recovery topology and failover planning follow-on
+
+Phase 3 now also implements the next planning boundary through `docs/PHASE-3-FAILOVER-PLANNING.md`:
+
+- authoritative recovery-topology evidence;
+- simulated node and failure-domain scenarios;
+- dependency-aware direct and transitive impact analysis;
+- alternate recovery-target selection with explicit coverage checks;
+- dependency-aware recovery ordering and cycle blocking;
+- durable topology, scenario, and plan persistence;
+- PostgreSQL continuity-planning tables;
+- approval-only failover-plan generation;
+- Recovery Center topology coverage and plan-creation exposure.
+
+A generated failover plan always has `requiresApproval: true`, `executionAuthorized: false`, and `sourceMutationAllowed: false`.
 
 ## Explicit boundary
 
-Phase 3 code evaluates and stores continuity evidence. It does not perform failover, provision disaster-recovery infrastructure, copy production data, mutate production state, create immutable storage, or claim multi-provider resilience.
+Phase 3 code evaluates and stores continuity evidence and can prepare approval-only recovery plans. It does not perform failover, switch traffic, provision disaster-recovery infrastructure, copy production data, mutate production state, create immutable storage, or claim multi-provider resilience.
 
-A ready continuity posture means that the supplied authoritative evidence satisfies the declared objective at the evaluation time. It is not a substitute for live-environment acceptance, and it expires when its underlying evidence becomes stale.
+A ready continuity posture means that supplied authoritative evidence satisfies the declared objective at the evaluation time. A ready-for-approval plan means only that the planning prerequisites are currently satisfied. Neither state substitutes for live-environment acceptance or runtime authorization, and both expire when underlying evidence becomes stale.
 
 ## Next implementation boundary
 
-The next continuity increment should connect these contracts to production-grade adapters and orchestration while preserving the same evidence rules:
+The next continuity increment should connect these contracts to current runtime evidence and operational workflows while preserving the same evidence rules:
 
-- scheduled objective evaluation;
+- scheduled continuity-objective evaluation;
+- topology freshness and expiry policy;
 - live RPO/RTO measurements from authoritative producers;
+- live failure-domain, alternate-target, and dependency inventory adapters;
 - bounded recovery-exercise automation;
-- alternate-environment inventory and health evidence;
-- failure-domain topology evidence;
-- service-level dependency graphs;
-- controlled failover-plan generation and approval;
-- GoreeCloud Monitoring metrics and GoreeCloud Notify alerts;
-- environment-specific acceptance evidence.
+- GoreeCloud Monitoring continuity metrics;
+- GoreeCloud Notify continuity alerts;
+- a separate approval and execution contract for controlled failover;
+- environment- and revision-bound failover acceptance evidence.
 
 None of those capabilities should be represented as deployed until runtime evidence proves them.
