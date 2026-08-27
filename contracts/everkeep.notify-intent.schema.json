@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.notify-intent.schema.json",
+  "title": "Everkeep GoreeCloud Notify Intent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "intentId", "objectiveId", "generatedAt", "category", "severity", "title", "reason", "dedupeKey", "evidenceRefs", "deliveryAuthority", "projectionOnly", "deliveryAttempted", "sensitivePayloadsExcluded"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "intentId": {"type": "string", "minLength": 1},
+    "objectiveId": {"type": "string", "minLength": 1},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "category": {"enum": ["continuity-degraded", "continuity-unknown", "continuity-attention", "continuity-evaluation-overdue", "continuity-evaluation-due", "continuity-evaluation-unknown", "recovery-topology-stale", "recovery-topology-unknown", "recovery-topology-expiring"]},
+    "severity": {"enum": ["high", "medium", "low"]},
+    "title": {"type": "string", "minLength": 1},
+    "reason": {"type": "string", "minLength": 1},
+    "dedupeKey": {"type": "string", "minLength": 1},
+    "evidenceRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "deliveryAuthority": {"const": "goreecloud-notify"},
+    "projectionOnly": {"const": true},
+    "deliveryAttempted": {"const": false},
+    "sensitivePayloadsExcluded": {"const": true}
+  }
+}
