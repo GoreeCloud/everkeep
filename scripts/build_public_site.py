@@ -9,6 +9,7 @@ FILES={
     ROOT/'website'/'style.css': DIST/'style.css',
     ROOT/'website'/'_headers': DIST/'_headers',
     ROOT/'website'/'robots.txt': DIST/'robots.txt',
+    ROOT/'website'/'sitemap.xml': DIST/'sitemap.xml',
     ROOT/'assets'/'everkeep.svg': DIST/'assets'/'everkeep.svg',
 }
 
