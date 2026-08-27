@@ -3,13 +3,15 @@
   "identity": {
     "official_name": "Everkeep",
     "short_name": "Everkeep",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "role": "Platform-wide resilience, recovery, preservation, portability, succession, and digital-legacy identity",
     "design_language": "Glaze UI"
   },
   "visual_identity": {
     "status": "approved",
     "canonical_asset": "assets/everkeep.svg",
+    "canonical_revision": "keystone-04",
+    "approved_on": "2026-08-27",
     "canonical_asset_required_for_showcase": true
   },
   "boundaries": {
