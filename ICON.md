@@ -2,42 +2,40 @@
 
 ## Status
 
-The Everkeep icon is **approved and canonical**. Its authoritative source is `assets/everkeep.svg`.
+The Everkeep **Keystone** icon is approved and canonical. Its authoritative source is `assets/everkeep.svg`.
 
 Derived raster, launcher, favicon, monochrome, and adaptive-icon assets must be generated from the canonical SVG and must not become independent authorities.
 
 ## Concept
 
-The mark is a continuous layered form built around a preserved central record.
+The mark centers a preserved keystone between two independent continuity rails.
 
-Two opposing paths travel around and through the composition. They do not form a generic circular-arrow, recycle, cloud, shield, lock, database, or backup symbol. Instead, they represent information continuing through infrastructure replacement, migration, failure, recovery, and long-term technology change.
+The keystone represents information, context, metadata, provenance, and meaning that must remain identifiable and recoverable even when the systems around it change. The two rails represent independent continuity paths across migration, recovery, replacement infrastructure, preservation, succession, and long-term technology change.
 
-The central rounded record represents the information that must remain meaningful and recoverable. Its horizontal interior mark suggests a stable piece of recorded information rather than a server, disk, or storage device.
-
-The paths approach the central record from different directions and continue beyond it. This communicates that Everkeep is not a destination or one backup event: information has a life before and after any individual application, host, storage system, or recovery operation.
+The rails remain open rather than forming a loop. This intentionally avoids generic restore-arrow, recycle, infinity, cloud, shield, lock, database, or storage-media metaphors.
 
 ## Meaning
 
-The visual language maps directly to the Everkeep identity:
-
-- **Central record** — preserved information, context, metadata, and history.
-- **Two continuous paths** — independent recovery layers, portability, migration, succession, and survival across change.
-- **Opposing movement** — recovery can move information forward into replacement systems or backward toward an earlier verified state.
-- **Open spatial structure** — Everkeep coordinates evidence and preservation without becoming the storage or backup engine itself.
-- **Rounded geometry** — calm, durable Glaze UI character rather than an alarm-oriented security symbol.
-- **Gradient path** — transition across time, systems, and technology while the protected record remains identifiable.
+- **Central keystone** — preserved information and durable meaning.
+- **Independent rails** — multiple continuity and recovery paths rather than dependence on one mechanism.
+- **Open structure** — movement across systems and time without implying a closed storage destination.
+- **Balanced symmetry** — stability and confidence without security-alarm symbolism.
+- **Rounded geometry** — calm Glaze UI character and strong launcher-scale readability.
+- **Teal-to-blue-to-violet gradient** — continuity across changing systems and eras while the protected core remains identifiable.
 
 ## Relationship to other GoreeCloud identities
 
-The mark is intentionally distinct from Wardveil Security and Privacy Shield because Everkeep is not represented by a shield, perimeter, lock, or defensive boundary. It is also distinct from GoreeCloud Backup because it does not use storage media, archive boxes, circular restore arrows, or database stacks.
+Everkeep is intentionally distinct from Wardveil Security and Privacy Shield: it is not represented by a shield, perimeter, lock, or defensive boundary. It is also distinct from GoreeCloud Backup and does not use storage media, archive boxes, circular restore arrows, or database stacks.
 
-Everkeep represents the survival and transferability of information across time and change. GoreeCloud Backup may produce evidence used by Everkeep, but Backup remains the operational backup and restore product.
+Everkeep represents platform-wide resilience, preservation, recoverability, portability, continuity, succession, and digital legacy. GoreeCloud Backup is a user-facing backup and restore application that may produce evidence used by Everkeep.
 
 ## Construction
 
-The canonical artwork uses a 512 × 512 view box with generous safe space for launcher and adaptive-icon use. Major paths use rounded caps and joins. The central record uses a rounded square geometry that remains readable at reduced sizes.
+The canonical artwork uses a `64 × 64` view box with generous clear space for launcher and adaptive-icon use.
 
-The canonical SVG supports Glaze UI surfaces through a restrained blue-to-indigo-to-violet path gradient. The central record uses `currentColor`, allowing host applications to provide an appropriate foreground color for light, dark, high-contrast, and monochrome presentations without changing the geometry.
+Two primary rails use rounded caps and a six-unit stroke. The central six-sided keystone is optically centered and deliberately larger than in earlier explorations so the preserved-core metaphor survives at favicon and compact launcher sizes.
+
+The full-color form uses a teal-to-blue-to-violet gradient. The keystone interior uses a restrained light gradient, with a dark horizontal record mark. Monochrome and high-contrast derivatives must preserve the exact geometry.
 
 ## Usage requirements
 
@@ -60,8 +58,8 @@ This SVG is the sole authoritative artwork. PNG, WebP, ICO, Android adaptive-ico
 
 ## Approval record
 
-The canonical SVG is explicitly approved by the GoreeCloud project owner as the official Everkeep icon. Approval was recorded on 2026-08-19.
+The Keystone 04 geometry was explicitly approved by the GoreeCloud project owner as the official Everkeep icon on **2026-08-27**.
 
-The approved SVG is committed at the required canonical asset path, and the machine-readable identity contract records the visual identity as `approved`.
+The approved geometry is committed at the canonical asset path, and the machine-readable identity contract records the visual identity as approved.
 
-Future visual changes require an intentional revision of both the canonical SVG and this contract. A derived asset must never silently redefine the Everkeep identity.
+Future visual changes require explicit owner approval followed by an intentional revision of both the canonical SVG and this contract. A derived asset must never silently redefine the Everkeep identity.

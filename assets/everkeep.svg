@@ -1,17 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
   <title id="title">Everkeep</title>
-  <desc id="desc">A preserved central record carried through two continuous interlocking paths, representing information surviving change and remaining transferable over time.</desc>
+  <desc id="desc">A fixed preserved keystone remains centered between two independent continuity rails as systems change around it.</desc>
   <defs>
-    <linearGradient id="everkeep-gradient" x1="96" y1="96" x2="416" y2="416" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#7DD3FC"/>
-      <stop offset="0.5" stop-color="#818CF8"/>
-      <stop offset="1" stop-color="#C084FC"/>
+    <linearGradient id="everkeep-keystone" x1="11" y1="12" x2="53" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2DD4BF"/>
+      <stop offset=".52" stop-color="#3B82F6"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="everkeep-keystone-core" x1="24" y1="21" x2="40" y2="43" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#E0F2FE"/>
     </linearGradient>
   </defs>
-  <g fill="none" stroke="url(#everkeep-gradient)" stroke-width="48" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M256 96C168 96 112 151 112 220c0 54 35 92 88 112 22 8 38 29 38 53v31"/>
-    <path d="M256 416c88 0 144-55 144-124 0-54-35-92-88-112-22-8-38-29-38-53V96"/>
-  </g>
-  <rect x="202" y="202" width="108" height="108" rx="30" fill="none" stroke="currentColor" stroke-width="32"/>
-  <path d="M234 256h44" fill="none" stroke="currentColor" stroke-width="24" stroke-linecap="round"/>
+  <path d="M17 12C11.5 22 11.5 42 17 52" fill="none" stroke="url(#everkeep-keystone)" stroke-width="6" stroke-linecap="round"/>
+  <path d="M47 12C52.5 22 52.5 42 47 52" fill="none" stroke="url(#everkeep-keystone)" stroke-width="6" stroke-linecap="round"/>
+  <path d="M32 19L42 26V38L32 45L22 38V26Z" fill="url(#everkeep-keystone-core)" stroke="url(#everkeep-keystone)" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M28 32H36" fill="none" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
 </svg>
