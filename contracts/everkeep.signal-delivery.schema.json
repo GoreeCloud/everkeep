@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.signal-delivery.schema.json",
+  "title": "Everkeep Continuity Signal Delivery Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "deliveryId", "channel", "projectionId", "objectiveId", "attemptedAt", "state", "authority", "deliveryAttempted", "sensitivePayloadsExcluded", "credentialsEmbedded", "evidenceRefs"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "deliveryId": {"type": "string", "minLength": 1},
+    "channel": {"enum": ["monitoring", "notify"]},
+    "projectionId": {"type": "string", "minLength": 1},
+    "objectiveId": {"type": "string", "minLength": 1},
+    "attemptedAt": {"type": "string", "format": "date-time"},
+    "state": {"enum": ["accepted", "rejected", "failed", "unknown"]},
+    "authority": {"enum": ["goreecloud-monitoring", "goreecloud-notify"]},
+    "providerReceiptRef": {"type": ["string", "null"]},
+    "reason": {"type": ["string", "null"]},
+    "deliveryAttempted": {"const": true},
+    "sensitivePayloadsExcluded": {"const": true},
+    "credentialsEmbedded": {"const": false},
+    "evidenceRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  }
+}

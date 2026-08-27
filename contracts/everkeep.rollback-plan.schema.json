@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.rollback-plan.schema.json",
+  "title": "Everkeep Rollback Assurance Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "rollbackPlanId", "executionId", "requestId", "planId", "planDigest", "objectiveId", "target", "expectedRevision", "state", "steps", "createdAt", "evidenceRefs", "requiresApproval", "executionAuthorized", "simulationOnly", "externalEffectsAuthorized", "sourceMutationAllowed", "trafficMutationAllowed", "credentialsEmbedded"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "rollbackPlanId": {"type": "string", "minLength": 1},
+    "executionId": {"type": "string", "minLength": 1},
+    "requestId": {"type": "string", "minLength": 1},
+    "planId": {"type": "string", "minLength": 1},
+    "planDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "objectiveId": {"type": "string", "minLength": 1},
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["targetId", "environment", "failureDomain"],
+      "properties": {
+        "targetId": {"type": "string", "minLength": 1},
+        "environment": {"type": "string", "minLength": 1},
+        "failureDomain": {"type": "string", "minLength": 1}
+      }
+    },
+    "expectedRevision": {"type": "string", "minLength": 1},
+    "state": {"enum": ["ready-for-drill", "blocked", "unknown"]},
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["stepId", "reversesStepId", "action", "externalEffect"],
+        "properties": {
+          "stepId": {"type": "string", "minLength": 1},
+          "reversesStepId": {"type": "string", "minLength": 1},
+          "action": {"const": "simulate-rollback-step"},
+          "externalEffect": {"const": false}
+        }
+      }
+    },
+    "blockerCodes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "evidenceRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "requiresApproval": {"const": true},
+    "executionAuthorized": {"const": false},
+    "simulationOnly": {"const": true},
+    "externalEffectsAuthorized": {"const": false},
+    "sourceMutationAllowed": {"const": false},
+    "trafficMutationAllowed": {"const": false},
+    "credentialsEmbedded": {"const": false}
+  }
+}
