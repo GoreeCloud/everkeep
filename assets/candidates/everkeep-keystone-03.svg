@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Everkeep Keystone identity candidate</title>
+  <desc id="desc">Two independent continuity rails pass a fixed luminous keystone, representing information remaining identifiable while systems change around it.</desc>
+  <defs>
+    <linearGradient id="rail" x1="9" y1="10" x2="55" y2="54" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2DD4BF"/>
+      <stop offset=".5" stop-color="#3B82F6"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="core" x1="24" y1="22" x2="40" y2="42" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E0F2FE"/>
+      <stop offset="1" stop-color="#FFFFFF"/>
+    </linearGradient>
+  </defs>
+  <path d="M13 12c-3 7-4 13-4 20s1 13 4 20" fill="none" stroke="url(#rail)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M51 12c3 7 4 13 4 20s-1 13-4 20" fill="none" stroke="url(#rail)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M18 18c5-4 10-6 14-6s9 2 14 6M18 46c5 4 10 6 14 6s9-2 14-6" fill="none" stroke="url(#rail)" stroke-width="3" stroke-linecap="round" opacity=".72"/>
+  <path d="M32 20l10 8v8l-10 8-10-8v-8z" fill="url(#core)" stroke="url(#rail)" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M28 32h8" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
+</svg>
