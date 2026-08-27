@@ -10,9 +10,10 @@ READINESS_KEYS = {
     "Recovery Blocked": "recoveryBlocked",
     "Unknown": "unknown",
 }
-
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
 ASSURANCE_FIELDS = ("integrityCurrent", "restoreTestCurrent", "policyCompliant")
+CONTINUITY_FIELDS = ("rpoCompliant", "rtoCompliant", "recoveryExerciseCurrent", "failureDomainDiverse")
+CONTINUITY_STATES = ("ready", "attention", "degraded", "unknown")
 
 
 def _action(resource, action, reason, authorized, destructive=False):
@@ -34,7 +35,7 @@ def _tri_state(value):
 
 
 def recommended_actions(resource):
-    """Return only actions justified by the state supplied by authoritative evidence."""
+    """Return only actions justified by state supplied by authoritative evidence."""
     actions = []
     protected = resource.get("protected") is True
     blockers = {
@@ -58,6 +59,20 @@ def recommended_actions(resource):
     if "dependency-unavailable" in blockers:
         actions.append(_action(resource, "inspect-dependencies", "A required recovery dependency is unavailable.", True))
 
+    if (
+        "rpo-missed" in blockers
+        or "rto-missed" in blockers
+        or resource.get("rpoCompliant") is False
+        or resource.get("rtoCompliant") is False
+    ):
+        actions.append(_action(resource, "inspect-continuity-objective", "Current evidence shows an RPO or RTO objective is not satisfied.", True))
+    if "recovery-exercise-stale" in blockers or resource.get("recoveryExerciseCurrent") is False:
+        actions.append(_action(resource, "run-disaster-recovery-drill", "Recovery-exercise evidence is stale or failed.", True))
+    if "failure-domain-concentration" in blockers or resource.get("failureDomainDiverse") is False:
+        actions.append(_action(resource, "inspect-failure-domains", "Current evidence does not satisfy required failure-domain diversity.", True))
+    if "alternate-recovery-target-unavailable" in blockers or resource.get("alternateRecoveryTargetReady") is False:
+        actions.append(_action(resource, "inspect-alternate-recovery-target", "A required alternate recovery target is not currently evidenced as ready.", True))
+
     ready = resource.get("readiness") == "Recovery Ready"
     eligible = resource.get("recoveryEligible") is True
     if ready and eligible:
@@ -77,9 +92,10 @@ def build_summary(resources, generated_at=None):
     resources = sorted(resources, key=lambda r: r["resourceId"])
     readiness = {value: 0 for value in READINESS_KEYS.values()}
     protection = {"protected": 0, "unprotected": 0}
-    assurance = {
-        field: {"pass": 0, "fail": 0, "unknown": 0}
-        for field in ASSURANCE_FIELDS
+    assurance = {field: {"pass": 0, "fail": 0, "unknown": 0} for field in ASSURANCE_FIELDS}
+    continuity = {
+        "state": {state: 0 for state in CONTINUITY_STATES},
+        "objectives": {field: {"pass": 0, "fail": 0, "unknown": 0} for field in CONTINUITY_FIELDS},
     }
     blocker_counts = Counter()
     blocker_severity = {}
@@ -93,6 +109,13 @@ def build_summary(resources, generated_at=None):
         for field in ASSURANCE_FIELDS:
             assurance[field][_tri_state(resource.get(field))] += 1
 
+        continuity_state = resource.get("continuityState", "unknown")
+        if continuity_state not in CONTINUITY_STATES:
+            continuity_state = "unknown"
+        continuity["state"][continuity_state] += 1
+        for field in CONTINUITY_FIELDS:
+            continuity["objectives"][field][_tri_state(resource.get(field))] += 1
+
         for blocker in resource.get("blockers", []):
             code = blocker if isinstance(blocker, str) else blocker["code"]
             severity = "high" if isinstance(blocker, str) else blocker.get("severity", "high")
@@ -104,20 +127,18 @@ def build_summary(resources, generated_at=None):
                 blocker_severity[code] = severity
         actions.extend(recommended_actions(resource))
 
-    priority = [
-        {"code": code, "count": count, "severity": blocker_severity[code]}
-        for code, count in blocker_counts.items()
-    ]
+    priority = [{"code": code, "count": count, "severity": blocker_severity[code]} for code, count in blocker_counts.items()]
     priority.sort(key=lambda item: (SEVERITY_ORDER[item["severity"]], -item["count"], item["code"]))
     actions.sort(key=lambda item: (item["resourceId"], item["action"]))
 
     return {
-        "schemaVersion": "1.1",
+        "schemaVersion": "1.2",
         "generatedAt": generated_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "totals": {"resources": len(resources)},
         "readiness": readiness,
         "protection": protection,
         "assurance": assurance,
+        "continuity": continuity,
         "priorityBlockers": priority,
         "recommendedActions": actions,
     }
