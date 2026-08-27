@@ -13,11 +13,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 from typing import Any
 
-from failover_executor import (
-    FailoverExecutorError,
-    start_execution,
-    transition_execution,
-)
+from failover_executor import start_execution, transition_execution
 from failover_governance import canonical_plan_digest
 
 ROLLBACK_AUTHORITIES = {
@@ -341,7 +337,11 @@ def evaluate_rollback_assurance(
         for name in ROLLBACK_AUTHORITIES
     }
     states = [item["state"] for item in normalized.values()]
-    if any(state == "fail" for state in states) or "rollback-assurance-revision-mismatch" in blockers:
+    if (
+        "rollback-plan-safety-boundary-invalid" in blockers
+        or "rollback-assurance-revision-mismatch" in blockers
+        or any(state == "fail" for state in states)
+    ):
         state = "fail"
     elif any(state == "unknown" for state in states) or rollback_plan.get("state") != "ready-for-drill":
         state = "unknown"
