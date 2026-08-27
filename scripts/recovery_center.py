@@ -20,6 +20,7 @@ CONTINUITY_FIELDS = (
     "topologyCurrent",
 )
 CONTINUITY_STATES = ("ready", "attention", "degraded", "unknown")
+CONTINUITY_ASSURANCE_STATES = ("scheduled", "due", "overdue", "unknown")
 
 
 def _action(resource, action, reason, authorized, destructive=False):
@@ -85,6 +86,12 @@ def recommended_actions(resource):
     ):
         actions.append(_action(resource, "inspect-recovery-topology", "Recovery topology evidence is stale, incomplete, or unavailable.", True))
 
+    assurance_schedule = resource.get("assuranceScheduleState", "unknown")
+    if assurance_schedule in {"due", "overdue"}:
+        actions.append(_action(resource, "evaluate-continuity-now", "The policy-defined continuity assurance evaluation is due or overdue.", True))
+    elif assurance_schedule == "unknown":
+        actions.append(_action(resource, "inspect-continuity-assurance", "Continuity assurance scheduling evidence is unavailable or invalid.", True))
+
     if (
         resource.get("continuityState") == "ready"
         and resource.get("failoverEligible") is True
@@ -115,6 +122,7 @@ def build_summary(resources, generated_at=None):
     continuity = {
         "state": {state: 0 for state in CONTINUITY_STATES},
         "objectives": {field: {"pass": 0, "fail": 0, "unknown": 0} for field in CONTINUITY_FIELDS},
+        "assuranceSchedule": {state: 0 for state in CONTINUITY_ASSURANCE_STATES},
     }
     blocker_counts = Counter()
     blocker_severity = {}
@@ -135,6 +143,11 @@ def build_summary(resources, generated_at=None):
         for field in CONTINUITY_FIELDS:
             continuity["objectives"][field][_tri_state(resource.get(field))] += 1
 
+        assurance_schedule = resource.get("assuranceScheduleState", "unknown")
+        if assurance_schedule not in CONTINUITY_ASSURANCE_STATES:
+            assurance_schedule = "unknown"
+        continuity["assuranceSchedule"][assurance_schedule] += 1
+
         for blocker in resource.get("blockers", []):
             code = blocker if isinstance(blocker, str) else blocker["code"]
             severity = "high" if isinstance(blocker, str) else blocker.get("severity", "high")
@@ -151,7 +164,7 @@ def build_summary(resources, generated_at=None):
     actions.sort(key=lambda item: (item["resourceId"], item["action"]))
 
     return {
-        "schemaVersion": "1.3",
+        "schemaVersion": "1.4",
         "generatedAt": generated_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "totals": {"resources": len(resources)},
         "readiness": readiness,
