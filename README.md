@@ -2,7 +2,7 @@
 
 Everkeep is GoreeCloud's platform-wide resilience, preservation, backup, recovery, portability, continuity, succession, and digital-legacy subsystem.
 
-It is a foundational technical system, not merely the name of GoreeCloud Backup, a visual identity, or a presentation layer. Everkeep provides shared infrastructure, contracts, evidence, policies, recovery planning, preservation manifests, continuity services, assurance scheduling, and authorized succession models that GoreeCloud applications and infrastructure can use without independently implementing complete resilience systems.
+It is a foundational technical system, not merely the name of GoreeCloud Backup, a visual identity, or a presentation layer. Everkeep provides shared infrastructure, contracts, evidence, policies, recovery planning, preservation manifests, continuity services, assurance scheduling, authorized succession models, and measurable continuity objectives that GoreeCloud applications and infrastructure can use without independently implementing complete resilience systems.
 
 ## Platform boundary
 
@@ -24,10 +24,10 @@ Everkeep must never convert an unsupported capability into a public protection c
 
 1. **Resilience** — backups, snapshots, versions, replicas, recovery points, rollback, and restoration.
 2. **Preservation** — archives, integrity, provenance, format longevity, preservation metadata, and long-term verification.
-3. **Continuity** — disaster recovery, service recovery, failover, dependency-aware restoration, and recovery exercises.
+3. **Continuity** — disaster recovery, service recovery, failover, dependency-aware restoration, measurable RPO/RTO objectives, and recovery exercises.
 4. **Portability** — exports, imports, migration packages, documented formats, manifests, and independent verification.
 5. **Succession** — digital legacy, trusted contacts, successor policies, emergency recovery, selective transfer, and authorized destruction.
-6. **Assurance** — recovery evidence, restore testing, policy compliance, measurable RPO/RTO objectives, and readiness evaluation.
+6. **Assurance** — recovery evidence, restore testing, policy compliance, measurable RPO/RTO objectives, continuity posture, and readiness evaluation.
 
 ## Phase 1 core
 
@@ -111,9 +111,36 @@ See `docs/PHASE-2-PRESERVATION-PORTABILITY.md`.
 
 See `docs/PHASE-2-SUCCESSION.md`.
 
+## Phase 3 continuous continuity
+
+Phase 3 adds a measurable continuity control plane above backup and restore existence.
+
+### Continuity objectives and posture
+
+- Explicit RPO and RTO objectives.
+- Recovery-exercise freshness objectives.
+- Minimum independent failure-domain requirements.
+- Alternate recovery-target readiness requirements.
+- Dependency and key-material readiness requirements.
+- Deterministic `ready`, `attention`, `degraded`, and `unknown` posture evaluation.
+- Failover eligibility that remains false unless all required continuity evidence is ready.
+
+### Recovery exercise evidence
+
+- Tabletop, dry-run, Recovery Sandbox, failover-drill, and restore-test records.
+- Explicit integrity, service-health, dependency, security, and privacy verification results.
+- Evidence references without embedding recovery payloads or secrets.
+- `productionMutationAllowed: false` for exercise records.
+
+### Recovery Center continuity coverage
+
+Recovery Center schema 1.2 adds fleet-level continuity posture plus RPO, RTO, exercise-freshness, and failure-domain coverage. It can recommend inspection or rehearsal actions when authoritative evidence proves a continuity problem, without executing failover itself.
+
+See `docs/PHASE-3-CONTINUITY.md`.
+
 ## Machine-readable contracts
 
-The repository includes contracts for continuity state, adoption, acceptance, resource identity, protection policy, recovery points, evidence, readiness, Mesh integration, runtime acceptance, and restore verification.
+The repository includes contracts for continuity state, adoption, acceptance, resource identity, protection policy, recovery points, evidence, readiness, Mesh integration, runtime acceptance, restore verification, recovery orchestration, preservation, portability, succession, and continuous continuity.
 
 Phase 2 adds:
 
@@ -128,6 +155,12 @@ Phase 2 adds:
 - `contracts/everkeep.succession-policy.schema.json`
 - `contracts/everkeep.succession-decision.schema.json`
 
+Phase 3 adds:
+
+- `contracts/everkeep.continuity-objective.schema.json`
+- `contracts/everkeep.continuity-posture.schema.json`
+- `contracts/everkeep.recovery-exercise.schema.json`
+
 ## Recovery standard
 
 Everkeep distinguishes:
@@ -140,12 +173,14 @@ from:
 
 A backup job completing successfully is never sufficient by itself to produce a recovery-ready state.
 
-## Protection, preservation, and succession principles
+Everkeep also distinguishes a theoretically recoverable design from a current continuity posture. RPO/RTO targets, recovery-drill freshness, failure-domain diversity, dependencies, key material, and alternate recovery targets must be backed by current authoritative evidence before a scope can be represented as continuity ready.
+
+## Protection, preservation, continuity, and succession principles
 
 Everkeep favors verified restore capability over backup existence, portable and documented data over lock-in, explicit retention over accidental permanence, independent failure domains over a single recovery mechanism, dependency-aware restoration over isolated component recovery, and preservation of meaning, metadata, provenance, and relationships rather than raw bytes alone.
 
-High-value policies may require immutable or isolated copies, off-site protection, multi-party authorization for destructive changes, malware checks before restoration, and a Recovery Sandbox before promotion to production. Succession policies may express owner intent, but cannot weaken Identity, Privacy Shield, Wardveil, waiting-period, successor-verification, legal, or destructive-action gates. These are policy capabilities and must not be represented as deployed unless runtime evidence proves them.
+High-value policies may require immutable or isolated copies, off-site protection, multi-party authorization for destructive changes, malware checks before restoration, a Recovery Sandbox before promotion to production, and measured continuity objectives. Succession policies may express owner intent, but cannot weaken Identity, Privacy Shield, Wardveil, waiting-period, successor-verification, legal, or destructive-action gates. These are policy capabilities and must not be represented as deployed unless runtime evidence proves them.
 
 ## Status
 
-**Phase 2 resilience control-plane architecture in development.** Phase 1 identity, continuity/adoption contracts, runtime boundaries, persistence, canonical visual identity, and evidence-gated integration model remain intact. Recovery Center projections, evidence timelines, dependency-aware recovery planning, scheduled restore-test decisions, execution authorization gates, Preservation Capsules, portability manifests, and succession eligibility now define the next implementable service boundaries. Runtime deployment and application adoption remain evidence-gated.
+**Phase 3 continuity control-plane implementation in development.** Phase 1 identity, continuity/adoption contracts, runtime boundaries, persistence, canonical visual identity, and evidence-gated integration model remain intact. Phase 2 Recovery Center projections, evidence timelines, dependency-aware recovery planning, scheduled restore-test decisions, execution authorization gates, Preservation Capsules, portability manifests, and succession eligibility remain the recovery-control foundation. Phase 3 now defines continuity objectives, deterministic RPO/RTO and recovery-exercise posture, failure-domain coverage, alternate-target readiness, durable reference storage, and Recovery Center continuity projections. Live failover, alternate-environment deployment, production recovery automation, and application adoption remain evidence-gated.
