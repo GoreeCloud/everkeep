@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.recovery-exercise.schema.json",
+  "title": "Everkeep Recovery Exercise",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "exerciseId", "objectiveId", "mode", "targetEnvironment", "startedAt", "finishedAt", "durationSeconds", "result", "verification", "evidenceRefs", "productionMutationAllowed"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "exerciseId": {"type": "string", "minLength": 1},
+    "objectiveId": {"type": "string", "minLength": 1},
+    "mode": {"enum": ["tabletop", "dry-run", "sandbox", "failover-drill", "restore-test"]},
+    "targetEnvironment": {"type": "string", "minLength": 1},
+    "startedAt": {"type": "string", "format": "date-time"},
+    "finishedAt": {"type": "string", "format": "date-time"},
+    "durationSeconds": {"type": "integer", "minimum": 0},
+    "result": {"enum": ["pass", "fail", "unknown"]},
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["integrity", "serviceHealth", "dependencies", "security", "privacy"],
+      "properties": {
+        "integrity": {"$ref": "#/$defs/check"},
+        "serviceHealth": {"$ref": "#/$defs/check"},
+        "dependencies": {"$ref": "#/$defs/check"},
+        "security": {"$ref": "#/$defs/check"},
+        "privacy": {"$ref": "#/$defs/check"}
+      }
+    },
+    "evidenceRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "productionMutationAllowed": {"const": false}
+  },
+  "$defs": {
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "evidenceRef", "reason"],
+      "properties": {
+        "state": {"enum": ["pass", "fail", "unknown"]},
+        "evidenceRef": {"type": ["string", "null"]},
+        "reason": {"type": ["string", "null"]}
+      }
+    }
+  }
+}
