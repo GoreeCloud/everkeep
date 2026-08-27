@@ -21,6 +21,8 @@ CONTINUITY_FIELDS = (
 )
 CONTINUITY_STATES = ("ready", "attention", "degraded", "unknown")
 CONTINUITY_ASSURANCE_STATES = ("scheduled", "due", "overdue", "unknown")
+FAILOVER_APPROVAL_STATES = ("approved", "denied", "expired", "unknown", "not-applicable")
+FAILOVER_ACCEPTANCE_STATES = ("pass", "fail", "unknown", "not-applicable")
 
 
 def _action(resource, action, reason, authorized, destructive=False):
@@ -99,6 +101,17 @@ def recommended_actions(resource):
     ):
         actions.append(_action(resource, "create-failover-plan", "Current continuity and topology evidence supports creating a non-executable failover plan for approval.", True))
 
+    failover_plan_state = resource.get("failoverPlanState")
+    failover_approval_state = resource.get("failoverApprovalState")
+    if failover_plan_state == "ready-for-approval":
+        if failover_approval_state in {None, "unknown", "expired"}:
+            actions.append(_action(resource, "review-failover-approval", "A ready failover plan requires current multi-authority approval evidence before executor handoff may be considered.", True))
+        elif failover_approval_state == "denied":
+            actions.append(_action(resource, "inspect-failover-denial", "Current failover approval evidence contains an explicit denial.", True))
+
+    if resource.get("failoverExecutionState") == "completed" and resource.get("failoverAcceptanceState") != "pass":
+        actions.append(_action(resource, "evaluate-failover-acceptance", "A completed recovery execution requires environment- and revision-bound acceptance evidence.", True))
+
     ready = resource.get("readiness") == "Recovery Ready"
     eligible = resource.get("recoveryEligible") is True
     if ready and eligible:
@@ -124,6 +137,10 @@ def build_summary(resources, generated_at=None):
         "objectives": {field: {"pass": 0, "fail": 0, "unknown": 0} for field in CONTINUITY_FIELDS},
         "assuranceSchedule": {state: 0 for state in CONTINUITY_ASSURANCE_STATES},
     }
+    failover_governance = {
+        "approval": {state: 0 for state in FAILOVER_APPROVAL_STATES},
+        "acceptance": {state: 0 for state in FAILOVER_ACCEPTANCE_STATES},
+    }
     blocker_counts = Counter()
     blocker_severity = {}
     actions = []
@@ -148,6 +165,22 @@ def build_summary(resources, generated_at=None):
             assurance_schedule = "unknown"
         continuity["assuranceSchedule"][assurance_schedule] += 1
 
+        if resource.get("failoverPlanState") == "ready-for-approval":
+            approval_state = resource.get("failoverApprovalState", "unknown")
+            if approval_state not in {"approved", "denied", "expired", "unknown"}:
+                approval_state = "unknown"
+        else:
+            approval_state = "not-applicable"
+        failover_governance["approval"][approval_state] += 1
+
+        if resource.get("failoverExecutionState") == "completed":
+            acceptance_state = resource.get("failoverAcceptanceState", "unknown")
+            if acceptance_state not in {"pass", "fail", "unknown"}:
+                acceptance_state = "unknown"
+        else:
+            acceptance_state = "not-applicable"
+        failover_governance["acceptance"][acceptance_state] += 1
+
         for blocker in resource.get("blockers", []):
             code = blocker if isinstance(blocker, str) else blocker["code"]
             severity = "high" if isinstance(blocker, str) else blocker.get("severity", "high")
@@ -164,13 +197,14 @@ def build_summary(resources, generated_at=None):
     actions.sort(key=lambda item: (item["resourceId"], item["action"]))
 
     return {
-        "schemaVersion": "1.4",
+        "schemaVersion": "1.5",
         "generatedAt": generated_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "totals": {"resources": len(resources)},
         "readiness": readiness,
         "protection": protection,
         "assurance": assurance,
         "continuity": continuity,
+        "failoverGovernance": failover_governance,
         "priorityBlockers": priority,
         "recommendedActions": actions,
     }

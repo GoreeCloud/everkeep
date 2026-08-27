@@ -56,18 +56,20 @@ def main():
         {"resourceId": "photos:primary", "protected": True, "readiness": "At Risk", "recoveryEligible": False, "integrityCurrent": True, "restoreTestCurrent": True, "policyCompliant": True, "continuityState": "degraded", "rpoCompliant": False, "rtoCompliant": True, "recoveryExerciseCurrent": False, "failureDomainDiverse": False, "alternateRecoveryTargetReady": False, "blockers": [{"code": "rpo-missed", "severity": "high"}, {"code": "recovery-exercise-stale", "severity": "medium"}, {"code": "failure-domain-concentration", "severity": "high"}]},
     ]
     summary = recovery_center.build_summary(resources, "2026-08-27T12:00:00Z")
-    assert summary["schemaVersion"] == "1.4"
+    assert summary["schemaVersion"] == "1.5"
     assert summary["continuity"]["state"]["ready"] == 1 and summary["continuity"]["state"]["degraded"] == 1
     assert summary["continuity"]["objectives"]["rpoCompliant"]["fail"] == 1
     assert summary["continuity"]["objectives"]["topologyCurrent"]["unknown"] == 2
     assert summary["continuity"]["assuranceSchedule"]["unknown"] == 2
+    assert summary["failoverGovernance"]["approval"]["not-applicable"] == 2
+    assert summary["failoverGovernance"]["acceptance"]["not-applicable"] == 2
     actions = {(item["resourceId"], item["action"]) for item in summary["recommendedActions"]}
     for action in ["inspect-continuity-objective", "run-disaster-recovery-drill", "inspect-failure-domains", "inspect-alternate-recovery-target"]:
         assert ("photos:primary", action) in actions
 
     for filename in ["everkeep.continuity-objective.schema.json", "everkeep.continuity-posture.schema.json", "everkeep.recovery-exercise.schema.json"]:
         assert json.loads((ROOT / "contracts" / filename).read_text())["properties"]["schemaVersion"]["const"] == "1.0"
-    assert json.loads((ROOT / "contracts" / "everkeep.recovery-center.summary.schema.json").read_text())["properties"]["schemaVersion"]["const"] == "1.4"
+    assert json.loads((ROOT / "contracts" / "everkeep.recovery-center.summary.schema.json").read_text())["properties"]["schemaVersion"]["const"] == "1.5"
     action_contract = json.loads((ROOT / "contracts" / "everkeep.recovery-action.schema.json").read_text())
     for action in ["inspect-continuity-objective", "run-disaster-recovery-drill", "inspect-failure-domains", "inspect-alternate-recovery-target"]:
         assert action in action_contract["properties"]["action"]["enum"]

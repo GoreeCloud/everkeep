@@ -24,7 +24,7 @@ def main():
     ]
 
     summary = mod.build_summary(resources, "2026-08-27T12:00:00Z")
-    assert summary["schemaVersion"] == "1.4"
+    assert summary["schemaVersion"] == "1.5"
     assert summary["totals"]["resources"] == 3
     assert summary["readiness"] == {"recoveryReady": 1, "atRisk": 1, "recoveryBlocked": 1, "unknown": 0}
     assert summary["protection"] == {"protected": 2, "unprotected": 1}
@@ -33,6 +33,8 @@ def main():
     assert summary["continuity"]["objectives"]["rpoCompliant"] == {"pass": 0, "fail": 0, "unknown": 3}
     assert summary["continuity"]["objectives"]["topologyCurrent"] == {"pass": 0, "fail": 0, "unknown": 3}
     assert summary["continuity"]["assuranceSchedule"] == {"scheduled": 0, "due": 0, "overdue": 0, "unknown": 3}
+    assert summary["failoverGovernance"]["approval"]["not-applicable"] == 3
+    assert summary["failoverGovernance"]["acceptance"]["not-applicable"] == 3
     assert summary["priorityBlockers"][0]["code"] == "key-material-unavailable"
 
     actions = {(action["resourceId"], action["action"]) for action in summary["recommendedActions"]}
@@ -52,11 +54,13 @@ def main():
     assert unknown["continuity"]["state"]["unknown"] == 1
     assert unknown["continuity"]["objectives"]["topologyCurrent"]["unknown"] == 1
     assert unknown["continuity"]["assuranceSchedule"]["unknown"] == 1
+    assert unknown["failoverGovernance"]["approval"]["not-applicable"] == 1
+    assert unknown["failoverGovernance"]["acceptance"]["not-applicable"] == 1
     assert all(action["action"] != "restore-resource" for action in unknown["recommendedActions"])
 
     summary_schema = json.loads((ROOT / "contracts" / "everkeep.recovery-center.summary.schema.json").read_text())
     action_schema = json.loads((ROOT / "contracts" / "everkeep.recovery-action.schema.json").read_text())
-    assert summary_schema["properties"]["schemaVersion"]["const"] == "1.4"
+    assert summary_schema["properties"]["schemaVersion"]["const"] == "1.5"
     for action in ["restore-resource", "run-recovery-sandbox", "create-preservation-capsule", "export-resource"]:
         assert action in action_schema["properties"]["action"]["enum"]
 

@@ -4,9 +4,9 @@
   "title": "Everkeep Recovery Center Summary",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "generatedAt", "totals", "readiness", "protection", "assurance", "continuity", "priorityBlockers", "recommendedActions"],
+  "required": ["schemaVersion", "generatedAt", "totals", "readiness", "protection", "assurance", "continuity", "failoverGovernance", "priorityBlockers", "recommendedActions"],
   "properties": {
-    "schemaVersion": {"const": "1.4"},
+    "schemaVersion": {"const": "1.5"},
     "generatedAt": {"type": "string", "format": "date-time"},
     "totals": {"type": "object", "additionalProperties": false, "required": ["resources"], "properties": {"resources": {"type": "integer", "minimum": 0}}},
     "readiness": {"type": "object", "additionalProperties": false, "required": ["recoveryReady", "atRisk", "recoveryBlocked", "unknown"], "properties": {"recoveryReady": {"type": "integer", "minimum": 0}, "atRisk": {"type": "integer", "minimum": 0}, "recoveryBlocked": {"type": "integer", "minimum": 0}, "unknown": {"type": "integer", "minimum": 0}}},
@@ -20,6 +20,15 @@
         "state": {"type": "object", "additionalProperties": false, "required": ["ready", "attention", "degraded", "unknown"], "properties": {"ready": {"type": "integer", "minimum": 0}, "attention": {"type": "integer", "minimum": 0}, "degraded": {"type": "integer", "minimum": 0}, "unknown": {"type": "integer", "minimum": 0}}},
         "objectives": {"type": "object", "additionalProperties": false, "required": ["rpoCompliant", "rtoCompliant", "recoveryExerciseCurrent", "failureDomainDiverse", "topologyCurrent"], "properties": {"rpoCompliant": {"$ref": "#/$defs/triStateCounts"}, "rtoCompliant": {"$ref": "#/$defs/triStateCounts"}, "recoveryExerciseCurrent": {"$ref": "#/$defs/triStateCounts"}, "failureDomainDiverse": {"$ref": "#/$defs/triStateCounts"}, "topologyCurrent": {"$ref": "#/$defs/triStateCounts"}}},
         "assuranceSchedule": {"type": "object", "additionalProperties": false, "required": ["scheduled", "due", "overdue", "unknown"], "properties": {"scheduled": {"type": "integer", "minimum": 0}, "due": {"type": "integer", "minimum": 0}, "overdue": {"type": "integer", "minimum": 0}, "unknown": {"type": "integer", "minimum": 0}}}
+      }
+    },
+    "failoverGovernance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approval", "acceptance"],
+      "properties": {
+        "approval": {"type": "object", "additionalProperties": false, "required": ["approved", "denied", "expired", "unknown", "not-applicable"], "properties": {"approved": {"type": "integer", "minimum": 0}, "denied": {"type": "integer", "minimum": 0}, "expired": {"type": "integer", "minimum": 0}, "unknown": {"type": "integer", "minimum": 0}, "not-applicable": {"type": "integer", "minimum": 0}}},
+        "acceptance": {"type": "object", "additionalProperties": false, "required": ["pass", "fail", "unknown", "not-applicable"], "properties": {"pass": {"type": "integer", "minimum": 0}, "fail": {"type": "integer", "minimum": 0}, "unknown": {"type": "integer", "minimum": 0}, "not-applicable": {"type": "integer", "minimum": 0}}}
       }
     },
     "priorityBlockers": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["code", "count", "severity"], "properties": {"code": {"type": "string", "minLength": 1}, "count": {"type": "integer", "minimum": 1}, "severity": {"enum": ["critical", "high", "medium", "low"]}}}},
