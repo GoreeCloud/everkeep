@@ -7,7 +7,10 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from runtime.mesh_evidence import create_restore_verification_envelope
+from runtime.mesh_evidence import (
+    create_restore_verification_envelope,
+    validate_mesh_evidence_refresh_intent,
+)
 
 
 def fail(message: str) -> None:
@@ -95,4 +98,52 @@ except ValueError:
 else:
     fail("non-authoritative restore evidence must be rejected")
 
-print("Everkeep Mesh Evidence Envelope adapter: OK")
+refresh = {
+    "version": "goreecloud.evidence-refresh-intent.v1",
+    "id": "refresh-everkeep-resource-42",
+    "coordinator": {
+        "system": "goreecloud-mesh",
+        "repository": "GoreeCloud/goreecloud-mesh",
+        "revision": "c" * 40,
+        "contract": "contracts/mesh.evidence-refresh-intent.schema.json",
+    },
+    "producer": "everkeep",
+    "authority_domain": "recovery",
+    "subject": {"kind": "resource", "id": "resource-42", "scope": "document-store"},
+    "assertion": "restore-verification",
+    "reason": "stale",
+    "requested_at": now.isoformat(),
+    "latest_observed_at": (now - timedelta(hours=2)).isoformat(),
+    "contains_user_content": False,
+    "contains_secret_material": False,
+    "authority_transferred": False,
+    "execution_authorized": False,
+}
+accepted = validate_mesh_evidence_refresh_intent(refresh, now=now)
+if accepted["producer"] != "everkeep" or accepted["authority_domain"] != "recovery":
+    fail("refresh intent changed Everkeep authority targeting")
+if accepted["execution_authorized"] or accepted["authority_transferred"]:
+    fail("refresh intent granted Everkeep execution or transferred authority")
+for forbidden in ("outcome", "ready", "failover_authorized", "restore_authorized"):
+    if forbidden in accepted:
+        fail(f"refresh intent manufactured continuity/recovery truth: {forbidden}")
+
+wrong_domain = dict(refresh)
+wrong_domain["authority_domain"] = "security"
+try:
+    validate_mesh_evidence_refresh_intent(wrong_domain, now=now)
+except ValueError:
+    pass
+else:
+    fail("cross-authority Everkeep refresh intent must be rejected")
+
+effecting = dict(refresh)
+effecting["execution_authorized"] = True
+try:
+    validate_mesh_evidence_refresh_intent(effecting, now=now)
+except ValueError:
+    pass
+else:
+    fail("refresh intent must not authorize recovery or failover execution")
+
+print("Everkeep Mesh Evidence Envelope and refresh-intent adapter: OK")
