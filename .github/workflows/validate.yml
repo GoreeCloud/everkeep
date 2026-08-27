@@ -88,6 +88,9 @@ jobs:
       - name: Validate Phase 3 scheduled continuity assurance
         run: python3 scripts/validate_phase3_continuity_assurance.py
 
+      - name: Validate Phase 3 failover governance
+        run: python3 scripts/validate_phase3_failover_governance.py
+
       - name: Test Everkeep Mesh evidence envelope adapter
         run: python3 scripts/test_mesh_evidence.py
 
