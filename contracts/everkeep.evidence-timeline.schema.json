@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.evidence-timeline.schema.json",
+  "title": "Everkeep Resource Evidence Timeline",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "resourceId", "generatedAt", "counts", "latestByCategory", "items"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "resourceId": {"type": "string", "minLength": 1},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "pass", "fail", "unknown", "info"],
+      "properties": {
+        "total": {"type": "integer", "minimum": 0},
+        "pass": {"type": "integer", "minimum": 0},
+        "fail": {"type": "integer", "minimum": 0},
+        "unknown": {"type": "integer", "minimum": 0},
+        "info": {"type": "integer", "minimum": 0}
+      }
+    },
+    "latestByCategory": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/latest"}
+    },
+    "items": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/item"}
+    }
+  },
+  "$defs": {
+    "category": {
+      "enum": ["protection", "integrity", "restore-test", "policy", "recovery", "retention", "dependency", "key-material", "preservation", "portability", "succession", "other"]
+    },
+    "state": {"enum": ["pass", "fail", "unknown", "info"]},
+    "latest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidenceId", "observedAt", "state", "summary", "evidenceRef"],
+      "properties": {
+        "evidenceId": {"type": "string", "minLength": 1},
+        "observedAt": {"type": "string", "format": "date-time"},
+        "state": {"$ref": "#/$defs/state"},
+        "summary": {"type": "string", "minLength": 1},
+        "evidenceRef": {"type": "string", "minLength": 1}
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidenceId", "category", "observedAt", "state", "current", "summary", "evidenceRef"],
+      "properties": {
+        "evidenceId": {"type": "string", "minLength": 1},
+        "category": {"$ref": "#/$defs/category"},
+        "observedAt": {"type": "string", "format": "date-time"},
+        "state": {"$ref": "#/$defs/state"},
+        "current": {"type": "boolean"},
+        "summary": {"type": "string", "minLength": 1},
+        "evidenceRef": {"type": "string", "minLength": 1},
+        "producer": {"type": ["string", "null"]},
+        "recoveryPointId": {"type": ["string", "null"]},
+        "freshnessDeadline": {"type": ["string", "null"], "format": "date-time"}
+      }
+    }
+  }
+}

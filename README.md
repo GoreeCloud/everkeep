@@ -2,7 +2,7 @@
 
 Everkeep is GoreeCloud's platform-wide resilience, preservation, backup, recovery, portability, continuity, succession, and digital-legacy subsystem.
 
-It is a foundational technical system, not merely the name of GoreeCloud Backup, a visual identity, or a presentation layer. Everkeep provides shared infrastructure, contracts, evidence, policies, recovery planning, preservation manifests, and continuity services that GoreeCloud applications and infrastructure can use without independently implementing complete resilience systems.
+It is a foundational technical system, not merely the name of GoreeCloud Backup, a visual identity, or a presentation layer. Everkeep provides shared infrastructure, contracts, evidence, policies, recovery planning, preservation manifests, continuity services, assurance scheduling, and authorized succession models that GoreeCloud applications and infrastructure can use without independently implementing complete resilience systems.
 
 ## Platform boundary
 
@@ -62,6 +62,15 @@ Phase 2 expands Everkeep from core protection records into an evidence-driven re
 
 See `docs/PHASE-2-RECOVERY-CENTER.md`.
 
+### Resource evidence timeline
+
+- Deterministic per-resource history across protection, verification, recovery, retention, preservation, portability, and succession evidence.
+- Separate current evidence projection from historical evidence.
+- Newest-first stable ordering.
+- Malformed producer states become `unknown`, never success.
+
+See `docs/PHASE-2-EVIDENCE-TIMELINE.md`.
+
 ### Recovery orchestration
 
 - Dependency-aware recovery plans.
@@ -72,6 +81,16 @@ See `docs/PHASE-2-RECOVERY-CENTER.md`.
 
 See `docs/PHASE-2-RECOVERY-ORCHESTRATION.md`.
 
+### Scheduled restore testing
+
+- Policy-derived restore-test intervals.
+- Scheduled / due / overdue / unknown projections.
+- Evidence-gated dispatch eligibility.
+- Mandatory Identity, Privacy Shield, Wardveil, recovery-point, and policy-required sandbox gates.
+- Non-destructive restore-test boundary.
+
+See `docs/PHASE-2-RESTORE-TESTING.md`.
+
 ### Preservation and portability
 
 - Preservation Capsules with stable resource identities, content digests, provenance, relationships, policy references, and evidence references.
@@ -81,6 +100,17 @@ See `docs/PHASE-2-RECOVERY-ORCHESTRATION.md`.
 
 See `docs/PHASE-2-PRESERVATION-PORTABILITY.md`.
 
+### Succession and Digital Legacy
+
+- Explicit resource-level succession dispositions: transfer, archive, delete, retain, or no action.
+- GoreeCloud Identity subject references for owners and successors rather than raw credentials or contact data.
+- Waiting-period and trusted-contact-quorum policy.
+- Mandatory Privacy Shield and Wardveil gates.
+- Implicit successor-verification and destruction-authorization gates where applicable.
+- Activation eligibility that never becomes direct execution authority.
+
+See `docs/PHASE-2-SUCCESSION.md`.
+
 ## Machine-readable contracts
 
 The repository includes contracts for continuity state, adoption, acceptance, resource identity, protection policy, recovery points, evidence, readiness, Mesh integration, runtime acceptance, and restore verification.
@@ -89,10 +119,14 @@ Phase 2 adds:
 
 - `contracts/everkeep.recovery-action.schema.json`
 - `contracts/everkeep.recovery-center.summary.schema.json`
+- `contracts/everkeep.evidence-timeline.schema.json`
 - `contracts/everkeep.recovery-plan.schema.json`
 - `contracts/everkeep.recovery-execution.schema.json`
+- `contracts/everkeep.restore-test-schedule.schema.json`
 - `contracts/everkeep.preservation-capsule.schema.json`
 - `contracts/everkeep.portability-manifest.schema.json`
+- `contracts/everkeep.succession-policy.schema.json`
+- `contracts/everkeep.succession-decision.schema.json`
 
 ## Recovery standard
 
@@ -106,12 +140,12 @@ from:
 
 A backup job completing successfully is never sufficient by itself to produce a recovery-ready state.
 
-## Protection and preservation principles
+## Protection, preservation, and succession principles
 
 Everkeep favors verified restore capability over backup existence, portable and documented data over lock-in, explicit retention over accidental permanence, independent failure domains over a single recovery mechanism, dependency-aware restoration over isolated component recovery, and preservation of meaning, metadata, provenance, and relationships rather than raw bytes alone.
 
-High-value policies may require immutable or isolated copies, off-site protection, multi-party authorization for destructive changes, malware checks before restoration, and a Recovery Sandbox before promotion to production. These are policy capabilities and must not be represented as deployed unless runtime evidence proves them.
+High-value policies may require immutable or isolated copies, off-site protection, multi-party authorization for destructive changes, malware checks before restoration, and a Recovery Sandbox before promotion to production. Succession policies may express owner intent, but cannot weaken Identity, Privacy Shield, Wardveil, waiting-period, successor-verification, legal, or destructive-action gates. These are policy capabilities and must not be represented as deployed unless runtime evidence proves them.
 
 ## Status
 
-**Phase 2 resilience control-plane architecture in development.** Phase 1 identity, continuity/adoption contracts, runtime boundaries, persistence, canonical visual identity, and evidence-gated integration model remain intact. Recovery Center projections, dependency-aware recovery planning, execution authorization gates, Preservation Capsules, and portability manifests now define the next implementable service boundaries. Runtime deployment and application adoption remain evidence-gated.
+**Phase 2 resilience control-plane architecture in development.** Phase 1 identity, continuity/adoption contracts, runtime boundaries, persistence, canonical visual identity, and evidence-gated integration model remain intact. Recovery Center projections, evidence timelines, dependency-aware recovery planning, scheduled restore-test decisions, execution authorization gates, Preservation Capsules, portability manifests, and succession eligibility now define the next implementable service boundaries. Runtime deployment and application adoption remain evidence-gated.

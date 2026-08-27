@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
   title: Everkeep Service API
-  version: 0.2.0
-  description: Evidence-gated reference API for GoreeCloud Everkeep resilience, recovery, preservation, and portability.
+  version: 0.3.0
+  description: Evidence-gated reference API for GoreeCloud Everkeep resilience, recovery, assurance, preservation, portability, and succession.
 servers:
   - url: https://everkeep.goreecloud.internal
 paths:
@@ -55,6 +55,43 @@ paths:
       responses:
         '200': {description: Resource Recovery Center projection}
         '404': {description: Not found}
+  /v1/resources/{resourceId}/evidence-timeline:
+    get:
+      operationId: getResourceEvidenceTimeline
+      parameters:
+        - {$ref: '#/components/parameters/ResourceId'}
+        - {name: category, in: query, schema: {type: string}}
+        - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 500}}
+      responses:
+        '200':
+          description: Deterministic current and historical evidence timeline
+          content:
+            application/json:
+              schema: {$ref: ../contracts/everkeep.evidence-timeline.schema.json}
+        '404': {description: Resource not found}
+  /v1/resources/{resourceId}/restore-test-schedule/evaluate:
+    post:
+      operationId: evaluateRestoreTestSchedule
+      parameters:
+        - {$ref: '#/components/parameters/ResourceId'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [scheduleId, policyId]
+              properties:
+                scheduleId: {type: string, minLength: 1}
+                policyId: {type: string, minLength: 1}
+      responses:
+        '200':
+          description: Policy-derived restore-test schedule and dispatch eligibility
+          content:
+            application/json:
+              schema: {$ref: ../contracts/everkeep.restore-test-schedule.schema.json}
+        '409': {description: Policy or evidence cannot produce a dispatchable restore test}
   /v1/recovery-center/summary:
     get:
       operationId: getRecoveryCenterSummary
@@ -182,6 +219,41 @@ paths:
             application/json:
               schema: {$ref: ../contracts/everkeep.portability-manifest.schema.json}
         '409': {description: Export authority or integrity evidence does not permit a positive portability claim}
+  /v1/succession/policies:
+    post:
+      operationId: createSuccessionPolicy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: ../contracts/everkeep.succession-policy.schema.json}
+      responses:
+        '201': {description: Succession policy recorded}
+        '409': {description: Policy conflicts with current authority or validation rules}
+  /v1/succession/policies/{successionPolicyId}:
+    get:
+      operationId: getSuccessionPolicy
+      parameters:
+        - {$ref: '#/components/parameters/SuccessionPolicyId'}
+      responses:
+        '200':
+          description: Succession policy
+          content:
+            application/json:
+              schema: {$ref: ../contracts/everkeep.succession-policy.schema.json}
+        '404': {description: Not found}
+  /v1/succession/policies/{successionPolicyId}/evaluate:
+    post:
+      operationId: evaluateSuccessionPolicy
+      parameters:
+        - {$ref: '#/components/parameters/SuccessionPolicyId'}
+      responses:
+        '200':
+          description: Evidence-gated succession activation eligibility decision
+          content:
+            application/json:
+              schema: {$ref: ../contracts/everkeep.succession-decision.schema.json}
+        '409': {description: Activation blocked or unknown; no succession execution authorized}
   /v1/audit-events:
     get:
       operationId: listAuditEvents
@@ -199,6 +271,11 @@ components:
       schema: {type: string}
     PlanId:
       name: planId
+      in: path
+      required: true
+      schema: {type: string}
+    SuccessionPolicyId:
+      name: successionPolicyId
       in: path
       required: true
       schema: {type: string}
