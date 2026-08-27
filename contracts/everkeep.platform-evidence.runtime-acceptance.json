@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.2.0",
+  "schema_version": "1.3.0",
   "system": "everkeep",
   "authority_domains": ["resilience", "recovery", "preservation", "continuity"],
   "purpose": "Defines runtime acceptance gates for Everkeep evidence delivery through GoreeCloud Mesh without converting backup existence or transport success into recoverability.",
@@ -11,6 +11,8 @@
     "identity audience equals goreecloud-mesh",
     "mesh.evidence.write scope is verified by GoreeCloud Identity",
     "delivery uses HTTPS except explicit loopback development",
+    "delivery refuses HTTP redirects while carrying service identity proof",
+    "Mesh base URL contains no user information, query, fragment, or path parameters",
     "envelope contains no backup payloads, archive contents, credentials, or private file/message content",
     "delivery receipt binds to the submitted evidence id",
     "delivery receipt binds to producer_service_id everkeep",
@@ -20,6 +22,8 @@
   "negative_cases": [
     "identity proof outside the approved GoreeCloud Identity profile",
     "another producer identity attempts Everkeep delivery",
+    "redirect response from the configured Mesh endpoint",
+    "Mesh base URL contains embedded user information, query, fragment, or path parameters",
     "receipt id mismatch",
     "producer service receipt mismatch",
     "non-loopback plaintext HTTP destination",
