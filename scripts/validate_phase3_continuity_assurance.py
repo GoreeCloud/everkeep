@@ -109,8 +109,10 @@ def main():
         {"resourceId": "vault:primary", "protected": True, "readiness": "At Risk", "recoveryEligible": False, "integrityCurrent": True, "restoreTestCurrent": True, "policyCompliant": True, "continuityState": "unknown", "rpoCompliant": None, "rtoCompliant": None, "recoveryExerciseCurrent": None, "failureDomainDiverse": None, "topologyCurrent": None, "assuranceScheduleState": "unknown", "failoverEligible": False, "blockers": []},
     ]
     summary = recovery_center.build_summary(resources, "2026-08-27T12:10:00Z")
-    assert summary["schemaVersion"] == "1.4"
+    assert summary["schemaVersion"] == "1.5"
     assert summary["continuity"]["assuranceSchedule"] == {"scheduled": 1, "due": 1, "overdue": 0, "unknown": 1}
+    assert summary["failoverGovernance"]["approval"]["not-applicable"] == 3
+    assert summary["failoverGovernance"]["acceptance"]["not-applicable"] == 3
     actions = {(item["resourceId"], item["action"]) for item in summary["recommendedActions"]}
     assert ("documents:primary", "create-failover-plan") in actions
     assert ("photos:primary", "evaluate-continuity-now") in actions
@@ -122,7 +124,7 @@ def main():
     assert notify_contract["properties"]["deliveryAuthority"]["const"] == "goreecloud-notify"
     assert notify_contract["properties"]["deliveryAttempted"]["const"] is False
     assert notify_contract["properties"]["projectionOnly"]["const"] is True
-    assert json.loads((ROOT / "contracts" / "everkeep.recovery-center.summary.schema.json").read_text())["properties"]["schemaVersion"]["const"] == "1.4"
+    assert json.loads((ROOT / "contracts" / "everkeep.recovery-center.summary.schema.json").read_text())["properties"]["schemaVersion"]["const"] == "1.5"
 
     action_contract = json.loads((ROOT / "contracts" / "everkeep.recovery-action.schema.json").read_text())
     for action in ["inspect-continuity-assurance", "evaluate-continuity-now"]:
