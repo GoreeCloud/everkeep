@@ -19,6 +19,8 @@
         "run-disaster-recovery-drill",
         "inspect-failure-domains",
         "inspect-alternate-recovery-target",
+        "inspect-recovery-topology",
+        "create-failover-plan",
         "create-recovery-plan",
         "run-recovery-sandbox",
         "restore-resource",
