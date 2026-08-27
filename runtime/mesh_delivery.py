@@ -10,10 +10,19 @@ import json
 from urllib import error, parse, request
 
 
+class _NoRedirectHandler(request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
 def _endpoint(mesh_base_url: str) -> str:
     raw = str(mesh_base_url or "").strip().rstrip("/")
     parsed = parse.urlparse(raw)
-    if parsed.scheme == "https":
+    if parsed.username is not None or parsed.password is not None:
+        raise ValueError("Mesh base URL must not contain user information")
+    if parsed.query or parsed.fragment or parsed.params:
+        raise ValueError("Mesh base URL must not contain query, fragment, or path parameters")
+    if parsed.scheme == "https" and parsed.hostname:
         return raw + "/v1/evidence/envelopes"
     if parsed.scheme == "http" and parsed.hostname in {"127.0.0.1", "localhost", "::1"}:
         return raw + "/v1/evidence/envelopes"
@@ -49,11 +58,14 @@ def deliver_mesh_evidence(
             "User-Agent": "goreecloud-everkeep/mesh-evidence",
         },
     )
+    opener = request.build_opener(_NoRedirectHandler())
     try:
-        with request.urlopen(req, timeout=timeout_seconds) as response:
+        with opener.open(req, timeout=timeout_seconds) as response:
             status = response.status
             payload = json.loads(response.read().decode("utf-8"))
     except error.HTTPError as exc:
+        if 300 <= exc.code < 400:
+            raise RuntimeError("Mesh evidence delivery refused an HTTP redirect") from exc
         try:
             detail = json.loads(exc.read().decode("utf-8")).get("error", "Mesh rejected evidence delivery")
         except Exception:
