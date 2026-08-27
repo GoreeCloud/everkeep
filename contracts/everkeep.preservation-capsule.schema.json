@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.preservation-capsule.schema.json",
+  "title": "Everkeep Preservation Capsule",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "capsuleId", "createdAt", "preservationTier", "formatVersion", "entries", "integrityState", "capsuleDigest", "policyRefs", "evidenceRefs"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "capsuleId": {"type": "string", "minLength": 1},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "preservationTier": {"enum": ["protected", "archive", "permanent"]},
+    "formatVersion": {"const": "everkeep-capsule/1"},
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["resourceId", "contentDigest", "provenanceRefs", "relationshipRefs", "evidenceRefs", "integrityVerified"],
+        "properties": {
+          "resourceId": {"type": "string", "minLength": 1},
+          "contentDigest": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["algorithm", "value"],
+            "properties": {
+              "algorithm": {"enum": ["sha256", "sha512", "blake3"]},
+              "value": {"type": "string", "minLength": 16}
+            }
+          },
+          "mediaType": {"type": ["string", "null"]},
+          "sizeBytes": {"type": ["integer", "null"], "minimum": 0},
+          "provenanceRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "relationshipRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "evidenceRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "integrityVerified": {"type": ["boolean", "null"]}
+        }
+      }
+    },
+    "integrityState": {"enum": ["verified", "failed", "unknown"]},
+    "capsuleDigest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "policyRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "evidenceRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  }
+}

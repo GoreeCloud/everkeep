@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
   title: Everkeep Service API
-  version: 0.1.0
-  description: Evidence-gated reference API for GoreeCloud Everkeep.
+  version: 0.2.0
+  description: Evidence-gated reference API for GoreeCloud Everkeep resilience, recovery, preservation, and portability.
 servers:
   - url: https://everkeep.goreecloud.internal
 paths:
@@ -53,8 +53,17 @@ paths:
       parameters:
         - {$ref: '#/components/parameters/ResourceId'}
       responses:
-        '200': {description: Recovery Center projection}
+        '200': {description: Resource Recovery Center projection}
         '404': {description: Not found}
+  /v1/recovery-center/summary:
+    get:
+      operationId: getRecoveryCenterSummary
+      responses:
+        '200':
+          description: Fleet Recovery Center summary derived from current evidence
+          content:
+            application/json:
+              schema: {$ref: ../contracts/everkeep.recovery-center.summary.schema.json}
   /v1/policies/{policyId}:
     get:
       operationId: getPolicy
@@ -106,6 +115,73 @@ paths:
       responses:
         '200': {description: State transitioned}
         '409': {description: Invalid lifecycle transition}
+  /v1/recovery-plans:
+    post:
+      operationId: createRecoveryPlan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [planId, targetResourceIds, mode]
+              properties:
+                planId: {type: string, minLength: 1}
+                targetResourceIds: {type: array, minItems: 1, uniqueItems: true, items: {type: string}}
+                mode: {enum: [dry-run, sandbox, restore]}
+                requestedRecoveryPointIds: {type: object, additionalProperties: {type: string}}
+      responses:
+        '201':
+          description: Deterministic recovery plan created
+          content:
+            application/json:
+              schema: {$ref: ../contracts/everkeep.recovery-plan.schema.json}
+        '409': {description: Dependency graph or planning conflict}
+  /v1/recovery-plans/{planId}:
+    get:
+      operationId: getRecoveryPlan
+      parameters:
+        - {$ref: '#/components/parameters/PlanId'}
+      responses:
+        '200':
+          description: Recovery plan
+          content:
+            application/json:
+              schema: {$ref: ../contracts/everkeep.recovery-plan.schema.json}
+        '404': {description: Not found}
+  /v1/recovery-plans/{planId}/authorize:
+    post:
+      operationId: authorizeRecoveryExecution
+      parameters:
+        - {$ref: '#/components/parameters/PlanId'}
+      responses:
+        '200':
+          description: Evidence-gated execution decision
+          content:
+            application/json:
+              schema: {$ref: ../contracts/everkeep.recovery-execution.schema.json}
+        '409': {description: Recovery execution blocked by current evidence}
+  /v1/preservation/capsules:
+    post:
+      operationId: createPreservationCapsule
+      responses:
+        '201':
+          description: Deterministic preservation capsule manifest created
+          content:
+            application/json:
+              schema: {$ref: ../contracts/everkeep.preservation-capsule.schema.json}
+        '409': {description: Missing digest, authority, or preservation requirement}
+  /v1/portability/exports:
+    post:
+      operationId: createPortabilityManifest
+      responses:
+        '201':
+          description: Evidence-gated portability manifest created
+          content:
+            application/json:
+              schema: {$ref: ../contracts/everkeep.portability-manifest.schema.json}
+        '409': {description: Export authority or integrity evidence does not permit a positive portability claim}
   /v1/audit-events:
     get:
       operationId: listAuditEvents
@@ -118,6 +194,11 @@ components:
   parameters:
     ResourceId:
       name: resourceId
+      in: path
+      required: true
+      schema: {type: string}
+    PlanId:
+      name: planId
       in: path
       required: true
       schema: {type: string}
