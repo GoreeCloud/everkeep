@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.recovery-center.failover-operations.schema.json",
+  "title": "Everkeep Recovery Center Failover Operations Projection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generatedAt", "totals", "executor", "rollback", "activeDrills", "recommendedActions"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "totals": {"type": "object", "additionalProperties": false, "required": ["resources"], "properties": {"resources": {"type": "integer", "minimum": 0}}},
+    "executor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pending", "validating", "authorized", "staging", "executing", "verifying", "completed", "blocked", "failed", "cancelled", "not-applicable"],
+      "properties": {
+        "pending": {"type": "integer", "minimum": 0},
+        "validating": {"type": "integer", "minimum": 0},
+        "authorized": {"type": "integer", "minimum": 0},
+        "staging": {"type": "integer", "minimum": 0},
+        "executing": {"type": "integer", "minimum": 0},
+        "verifying": {"type": "integer", "minimum": 0},
+        "completed": {"type": "integer", "minimum": 0},
+        "blocked": {"type": "integer", "minimum": 0},
+        "failed": {"type": "integer", "minimum": 0},
+        "cancelled": {"type": "integer", "minimum": 0},
+        "not-applicable": {"type": "integer", "minimum": 0}
+      }
+    },
+    "rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pass", "fail", "unknown", "not-applicable"],
+      "properties": {
+        "pass": {"type": "integer", "minimum": 0},
+        "fail": {"type": "integer", "minimum": 0},
+        "unknown": {"type": "integer", "minimum": 0},
+        "not-applicable": {"type": "integer", "minimum": 0}
+      }
+    },
+    "activeDrills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["resourceId", "executionId", "state"],
+        "properties": {
+          "resourceId": {"type": "string", "minLength": 1},
+          "executionId": {"type": "string", "minLength": 1},
+          "state": {"enum": ["pending", "validating", "authorized", "staging", "executing", "verifying"]},
+          "updatedAt": {"type": ["string", "null"], "format": "date-time"}
+        }
+      }
+    },
+    "recommendedActions": {"type": "array", "items": {"$ref": "everkeep.recovery-action.schema.json"}}
+  }
+}
