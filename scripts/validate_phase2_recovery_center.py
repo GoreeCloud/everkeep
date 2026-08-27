@@ -59,16 +59,13 @@ def main():
     ]
 
     summary = mod.build_summary(resources, "2026-08-27T12:00:00Z")
-    assert summary["schemaVersion"] == "1.1"
+    assert summary["schemaVersion"] == "1.2"
     assert summary["totals"]["resources"] == 3
-    assert summary["readiness"] == {
-        "recoveryReady": 1,
-        "atRisk": 1,
-        "recoveryBlocked": 1,
-        "unknown": 0,
-    }
+    assert summary["readiness"] == {"recoveryReady": 1, "atRisk": 1, "recoveryBlocked": 1, "unknown": 0}
     assert summary["protection"] == {"protected": 2, "unprotected": 1}
     assert summary["assurance"]["integrityCurrent"] == {"pass": 1, "fail": 1, "unknown": 1}
+    assert summary["continuity"]["state"] == {"ready": 0, "attention": 0, "degraded": 0, "unknown": 3}
+    assert summary["continuity"]["objectives"]["rpoCompliant"] == {"pass": 0, "fail": 0, "unknown": 3}
     assert summary["priorityBlockers"][0]["code"] == "key-material-unavailable"
 
     actions = {(action["resourceId"], action["action"]) for action in summary["recommendedActions"]}
@@ -88,11 +85,12 @@ def main():
     unknown = mod.build_summary([{"resourceId": "x", "protected": False}], "2026-08-27T12:00:00Z")
     assert unknown["readiness"]["unknown"] == 1
     assert unknown["assurance"]["integrityCurrent"]["unknown"] == 1
+    assert unknown["continuity"]["state"]["unknown"] == 1
     assert all(action["action"] != "restore-resource" for action in unknown["recommendedActions"])
 
     summary_schema = json.loads((ROOT / "contracts" / "everkeep.recovery-center.summary.schema.json").read_text())
     action_schema = json.loads((ROOT / "contracts" / "everkeep.recovery-action.schema.json").read_text())
-    assert summary_schema["properties"]["schemaVersion"]["const"] == "1.1"
+    assert summary_schema["properties"]["schemaVersion"]["const"] == "1.2"
     for action in ["restore-resource", "run-recovery-sandbox", "create-preservation-capsule", "export-resource"]:
         assert action in action_schema["properties"]["action"]["enum"]
 

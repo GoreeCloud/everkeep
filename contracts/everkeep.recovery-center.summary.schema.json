@@ -4,74 +4,25 @@
   "title": "Everkeep Recovery Center Summary",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "generatedAt", "totals", "readiness", "protection", "assurance", "priorityBlockers", "recommendedActions"],
+  "required": ["schemaVersion", "generatedAt", "totals", "readiness", "protection", "assurance", "continuity", "priorityBlockers", "recommendedActions"],
   "properties": {
-    "schemaVersion": {"const": "1.1"},
+    "schemaVersion": {"const": "1.2"},
     "generatedAt": {"type": "string", "format": "date-time"},
-    "totals": {
+    "totals": {"type": "object", "additionalProperties": false, "required": ["resources"], "properties": {"resources": {"type": "integer", "minimum": 0}}},
+    "readiness": {"type": "object", "additionalProperties": false, "required": ["recoveryReady", "atRisk", "recoveryBlocked", "unknown"], "properties": {"recoveryReady": {"type": "integer", "minimum": 0}, "atRisk": {"type": "integer", "minimum": 0}, "recoveryBlocked": {"type": "integer", "minimum": 0}, "unknown": {"type": "integer", "minimum": 0}}},
+    "protection": {"type": "object", "additionalProperties": false, "required": ["protected", "unprotected"], "properties": {"protected": {"type": "integer", "minimum": 0}, "unprotected": {"type": "integer", "minimum": 0}}},
+    "assurance": {"type": "object", "additionalProperties": false, "required": ["integrityCurrent", "restoreTestCurrent", "policyCompliant"], "properties": {"integrityCurrent": {"$ref": "#/$defs/triStateCounts"}, "restoreTestCurrent": {"$ref": "#/$defs/triStateCounts"}, "policyCompliant": {"$ref": "#/$defs/triStateCounts"}}},
+    "continuity": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["resources"],
-      "properties": {"resources": {"type": "integer", "minimum": 0}}
-    },
-    "readiness": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["recoveryReady", "atRisk", "recoveryBlocked", "unknown"],
+      "required": ["state", "objectives"],
       "properties": {
-        "recoveryReady": {"type": "integer", "minimum": 0},
-        "atRisk": {"type": "integer", "minimum": 0},
-        "recoveryBlocked": {"type": "integer", "minimum": 0},
-        "unknown": {"type": "integer", "minimum": 0}
+        "state": {"type": "object", "additionalProperties": false, "required": ["ready", "attention", "degraded", "unknown"], "properties": {"ready": {"type": "integer", "minimum": 0}, "attention": {"type": "integer", "minimum": 0}, "degraded": {"type": "integer", "minimum": 0}, "unknown": {"type": "integer", "minimum": 0}}},
+        "objectives": {"type": "object", "additionalProperties": false, "required": ["rpoCompliant", "rtoCompliant", "recoveryExerciseCurrent", "failureDomainDiverse"], "properties": {"rpoCompliant": {"$ref": "#/$defs/triStateCounts"}, "rtoCompliant": {"$ref": "#/$defs/triStateCounts"}, "recoveryExerciseCurrent": {"$ref": "#/$defs/triStateCounts"}, "failureDomainDiverse": {"$ref": "#/$defs/triStateCounts"}}}
       }
     },
-    "protection": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["protected", "unprotected"],
-      "properties": {
-        "protected": {"type": "integer", "minimum": 0},
-        "unprotected": {"type": "integer", "minimum": 0}
-      }
-    },
-    "assurance": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["integrityCurrent", "restoreTestCurrent", "policyCompliant"],
-      "properties": {
-        "integrityCurrent": {"$ref": "#/$defs/triStateCounts"},
-        "restoreTestCurrent": {"$ref": "#/$defs/triStateCounts"},
-        "policyCompliant": {"$ref": "#/$defs/triStateCounts"}
-      }
-    },
-    "priorityBlockers": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["code", "count", "severity"],
-        "properties": {
-          "code": {"type": "string", "minLength": 1},
-          "count": {"type": "integer", "minimum": 1},
-          "severity": {"enum": ["critical", "high", "medium", "low"]}
-        }
-      }
-    },
-    "recommendedActions": {
-      "type": "array",
-      "items": {"$ref": "everkeep.recovery-action.schema.json"}
-    }
+    "priorityBlockers": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["code", "count", "severity"], "properties": {"code": {"type": "string", "minLength": 1}, "count": {"type": "integer", "minimum": 1}, "severity": {"enum": ["critical", "high", "medium", "low"]}}}},
+    "recommendedActions": {"type": "array", "items": {"$ref": "everkeep.recovery-action.schema.json"}}
   },
-  "$defs": {
-    "triStateCounts": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["pass", "fail", "unknown"],
-      "properties": {
-        "pass": {"type": "integer", "minimum": 0},
-        "fail": {"type": "integer", "minimum": 0},
-        "unknown": {"type": "integer", "minimum": 0}
-      }
-    }
-  }
+  "$defs": {"triStateCounts": {"type": "object", "additionalProperties": false, "required": ["pass", "fail", "unknown"], "properties": {"pass": {"type": "integer", "minimum": 0}, "fail": {"type": "integer", "minimum": 0}, "unknown": {"type": "integer", "minimum": 0}}}}
 }

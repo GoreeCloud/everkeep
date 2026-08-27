@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.continuity-objective.schema.json",
+  "title": "Everkeep Continuity Objective",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "objectiveId", "scope", "rpoSeconds", "rtoSeconds", "maxExerciseAgeSeconds", "minFailureDomains"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "objectiveId": {"type": "string", "minLength": 1},
+    "scope": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "application": {"type": "string", "minLength": 1},
+        "service": {"type": "string", "minLength": 1},
+        "resourceIds": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "rpoSeconds": {"type": "integer", "minimum": 1},
+    "rtoSeconds": {"type": "integer", "minimum": 1},
+    "maxExerciseAgeSeconds": {"type": "integer", "minimum": 1},
+    "minFailureDomains": {"type": "integer", "minimum": 1},
+    "requireAlternateRecoveryTarget": {"type": "boolean", "default": false},
+    "requireDependencyReadiness": {"type": "boolean", "default": true},
+    "requireKeyMaterialReadiness": {"type": "boolean", "default": true}
+  }
+}

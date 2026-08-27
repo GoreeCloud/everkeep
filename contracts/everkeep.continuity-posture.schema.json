@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.continuity-posture.schema.json",
+  "title": "Everkeep Continuity Posture",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "objectiveId", "scope", "observedAt", "state", "dimensions", "blockerCodes", "warningCodes", "evidenceRefs", "failoverEligible"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "objectiveId": {"type": "string", "minLength": 1},
+    "scope": {"type": "object"},
+    "observedAt": {"type": "string", "format": "date-time"},
+    "state": {"enum": ["ready", "attention", "degraded", "unknown"]},
+    "dimensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rpo", "rto", "exercise", "failureDomains", "alternateRecoveryTarget", "dependencies", "keyMaterial"],
+      "properties": {
+        "rpo": {"$ref": "#/$defs/dimension"},
+        "rto": {"$ref": "#/$defs/dimension"},
+        "exercise": {"$ref": "#/$defs/dimension"},
+        "failureDomains": {"$ref": "#/$defs/dimension"},
+        "alternateRecoveryTarget": {"$ref": "#/$defs/dimension"},
+        "dependencies": {"$ref": "#/$defs/dimension"},
+        "keyMaterial": {"$ref": "#/$defs/dimension"}
+      }
+    },
+    "blockerCodes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "warningCodes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "evidenceRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "failoverEligible": {"type": "boolean"}
+  },
+  "$defs": {
+    "dimension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state"],
+      "properties": {
+        "state": {"enum": ["ready", "attention", "degraded", "unknown"]},
+        "measured": {"type": ["integer", "number"]},
+        "target": {"type": ["integer", "number"]},
+        "reason": {"type": "string"},
+        "evidenceRef": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}
