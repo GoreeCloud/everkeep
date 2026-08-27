@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Everkeep Strata identity candidate</title>
+  <desc id="desc">Three durable strata carry one uninterrupted preserved core through changing layers of technology and time.</desc>
+  <defs>
+    <linearGradient id="g1" x1="10" y1="16" x2="54" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22D3EE"/>
+      <stop offset=".48" stop-color="#3B82F6"/>
+      <stop offset="1" stop-color="#A855F7"/>
+    </linearGradient>
+    <linearGradient id="core" x1="28" y1="18" x2="36" y2="46" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#DBEAFE"/>
+    </linearGradient>
+  </defs>
+  <path d="M10 20c9-6 17-7 24-4 8 4 12 4 20-1" fill="none" stroke="url(#g1)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M10 32c9-5 17-6 24-3 8 3 12 3 20-2" fill="none" stroke="url(#g1)" stroke-width="5" stroke-linecap="round" opacity=".84"/>
+  <path d="M10 44c9-4 17-5 24-2 8 3 12 2 20-3" fill="none" stroke="url(#g1)" stroke-width="5" stroke-linecap="round" opacity=".68"/>
+  <rect x="27" y="17" width="10" height="30" rx="5" fill="url(#core)" stroke="url(#g1)" stroke-width="2.5"/>
+  <circle cx="32" cy="24" r="1.8" fill="#3B82F6"/>
+  <circle cx="32" cy="32" r="1.8" fill="#6366F1"/>
+  <circle cx="32" cy="40" r="1.8" fill="#8B5CF6"/>
+</svg>
