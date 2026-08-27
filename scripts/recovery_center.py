@@ -12,7 +12,13 @@ READINESS_KEYS = {
 }
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
 ASSURANCE_FIELDS = ("integrityCurrent", "restoreTestCurrent", "policyCompliant")
-CONTINUITY_FIELDS = ("rpoCompliant", "rtoCompliant", "recoveryExerciseCurrent", "failureDomainDiverse")
+CONTINUITY_FIELDS = (
+    "rpoCompliant",
+    "rtoCompliant",
+    "recoveryExerciseCurrent",
+    "failureDomainDiverse",
+    "topologyCurrent",
+)
 CONTINUITY_STATES = ("ready", "attention", "degraded", "unknown")
 
 
@@ -72,6 +78,19 @@ def recommended_actions(resource):
         actions.append(_action(resource, "inspect-failure-domains", "Current evidence does not satisfy required failure-domain diversity.", True))
     if "alternate-recovery-target-unavailable" in blockers or resource.get("alternateRecoveryTargetReady") is False:
         actions.append(_action(resource, "inspect-alternate-recovery-target", "A required alternate recovery target is not currently evidenced as ready.", True))
+    if (
+        "recovery-topology-stale" in blockers
+        or "recovery-topology-unknown" in blockers
+        or resource.get("topologyCurrent") is False
+    ):
+        actions.append(_action(resource, "inspect-recovery-topology", "Recovery topology evidence is stale, incomplete, or unavailable.", True))
+
+    if (
+        resource.get("continuityState") == "ready"
+        and resource.get("failoverEligible") is True
+        and resource.get("topologyCurrent") is True
+    ):
+        actions.append(_action(resource, "create-failover-plan", "Current continuity and topology evidence supports creating a non-executable failover plan for approval.", True))
 
     ready = resource.get("readiness") == "Recovery Ready"
     eligible = resource.get("recoveryEligible") is True
@@ -132,7 +151,7 @@ def build_summary(resources, generated_at=None):
     actions.sort(key=lambda item: (item["resourceId"], item["action"]))
 
     return {
-        "schemaVersion": "1.2",
+        "schemaVersion": "1.3",
         "generatedAt": generated_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "totals": {"resources": len(resources)},
         "readiness": readiness,
