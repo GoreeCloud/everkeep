@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.continuity-assurance-state.schema.json",
+  "title": "Everkeep Continuity Assurance State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "assuranceId", "policyId", "objectiveId", "evaluatedAt", "state", "postureState", "schedule", "topologyFreshness", "blockerCodes", "warningCodes", "evidenceRefs", "evaluationDispatchEligible"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "assuranceId": {"type": "string", "minLength": 1},
+    "policyId": {"type": "string", "minLength": 1},
+    "objectiveId": {"type": "string", "minLength": 1},
+    "evaluatedAt": {"type": "string", "format": "date-time"},
+    "state": {"enum": ["ready", "attention", "degraded", "unknown"]},
+    "postureState": {"enum": ["ready", "attention", "degraded", "unknown"]},
+    "schedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "lastEvaluatedAt", "nextDueAt", "overdueSeconds"],
+      "properties": {
+        "state": {"enum": ["scheduled", "due", "overdue", "unknown"]},
+        "lastEvaluatedAt": {"type": ["string", "null"], "format": "date-time"},
+        "nextDueAt": {"type": ["string", "null"], "format": "date-time"},
+        "overdueSeconds": {"type": "integer", "minimum": 0}
+      }
+    },
+    "topologyFreshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "observedAt", "expiresAt", "ageSeconds", "freshnessRemainingSeconds"],
+      "properties": {
+        "state": {"enum": ["current", "attention", "stale", "unknown"]},
+        "observedAt": {"type": ["string", "null"], "format": "date-time"},
+        "expiresAt": {"type": ["string", "null"], "format": "date-time"},
+        "ageSeconds": {"type": ["integer", "null"], "minimum": 0},
+        "freshnessRemainingSeconds": {"type": ["integer", "null"]}
+      }
+    },
+    "blockerCodes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "warningCodes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "evidenceRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "evaluationDispatchEligible": {"type": "boolean"}
+  }
+}
