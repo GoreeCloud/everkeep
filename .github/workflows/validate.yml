@@ -66,3 +66,18 @@ jobs:
 
       - name: Test authenticated Everkeep Mesh evidence delivery
         run: python3 scripts/test_mesh_delivery.py
+
+      - name: Build Everkeep public website
+        run: python3 scripts/build_public_site.py
+
+      - name: Validate Everkeep public website artifact
+        run: |
+          test -f dist/index.html
+          test -f dist/style.css
+          test -f dist/_headers
+          test -f dist/robots.txt
+          test -f dist/sitemap.xml
+          test -f dist/assets/everkeep.svg
+          grep -Fq 'https://everkeep.goreecloud.com/' dist/index.html
+          grep -Fq 'Everkeep never turns an unsupported capability into a protection claim.' dist/index.html
+          ! grep -Fq 'GoreeCloud Identity' dist/index.html
