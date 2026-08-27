@@ -79,6 +79,9 @@ jobs:
       - name: Validate Phase 2 succession
         run: python3 scripts/validate_phase2_succession.py
 
+      - name: Validate Phase 3 continuity control plane
+        run: python3 scripts/validate_phase3_continuity.py
+
       - name: Test Everkeep Mesh evidence envelope adapter
         run: python3 scripts/test_mesh_evidence.py
 
