@@ -2,7 +2,7 @@
 
 Everkeep is GoreeCloud's platform-wide resilience, preservation, backup, recovery, portability, continuity, succession, and digital-legacy subsystem.
 
-It is a foundational technical system, not merely the name of GoreeCloud Backup, a visual identity, or a presentation layer. Everkeep provides shared infrastructure, contracts, evidence, policies, recovery planning, preservation manifests, continuity services, assurance scheduling, authorized succession models, measurable continuity objectives, recovery topology, failover planning, and failover governance that GoreeCloud applications and infrastructure can use without independently implementing complete resilience systems.
+It is a foundational technical system, not merely the name of GoreeCloud Backup, a visual identity, or a presentation layer. Everkeep provides shared infrastructure, contracts, evidence, policies, recovery planning, preservation manifests, continuity services, assurance scheduling, authorized succession models, measurable continuity objectives, recovery topology, failover planning, failover governance, and controlled recovery-execution semantics that GoreeCloud applications and infrastructure can use without independently implementing complete resilience systems.
 
 ## Platform boundary
 
@@ -24,10 +24,10 @@ Everkeep must never convert an unsupported capability into a public protection c
 
 1. **Resilience** — backups, snapshots, versions, replicas, recovery points, rollback, and restoration.
 2. **Preservation** — archives, integrity, provenance, format longevity, preservation metadata, and long-term verification.
-3. **Continuity** — disaster recovery, service recovery, failover, dependency-aware restoration, measurable RPO/RTO objectives, recovery topology, failure scenarios, recovery exercises, and failover governance.
+3. **Continuity** — disaster recovery, service recovery, failover, dependency-aware restoration, measurable RPO/RTO objectives, recovery topology, failure scenarios, recovery exercises, failover governance, and controlled drill execution.
 4. **Portability** — exports, imports, migration packages, documented formats, manifests, and independent verification.
 5. **Succession** — digital legacy, trusted contacts, successor policies, emergency recovery, selective transfer, and authorized destruction.
-6. **Assurance** — recovery evidence, restore testing, policy compliance, measurable RPO/RTO objectives, continuity posture, topology freshness, scheduled re-evaluation, and revision-bound acceptance.
+6. **Assurance** — recovery evidence, restore testing, policy compliance, measurable RPO/RTO objectives, continuity posture, topology freshness, scheduled re-evaluation, exact-plan approval, executor-time revalidation, and revision-bound acceptance.
 
 ## Phase 1 core
 
@@ -172,11 +172,26 @@ See `docs/PHASE-3-CONTINUITY-ASSURANCE.md`.
 
 See `docs/PHASE-3-FAILOVER-GOVERNANCE.md`.
 
+### Controlled failover executor
+
+Phase 3.4 introduces a separate reference executor boundary without turning approval into production authority.
+
+- Executor requests are bound to the approved exact plan digest, objective, target, expected revision, approval validity, and fresh executor-time authority evidence.
+- GoreeCloud Identity, Privacy Shield, Wardveil Security, Everkeep continuity, target, dependency, and key-material evidence are revalidated at executor handoff rather than assuming approval-time evidence is still current.
+- The reference executor state machine separates `pending`, `validating`, `authorized`, `staging`, `executing`, `verifying`, and `completed`, with terminal `blocked`, `failed`, and `cancelled` states.
+- Drill artifacts permanently require `simulationOnly: true`, `externalEffectsAuthorized: false`, `sourceMutationAllowed: false`, `trafficMutationAllowed: false`, and `credentialsEmbedded: false`.
+- Append-only SQLite reference history and PostgreSQL-oriented executor tables enforce the same safety invariants.
+- `executor_may_produce_external_effects()` returns false unconditionally.
+
+The Phase 3.4 reference executor performs no external effects and does not establish production failover, traffic switching, production data movement, infrastructure provisioning, or bearer execution credentials.
+
+See `docs/PHASE-3-FAILOVER-EXECUTOR.md`.
+
 ### Recovery Center continuity and governance coverage
 
 Recovery Center schema 1.5 aggregates continuity posture, RPO, RTO, exercise freshness, failure-domain coverage, topology freshness, assurance scheduling, failover approval, and failover acceptance. It can recommend inspection, rehearsal, topology review, continuity evaluation, failover planning, approval review, denial inspection, and acceptance evaluation when supplied evidence supports those actions.
 
-Recovery Center intentionally exposes no `execute-failover` action. Creating a plan, approving a plan, or recording acceptance evidence does not itself run failover.
+Recovery Center intentionally exposes no `execute-failover` action. Phase 3.4 does not change that boundary; executor-state projection is a separate future capability.
 
 ## Machine-readable contracts
 
@@ -209,6 +224,8 @@ Phase 3 adds:
 - `contracts/everkeep.notify-intent.schema.json`
 - `contracts/everkeep.failover-approval.schema.json`
 - `contracts/everkeep.failover-acceptance.schema.json`
+- `contracts/everkeep.failover-executor-request.schema.json`
+- `contracts/everkeep.failover-executor-state.schema.json`
 
 ## Recovery standard
 
@@ -222,14 +239,14 @@ from:
 
 A backup job completing successfully is never sufficient by itself to produce a recovery-ready state.
 
-Everkeep also distinguishes a theoretically recoverable design from a current continuity posture. RPO/RTO targets, recovery-drill freshness, failure-domain diversity, dependencies, key material, alternate recovery targets, recovery topology, approval validity, exact plan identity, and revision-bound acceptance must be backed by current authoritative evidence before corresponding readiness or acceptance states may be represented.
+Everkeep also distinguishes a theoretically recoverable design from a current continuity posture. RPO/RTO targets, recovery-drill freshness, failure-domain diversity, dependencies, key material, alternate recovery targets, recovery topology, approval validity, exact plan identity, fresh executor-time authority, and revision-bound acceptance must be backed by current authoritative evidence before corresponding readiness or acceptance states may be represented.
 
 ## Protection, preservation, continuity, and succession principles
 
 Everkeep favors verified restore capability over backup existence, portable and documented data over lock-in, explicit retention over accidental permanence, independent failure domains over a single recovery mechanism, dependency-aware restoration over isolated component recovery, and preservation of meaning, metadata, provenance, and relationships rather than raw bytes alone.
 
-High-value policies may require immutable or isolated copies, off-site protection, multi-party authorization for destructive changes, malware checks before restoration, a Recovery Sandbox before promotion to production, measured continuity objectives, current recovery topology, and approved failover plans. Succession policies may express owner intent, but cannot weaken Identity, Privacy Shield, Wardveil, waiting-period, successor-verification, legal, or destructive-action gates. These are policy capabilities and must not be represented as deployed unless runtime evidence proves them.
+High-value policies may require immutable or isolated copies, off-site protection, multi-party authorization for destructive changes, malware checks before restoration, a Recovery Sandbox before promotion to production, measured continuity objectives, current recovery topology, approved failover plans, and fresh executor-time authority checks. Succession policies may express owner intent, but cannot weaken Identity, Privacy Shield, Wardveil, waiting-period, successor-verification, legal, or destructive-action gates. These are policy capabilities and must not be represented as deployed unless runtime evidence proves them.
 
 ## Status
 
-**Phase 3 continuous-continuity governance implementation in development.** Phase 1 identity, continuity/adoption contracts, runtime boundaries, persistence, canonical visual identity, and evidence-gated integration model remain intact. Phase 2 Recovery Center projections, evidence timelines, dependency-aware recovery planning, scheduled restore-test decisions, execution authorization gates, Preservation Capsules, portability manifests, and succession eligibility remain the recovery-control foundation. Phase 3 now defines continuity objectives, deterministic RPO/RTO and exercise posture, failure-domain coverage, alternate-target readiness, recovery topology, simulated impact analysis, scheduled assurance, bounded Monitoring/Notify projections, exact-plan failover approval evidence, and revision-bound acceptance evidence. Live failover, traffic switching, alternate-environment deployment, actual Monitoring/Notify delivery, production recovery automation, and application-specific continuity acceptance remain evidence-gated.
+**Phase 3 continuous-continuity governance and controlled-drill implementation in development.** Phase 1 identity, continuity/adoption contracts, runtime boundaries, persistence, canonical visual identity, and evidence-gated integration model remain intact. Phase 2 Recovery Center projections, evidence timelines, dependency-aware recovery planning, scheduled restore-test decisions, execution authorization gates, Preservation Capsules, portability manifests, and succession eligibility remain the recovery-control foundation. Phase 3 now defines continuity objectives, deterministic RPO/RTO and exercise posture, failure-domain coverage, alternate-target readiness, recovery topology, simulated impact analysis, scheduled assurance, bounded Monitoring/Notify projections, exact-plan failover approval evidence, revision-bound acceptance evidence, and a simulation-only controlled failover executor with fresh authority revalidation. Live production failover, traffic switching, alternate-environment deployment, actual Monitoring/Notify delivery, production recovery automation, and application-specific continuity acceptance remain evidence-gated.
