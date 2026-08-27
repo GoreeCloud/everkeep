@@ -67,7 +67,7 @@ A passing acceptance requires:
 - the execution to report `state: completed` and `authorized: true` under its own contract;
 - the execution environment to match the failover plan target environment;
 - `sourceMutationAllowed: false` to remain intact;
-- the expected deployed revision to exactly equal the observed revision;
+- the expected deployed revision to exactly equal the observed revision, binding acceptance to the exact deployed revision rather than a branch, tag, release family, or intended version;
 - authoritative pass evidence for service health;
 - authoritative pass evidence for data integrity;
 - authoritative pass evidence for dependency health;
