@@ -61,6 +61,15 @@ jobs:
       - name: Validate restore verification evidence contract
         run: python3 scripts/validate_restore_verification.py
 
+      - name: Validate Phase 2 Recovery Center
+        run: python3 scripts/validate_phase2_recovery_center.py
+
+      - name: Validate Phase 2 recovery orchestration
+        run: python3 scripts/validate_phase2_orchestrator.py
+
+      - name: Validate Phase 2 preservation and portability
+        run: python3 scripts/validate_phase2_preservation.py
+
       - name: Test Everkeep Mesh evidence envelope adapter
         run: python3 scripts/test_mesh_evidence.py
 
