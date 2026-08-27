@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.failover-approval.schema.json",
+  "title": "Everkeep Failover Approval Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "approvalId", "planId", "planDigest", "objectiveId", "target", "evaluatedAt", "expiresAt", "state", "gateResults", "blockerCodes", "evidenceRefs", "handoffEligible", "executionAuthorized", "executionCredential", "sourceMutationAllowed"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "approvalId": {"type": "string", "minLength": 1},
+    "planId": {"type": "string", "minLength": 1},
+    "planDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "objectiveId": {"type": "string", "minLength": 1},
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["targetId", "environment", "failureDomain"],
+      "properties": {
+        "targetId": {"type": "string", "minLength": 1},
+        "environment": {"type": "string", "minLength": 1},
+        "failureDomain": {"type": "string", "minLength": 1}
+      }
+    },
+    "evaluatedAt": {"type": "string", "format": "date-time"},
+    "expiresAt": {"type": ["string", "null"], "format": "date-time"},
+    "state": {"enum": ["approved", "denied", "expired", "unknown"]},
+    "gateResults": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operator", "identity", "privacy", "wardveil", "continuity", "target", "dependencies", "keyMaterial"],
+      "properties": {
+        "operator": {"$ref": "#/$defs/gate"},
+        "identity": {"$ref": "#/$defs/gate"},
+        "privacy": {"$ref": "#/$defs/gate"},
+        "wardveil": {"$ref": "#/$defs/gate"},
+        "continuity": {"$ref": "#/$defs/gate"},
+        "target": {"$ref": "#/$defs/gate"},
+        "dependencies": {"$ref": "#/$defs/gate"},
+        "keyMaterial": {"$ref": "#/$defs/gate"}
+      }
+    },
+    "blockerCodes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "evidenceRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "handoffEligible": {"type": "boolean"},
+    "executionAuthorized": {"const": false},
+    "executionCredential": {"const": false},
+    "sourceMutationAllowed": {"const": false}
+  },
+  "$defs": {
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "authority", "evidenceRef", "observedAt", "validUntil"],
+      "properties": {
+        "state": {"enum": ["pass", "fail", "unknown"]},
+        "authority": {"type": "string", "minLength": 1},
+        "evidenceRef": {"type": ["string", "null"]},
+        "observedAt": {"type": ["string", "null"], "format": "date-time"},
+        "validUntil": {"type": ["string", "null"], "format": "date-time"},
+        "reason": {"type": ["string", "null"]}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"state": {"const": "approved"}}},
+      "then": {"properties": {"handoffEligible": {"const": true}}},
+      "else": {"properties": {"handoffEligible": {"const": false}}}
+    }
+  ]
+}
