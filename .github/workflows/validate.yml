@@ -82,6 +82,9 @@ jobs:
       - name: Validate Phase 3 continuity control plane
         run: python3 scripts/validate_phase3_continuity.py
 
+      - name: Validate Phase 3 recovery topology and failover planning
+        run: python3 scripts/validate_phase3_failover_planning.py
+
       - name: Test Everkeep Mesh evidence envelope adapter
         run: python3 scripts/test_mesh_evidence.py
 
