@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Everkeep Keystone 04 identity candidate</title>
+  <desc id="desc">A fixed preserved keystone remains centered between two independent continuity rails as systems change around it.</desc>
+  <defs>
+    <linearGradient id="everkeep-keystone-04" x1="11" y1="12" x2="53" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2DD4BF"/>
+      <stop offset=".52" stop-color="#3B82F6"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="everkeep-keystone-core-04" x1="24" y1="21" x2="40" y2="43" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#E0F2FE"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Independent continuity rails: reduced to two primary strokes for launcher-scale clarity. -->
+  <path d="M17 12C11.5 22 11.5 42 17 52" fill="none" stroke="url(#everkeep-keystone-04)" stroke-width="6" stroke-linecap="round"/>
+  <path d="M47 12C52.5 22 52.5 42 47 52" fill="none" stroke="url(#everkeep-keystone-04)" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Preserved keystone: larger, simpler, and optically centered. -->
+  <path d="M32 19L42 26V38L32 45L22 38V26Z" fill="url(#everkeep-keystone-core-04)" stroke="url(#everkeep-keystone-04)" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M28 32H36" fill="none" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
+</svg>
