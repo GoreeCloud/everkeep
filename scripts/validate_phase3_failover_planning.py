@@ -80,9 +80,11 @@ def main():
         {"resourceId": "photos:primary", "protected": True, "readiness": "At Risk", "recoveryEligible": False, "integrityCurrent": True, "restoreTestCurrent": True, "policyCompliant": True, "continuityState": "unknown", "rpoCompliant": True, "rtoCompliant": True, "recoveryExerciseCurrent": True, "failureDomainDiverse": True, "topologyCurrent": False, "assuranceScheduleState": "overdue", "failoverEligible": False, "blockers": [{"code": "recovery-topology-stale", "severity": "high"}]},
     ]
     summary = recovery_center.build_summary(resources, "2026-08-27T12:05:00Z")
-    assert summary["schemaVersion"] == "1.4"
+    assert summary["schemaVersion"] == "1.5"
     assert summary["continuity"]["objectives"]["topologyCurrent"] == {"pass": 1, "fail": 1, "unknown": 0}
     assert summary["continuity"]["assuranceSchedule"] == {"scheduled": 1, "due": 0, "overdue": 1, "unknown": 0}
+    assert summary["failoverGovernance"]["approval"]["not-applicable"] == 2
+    assert summary["failoverGovernance"]["acceptance"]["not-applicable"] == 2
     actions = {(item["resourceId"], item["action"]) for item in summary["recommendedActions"]}
     assert ("documents:primary", "create-failover-plan") in actions
     assert ("photos:primary", "inspect-recovery-topology") in actions
@@ -95,7 +97,7 @@ def main():
     assert plan_contract["properties"]["executionAuthorized"]["const"] is False
     assert plan_contract["properties"]["sourceMutationAllowed"]["const"] is False
     assert plan_contract["properties"]["requiresApproval"]["const"] is True
-    assert json.loads((ROOT / "contracts" / "everkeep.recovery-center.summary.schema.json").read_text())["properties"]["schemaVersion"]["const"] == "1.4"
+    assert json.loads((ROOT / "contracts" / "everkeep.recovery-center.summary.schema.json").read_text())["properties"]["schemaVersion"]["const"] == "1.5"
     action_contract = json.loads((ROOT / "contracts" / "everkeep.recovery-action.schema.json").read_text())
     for action in ["create-failover-plan", "inspect-recovery-topology"]:
         assert action in action_contract["properties"]["action"]["enum"]
