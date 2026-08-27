@@ -97,6 +97,9 @@ jobs:
       - name: Validate Phase 3 drill operations and rollback assurance
         run: python3 scripts/validate_phase3_drill_operations.py
 
+      - name: Validate Phase 3 failover lifecycle projection
+        run: python3 scripts/validate_phase3_failover_lifecycle.py
+
       - name: Test Everkeep Mesh evidence envelope adapter
         run: python3 scripts/test_mesh_evidence.py
 

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/everkeep.recovery-center.failover-lifecycle.schema.json",
+  "title": "Everkeep Recovery Center Failover Lifecycle Detail",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generatedAt", "totals", "acceptance", "executions", "recommendedActions"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "totals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resources", "executions"],
+      "properties": {
+        "resources": {"type": "integer", "minimum": 0},
+        "executions": {"type": "integer", "minimum": 0}
+      }
+    },
+    "acceptance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pass", "fail", "unknown", "not-applicable"],
+      "properties": {
+        "pass": {"type": "integer", "minimum": 0},
+        "fail": {"type": "integer", "minimum": 0},
+        "unknown": {"type": "integer", "minimum": 0},
+        "not-applicable": {"type": "integer", "minimum": 0}
+      }
+    },
+    "executions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["resourceId", "executionId", "state", "phase", "rollbackState", "acceptanceState", "refreshRequired", "simulationOnly", "externalEffectsAuthorized"],
+        "properties": {
+          "resourceId": {"type": "string", "minLength": 1},
+          "executionId": {"type": "string", "minLength": 1},
+          "state": {"enum": ["pending", "validating", "authorized", "staging", "executing", "verifying", "completed", "blocked", "failed", "cancelled", "unknown"]},
+          "phase": {"enum": ["active", "terminal", "unknown"]},
+          "updatedAt": {"type": ["string", "null"], "format": "date-time"},
+          "rollbackState": {"enum": ["pass", "fail", "unknown", "not-applicable"]},
+          "acceptanceState": {"enum": ["pass", "fail", "unknown", "not-applicable"]},
+          "refreshRequired": {"type": "boolean"},
+          "simulationOnly": {"const": true},
+          "externalEffectsAuthorized": {"const": false}
+        }
+      }
+    },
+    "recommendedActions": {"type": "array", "items": {"$ref": "everkeep.recovery-action.schema.json"}}
+  }
+}
