@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+import copy
 import json
 import sys
 
@@ -12,6 +13,7 @@ from runtime.mesh_evidence import (
     validate_mesh_evidence_refresh_intent,
 )
 from runtime.mesh_refresh_response import create_mesh_evidence_refresh_response
+from runtime.mesh_refresh_handoff import create_mesh_evidence_refresh_response_for_evidence
 
 
 def fail(message: str) -> None:
@@ -185,4 +187,75 @@ except ValueError:
 else:
     fail("non-completed refresh response must not claim produced evidence")
 
-print("Everkeep Mesh Evidence Envelope, refresh-intent, and refresh-response adapters: OK")
+handoff_evidence = copy.deepcopy(evidence)
+handoff_evidence["verificationId"] = "restore-verify-002"
+handoff_evidence["capturedAt"] = now.isoformat()
+handoff_evidence["everkeepSourceRevision"] = "d" * 40
+handoff_evidence["status"] = "pass"
+handoff_envelope = create_restore_verification_envelope(
+    handoff_evidence,
+    valid_until=(now + timedelta(hours=2)).isoformat(),
+    observed_at=now,
+)
+handoff_response = create_mesh_evidence_refresh_response_for_evidence(
+    refresh,
+    response_id="everkeep-refresh-handoff-001",
+    revision="d" * 40,
+    evidence_envelope=handoff_envelope,
+    responded_at=now,
+    now=now,
+)
+if handoff_response.get("evidence_envelope_id") != handoff_envelope["id"] or not handoff_response["evidence_produced"]:
+    fail("validated handoff did not bind the actual Everkeep evidence envelope")
+if "outcome" in handoff_response or handoff_response["execution_authorized"] or handoff_response["authority_transferred"]:
+    fail("validated handoff receipt crossed the Everkeep authority boundary")
+
+old_handoff = copy.deepcopy(handoff_envelope)
+old_handoff["observed_at"] = (now - timedelta(seconds=1)).isoformat()
+try:
+    create_mesh_evidence_refresh_response_for_evidence(
+        refresh,
+        response_id="everkeep-refresh-handoff-old",
+        revision="d" * 40,
+        evidence_envelope=old_handoff,
+        responded_at=now,
+        now=now,
+    )
+except ValueError:
+    pass
+else:
+    fail("pre-request Everkeep evidence must not satisfy a refresh handoff")
+
+wrong_revision_handoff = copy.deepcopy(handoff_envelope)
+wrong_revision_handoff["producer"]["revision"] = "e" * 40
+try:
+    create_mesh_evidence_refresh_response_for_evidence(
+        refresh,
+        response_id="everkeep-refresh-handoff-revision",
+        revision="d" * 40,
+        evidence_envelope=wrong_revision_handoff,
+        responded_at=now,
+        now=now,
+    )
+except ValueError:
+    pass
+else:
+    fail("Everkeep evidence from another producer revision must be rejected")
+
+wrong_subject_handoff = copy.deepcopy(handoff_envelope)
+wrong_subject_handoff["subject"]["id"] = "resource-99"
+try:
+    create_mesh_evidence_refresh_response_for_evidence(
+        refresh,
+        response_id="everkeep-refresh-handoff-subject",
+        revision="d" * 40,
+        evidence_envelope=wrong_subject_handoff,
+        responded_at=now,
+        now=now,
+    )
+except ValueError:
+    pass
+else:
+    fail("Everkeep evidence for another subject must be rejected")
+
+print("Everkeep Mesh Evidence Envelope, refresh-intent, refresh-response, and validated handoff adapters: OK")
