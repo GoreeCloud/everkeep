@@ -147,10 +147,11 @@ def main():
         },
     ]
     summary = recovery_center.build_summary(resources, "2026-08-27T12:00:00Z")
-    assert summary["schemaVersion"] == "1.2"
+    assert summary["schemaVersion"] == "1.3"
     assert summary["continuity"]["state"]["ready"] == 1
     assert summary["continuity"]["state"]["degraded"] == 1
     assert summary["continuity"]["objectives"]["rpoCompliant"]["fail"] == 1
+    assert summary["continuity"]["objectives"]["topologyCurrent"]["unknown"] == 2
     actions = {(item["resourceId"], item["action"]) for item in summary["recommendedActions"]}
     assert ("photos:primary", "inspect-continuity-objective") in actions
     assert ("photos:primary", "run-disaster-recovery-drill") in actions
@@ -166,7 +167,7 @@ def main():
         assert contract["properties"]["schemaVersion"]["const"] == "1.0"
 
     summary_contract = json.loads((ROOT / "contracts" / "everkeep.recovery-center.summary.schema.json").read_text())
-    assert summary_contract["properties"]["schemaVersion"]["const"] == "1.2"
+    assert summary_contract["properties"]["schemaVersion"]["const"] == "1.3"
     action_contract = json.loads((ROOT / "contracts" / "everkeep.recovery-action.schema.json").read_text())
     for action in [
         "inspect-continuity-objective",
