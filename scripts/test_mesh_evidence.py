@@ -11,6 +11,7 @@ from runtime.mesh_evidence import (
     create_restore_verification_envelope,
     validate_mesh_evidence_refresh_intent,
 )
+from runtime.mesh_refresh_response import create_mesh_evidence_refresh_response
 
 
 def fail(message: str) -> None:
@@ -146,4 +147,42 @@ except ValueError:
 else:
     fail("refresh intent must not authorize recovery or failover execution")
 
-print("Everkeep Mesh Evidence Envelope and refresh-intent adapter: OK")
+response = create_mesh_evidence_refresh_response(
+    refresh,
+    response_id="everkeep-refresh-response-001",
+    revision="d" * 40,
+    status="completed",
+    reason_code="evidence-issued",
+    responded_at=now,
+    evidence_envelope_id="everkeep-restore-verify-002",
+    now=now,
+)
+if response["version"] != "goreecloud.evidence-refresh-response.v1":
+    fail("wrong refresh response version")
+if response["intent"]["id"] != refresh["id"] or response["intent"]["coordinator_revision"] != refresh["coordinator"]["revision"]:
+    fail("refresh response did not bind the exact Mesh intent")
+if response["producer"]["system"] != "everkeep" or response["authority_domain"] != "recovery":
+    fail("refresh response changed Everkeep authority targeting")
+if not response["evidence_produced"] or response.get("evidence_envelope_id") != "everkeep-restore-verify-002":
+    fail("completed refresh response did not preserve separate evidence reference")
+for forbidden in ("outcome", "ready", "failover_authorized", "restore_authorized", "fresh"):
+    if forbidden in response:
+        fail(f"refresh response manufactured continuity/recovery truth: {forbidden}")
+if response["execution_authorized"] or response["authority_transferred"]:
+    fail("refresh response granted Everkeep execution or transferred authority")
+
+try:
+    create_mesh_evidence_refresh_response(
+        refresh,
+        response_id="everkeep-refresh-response-002",
+        revision="d" * 40,
+        status="received",
+        evidence_envelope_id="everkeep-restore-verify-003",
+        now=now,
+    )
+except ValueError:
+    pass
+else:
+    fail("non-completed refresh response must not claim produced evidence")
+
+print("Everkeep Mesh Evidence Envelope, refresh-intent, and refresh-response adapters: OK")
