@@ -119,4 +119,10 @@ jobs:
           test -f dist/assets/everkeep.svg
           grep -Fq 'https://everkeep.goreecloud.com/' dist/index.html
           grep -Fq 'Everkeep never turns an unsupported capability into a protection claim.' dist/index.html
+          grep -Fq 'Phase 3.5 continuity control-plane implementation is current.' dist/index.html
+          grep -Fq 'Recovery Center 1.5' dist/index.html
+          grep -Fq 'simulation-only controlled drill executor' dist/index.html
+          grep -Fq 'separately produced current Everkeep evidence' dist/index.html
+          grep -Fq 'do not authorize production failover' dist/index.html
+          ! grep -Fq 'Phase 1 core architecture is in development.' dist/index.html
           ! grep -Fq 'GoreeCloud Identity' dist/index.html
