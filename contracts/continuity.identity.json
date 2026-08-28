@@ -10,6 +10,10 @@
   "visual_identity": {
     "status": "approved",
     "canonical_asset": "assets/everkeep.svg",
+    "canonical_asset_scope": "repository-synchronized-derivative",
+    "branding_authority_repository": "GoreeCloud/goreecloud-branding-assets",
+    "branding_authority_asset": "systems/everkeep/everkeep.svg",
+    "local_derivative_asset": "assets/everkeep.svg",
     "canonical_revision": "keystone-04",
     "approved_on": "2026-08-27",
     "canonical_asset_required_for_showcase": true
