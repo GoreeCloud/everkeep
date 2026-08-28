@@ -2,9 +2,15 @@
 
 ## Status
 
-The Everkeep **Keystone** icon is approved and canonical. Its authoritative source is `assets/everkeep.svg`.
+The Everkeep **Keystone 04** icon is approved.
 
-Derived raster, launcher, favicon, monochrome, and adaptive-icon assets must be generated from the canonical SVG and must not become independent authorities.
+The authoritative branding source is maintained in the unified GoreeCloud branding repository:
+
+- Repository: `GoreeCloud/goreecloud-branding-assets`
+- Canonical path: `systems/everkeep/everkeep.svg`
+- Local synchronized derivative: `assets/everkeep.svg`
+
+The local SVG remains available for Everkeep packaging, validation, documentation, and runtime integration, but it is a synchronized derivative rather than an independent branding authority.
 
 ## Concept
 
@@ -21,7 +27,7 @@ The rails remain open rather than forming a loop. This intentionally avoids gene
 - **Open structure** — movement across systems and time without implying a closed storage destination.
 - **Balanced symmetry** — stability and confidence without security-alarm symbolism.
 - **Rounded geometry** — calm Glaze UI character and strong launcher-scale readability.
-- **Teal-to-blue-to-violet gradient** — continuity across changing systems and eras while the protected core remains identifiable.
+- **Teal-to-blue-to-violet gradient** — continuity across changing systems and eras while the preserved core remains identifiable.
 
 ## Relationship to other GoreeCloud identities
 
@@ -31,35 +37,20 @@ Everkeep represents platform-wide resilience, preservation, recoverability, port
 
 ## Construction
 
-The canonical artwork uses a `64 × 64` view box with generous clear space for launcher and adaptive-icon use.
+The approved artwork uses a `64 × 64` view box with generous clear space. Two primary rails use rounded caps and a six-unit stroke. The central six-sided keystone is optically centered and sized to remain legible at favicon and compact launcher sizes.
 
-Two primary rails use rounded caps and a six-unit stroke. The central six-sided keystone is optically centered and deliberately larger than in earlier explorations so the preserved-core metaphor survives at favicon and compact launcher sizes.
+The full-color form uses a teal-to-blue-to-violet gradient. The keystone interior uses a restrained light gradient with a dark horizontal record mark. Monochrome and high-contrast derivatives must preserve the exact geometry.
 
-The full-color form uses a teal-to-blue-to-violet gradient. The keystone interior uses a restrained light gradient, with a dark horizontal record mark. Monochrome and high-contrast derivatives must preserve the exact geometry.
+## Usage and synchronization requirements
 
-## Usage requirements
+The canonical source of truth is `GoreeCloud/goreecloud-branding-assets` path `systems/everkeep/everkeep.svg`.
 
-The canonical icon must:
+The repository-local `assets/everkeep.svg` must remain synchronized with that source. PNG, WebP, ICO, Android adaptive-icon layers, application icons, social graphics, documentation images, and other derivatives must trace back to the unified canonical SVG.
 
-- preserve the geometry and proportions of `assets/everkeep.svg`,
-- remain recognizable at launcher and favicon sizes,
-- retain adequate clear space around the mark,
-- use the canonical full-color form when appropriate,
-- use a geometry-identical monochrome derivation where color is unavailable,
-- remain legible on light and dark Glaze UI surfaces,
-- contain no text or additional emblem inside the mark,
-- never be replaced with a generic cloud, floppy-disk, shield, padlock, circular-arrow, infinity-only, recycle, or database-stack metaphor.
-
-## Canonical asset path
-
-`assets/everkeep.svg`
-
-This SVG is the sole authoritative artwork. PNG, WebP, ICO, Android adaptive-icon layers, application icons, social graphics, and other derived assets must trace back to it.
+Future visual changes require explicit owner approval and must be committed to the unified branding repository first. A local or derived asset must never silently redefine the Everkeep identity.
 
 ## Approval record
 
-The Keystone 04 geometry was explicitly approved by the GoreeCloud project owner as the official Everkeep icon on **2026-08-27**.
+Keystone 04 was explicitly approved by the GoreeCloud project owner as the official Everkeep icon on **2026-08-27**. The approved geometry was centralized into `GoreeCloud/goreecloud-branding-assets` without geometry changes.
 
-The approved geometry is committed at the canonical asset path, and the machine-readable identity contract records the visual identity as approved.
-
-Future visual changes require explicit owner approval followed by an intentional revision of both the canonical SVG and this contract. A derived asset must never silently redefine the Everkeep identity.
+Branding approval does not establish backup existence, recovery readiness, continuity acceptance, production failover capability, or any other Everkeep technical claim. Those states remain evidence-gated by Everkeep contracts.
