@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.1.1",
   "system": "everkeep",
   "producer_repository": "GoreeCloud/goreecloud-everkeep",
   "authority_domains": ["resilience", "recovery", "preservation", "continuity"],
@@ -16,7 +16,7 @@
   },
   "presentation_consumer": {
     "system": "glaze-ui",
-    "repository": "GoreeCloud/glaze-ui",
+    "repository": "GoreeCloud/goreecloud-glaze-ui",
     "path": "contracts/glaze.evidence-presentation.schema.json",
     "may_upgrade_continuity_truth": false
   },
@@ -62,6 +62,7 @@
   },
   "authority_rules": [
     "Everkeep remains authoritative for resilience, recovery, preservation, continuity, portability, and succession evidence.",
+    "GoreeCloud Identity remains authoritative for the actor or service identity used to authenticate delivery; authenticated identity does not establish recoverability or continuity readiness.",
     "Mesh may persist and transport bounded Everkeep evidence but cannot convert backup existence into verified recoverability.",
     "Privacy Shield remains authoritative for retention, deletion, export, and succession privacy authority that constrains Everkeep actions.",
     "Wardveil remains authoritative for security findings used during recovery or post-restore verification.",
