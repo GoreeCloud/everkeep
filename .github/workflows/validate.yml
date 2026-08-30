@@ -17,112 +17,88 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-
       - name: Verify exact source revision
         env:
           EXPECTED_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.13'
-
       - name: Validate Everkeep identity contract
         run: python3 scripts/validate_continuity.py
-
       - name: Validate evidence validity contract
         run: python3 scripts/validate_evidence_validity.py
-
       - name: Validate Phase 1 Mesh and readiness contracts
         run: python3 scripts/validate_phase1.py
-
       - name: Validate Phase 1 execution layer
         run: python3 scripts/validate_execution_layer.py
-
       - name: Validate persistent service layer
         run: python3 scripts/validate_persistence.py
-
       - name: Validate service and API layer
         run: python3 scripts/validate_service_api.py
-
       - name: Validate runtime integration layer
         run: python3 scripts/validate_runtime_integration.py
-
       - name: Validate deployment readiness layer
         run: python3 scripts/validate_deployment_readiness.py
-
       - name: Validate staging verification layer
         run: python3 scripts/validate_staging_verification.py
-
       - name: Validate live acceptance layer
         run: python3 scripts/validate_live_acceptance.py
-
       - name: Validate restore verification evidence contract
         run: python3 scripts/validate_restore_verification.py
-
       - name: Validate Phase 2 Recovery Center
         run: python3 scripts/validate_phase2_recovery_center.py
-
       - name: Validate Phase 2 resource evidence timeline
         run: python3 scripts/validate_phase2_evidence_timeline.py
-
       - name: Validate Phase 2 recovery orchestration
         run: python3 scripts/validate_phase2_orchestrator.py
-
       - name: Validate Phase 2 restore-test scheduling
         run: python3 scripts/validate_phase2_restore_testing.py
-
       - name: Validate Phase 2 preservation and portability
         run: python3 scripts/validate_phase2_preservation.py
-
       - name: Validate Phase 2 succession
         run: python3 scripts/validate_phase2_succession.py
-
       - name: Validate Phase 3 continuity control plane
         run: python3 scripts/validate_phase3_continuity.py
-
       - name: Validate Phase 3 recovery topology and failover planning
         run: python3 scripts/validate_phase3_failover_planning.py
-
       - name: Validate Phase 3 scheduled continuity assurance
         run: python3 scripts/validate_phase3_continuity_assurance.py
-
       - name: Validate Phase 3 failover governance
         run: python3 scripts/validate_phase3_failover_governance.py
-
       - name: Validate Phase 3 controlled failover executor
         run: python3 scripts/validate_phase3_failover_executor.py
-
       - name: Validate Phase 3 drill operations and rollback assurance
         run: python3 scripts/validate_phase3_drill_operations.py
-
       - name: Validate Phase 3 failover lifecycle projection
         run: python3 scripts/validate_phase3_failover_lifecycle.py
-
       - name: Test Everkeep Mesh evidence envelope adapter
         run: python3 scripts/test_mesh_evidence.py
-
       - name: Test authenticated Everkeep Mesh evidence delivery
         run: python3 scripts/test_mesh_delivery.py
-
       - name: Build Everkeep public website
         run: python3 scripts/build_public_site.py
-
       - name: Validate Everkeep public website artifact
         run: |
           test -f dist/index.html
           test -f dist/style.css
+          test -f dist/glaze-ui-2.0.0.css
           test -f dist/_headers
           test -f dist/robots.txt
           test -f dist/sitemap.xml
           test -f dist/assets/everkeep.svg
           grep -Fq 'https://everkeep.goreecloud.com/' dist/index.html
+          grep -Fq 'name="goreecloud-glaze-ui" content="2.0.0"' dist/index.html
+          grep -Fq 'data-glaze-ui="2.0.0"' dist/index.html
+          grep -Fq 'glaze-navigation-capsule' dist/index.html
+          grep -Fq 'glaze-material' dist/index.html
           grep -Fq 'Everkeep never turns an unsupported capability into a protection claim.' dist/index.html
           grep -Fq 'Phase 3.5 continuity control-plane implementation is current.' dist/index.html
           grep -Fq 'Recovery Center 1.5' dist/index.html
           grep -Fq 'simulation-only controlled drill executor' dist/index.html
           grep -Fq 'separately produced current Everkeep evidence' dist/index.html
           grep -Fq 'do not authorize production failover' dist/index.html
+          ! grep -Fq 'data-glaze-ui="1.5.0"' dist/index.html
           ! grep -Fq 'Phase 1 core architecture is in development.' dist/index.html
           ! grep -Fq 'GoreeCloud Identity' dist/index.html
