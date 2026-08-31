@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schemaVersion", "environment", "capturedAt", "sourceRevision", "checks", "accepted"],
   "properties": {
-    "schemaVersion": {"const": "1.0"},
+    "schemaVersion": {"const": "1.1"},
     "environment": {"enum": ["staging", "production"]},
     "capturedAt": {"type": "string", "format": "date-time"},
     "sourceRevision": {"type": "string", "minLength": 7},
@@ -18,10 +18,32 @@
         "additionalProperties": false,
         "required": ["name", "status", "authoritative", "evidence"],
         "properties": {
-          "name": {"type": "string"},
+          "name": {
+            "enum": [
+              "everkeep.readiness",
+              "postgres.migrations",
+              "identity.authenticated-flow",
+              "privacy.deliberate-denial",
+              "wardveil.deliberate-denial",
+              "mesh.delivery-retry",
+              "adapter.cursor-restart",
+              "runtime.durable-restart"
+            ]
+          },
           "status": {"enum": ["pass", "fail", "unknown"]},
           "authoritative": {"type": "boolean"},
-          "evidence": {"type": "object"}
+          "evidence": {
+            "type": "object",
+            "required": ["provider", "environment", "everkeep_revision", "evidence_id", "observed_at"],
+            "properties": {
+              "provider": {"type": "string", "minLength": 1},
+              "environment": {"enum": ["staging", "production"]},
+              "everkeep_revision": {"type": "string", "minLength": 7},
+              "provider_revision": {"type": "string", "minLength": 7},
+              "evidence_id": {"type": "string", "minLength": 1},
+              "observed_at": {"type": "string", "format": "date-time"}
+            }
+          }
         }
       }
     },
