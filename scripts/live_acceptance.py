@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Iterable
 
 REQUIRED_CHECKS = {
@@ -27,6 +27,9 @@ EXPECTED_PROVIDERS = {
     "runtime.durable-restart": "everkeep",
 }
 
+MAX_EVIDENCE_AGE_SECONDS = 60 * 60
+MAX_FUTURE_SKEW_SECONDS = 60
+
 
 @dataclass(frozen=True)
 class AcceptanceCheck:
@@ -41,6 +44,7 @@ def _common_evidence_is_bound(
     *,
     environment: str,
     source_revision: str,
+    captured_at: datetime,
 ) -> bool:
     evidence = check.evidence
     if not isinstance(evidence, dict):
@@ -58,7 +62,16 @@ def _common_evidence_is_bound(
         parsed = datetime.fromisoformat(observed_at.replace("Z", "+00:00"))
     except ValueError:
         return False
-    return parsed.tzinfo is not None
+    if parsed.tzinfo is None:
+        return False
+
+    observed_utc = parsed.astimezone(timezone.utc)
+    captured_utc = captured_at.astimezone(timezone.utc)
+    if observed_utc > captured_utc + timedelta(seconds=MAX_FUTURE_SKEW_SECONDS):
+        return False
+    if captured_utc - observed_utc > timedelta(seconds=MAX_EVIDENCE_AGE_SECONDS):
+        return False
+    return True
 
 
 def _check_specific_evidence_is_authoritative(check: AcceptanceCheck) -> bool:
@@ -70,7 +83,10 @@ def _check_specific_evidence_is_authoritative(check: AcceptanceCheck) -> bool:
                 and evidence.get("deployed_revision") == evidence.get("everkeep_revision")
             )
         case "postgres.migrations":
-            return evidence.get("database_reachable") is True and evidence.get("migrations_current") is True
+            return (
+                evidence.get("database_reachable") is True
+                and evidence.get("migrations_current") is True
+            )
         case "identity.authenticated-flow":
             return (
                 evidence.get("service_id") == "everkeep"
@@ -124,11 +140,16 @@ def evidence_is_authoritative(
     *,
     environment: str,
     source_revision: str,
+    captured_at: datetime | None = None,
 ) -> bool:
+    captured = captured_at or datetime.now(timezone.utc)
+    if captured.tzinfo is None:
+        return False
     return _common_evidence_is_bound(
         check,
         environment=environment,
         source_revision=source_revision,
+        captured_at=captured,
     ) and _check_specific_evidence_is_authoritative(check)
 
 
@@ -136,26 +157,52 @@ def evaluate(
     checks: Iterable[AcceptanceCheck],
     environment: str,
     source_revision: str,
+    *,
+    captured_at: datetime | None = None,
 ) -> dict[str, Any]:
+    captured = captured_at or datetime.now(timezone.utc)
+    if captured.tzinfo is None:
+        raise ValueError("captured_at must be timezone-aware")
+    captured = captured.astimezone(timezone.utc)
+
     checks = list(checks)
     by_name = {check.name: check for check in checks}
     unique = len(by_name) == len(checks)
     complete = REQUIRED_CHECKS.issubset(by_name)
-    accepted = unique and complete and all(
+
+    required_evidence_ids = []
+    if complete:
+        required_evidence_ids = [
+            str(by_name[name].evidence.get("evidence_id", "")).strip()
+            if isinstance(by_name[name].evidence, dict)
+            else ""
+            for name in REQUIRED_CHECKS
+        ]
+    evidence_ids_unique = (
+        complete
+        and all(required_evidence_ids)
+        and len(set(required_evidence_ids)) == len(required_evidence_ids)
+    )
+
+    accepted = unique and complete and evidence_ids_unique and all(
         by_name[name].status == "pass"
         and by_name[name].authoritative
         and evidence_is_authoritative(
             by_name[name],
             environment=environment,
             source_revision=source_revision,
+            captured_at=captured,
         )
         for name in REQUIRED_CHECKS
     )
     return {
-        "schemaVersion": "1.1",
+        "schemaVersion": "1.2",
         "environment": environment,
-        "capturedAt": datetime.now(timezone.utc).isoformat(),
+        "capturedAt": captured.isoformat(),
         "sourceRevision": source_revision,
+        "evidenceFreshnessMaxAgeSeconds": MAX_EVIDENCE_AGE_SECONDS,
+        "evidenceFutureSkewSeconds": MAX_FUTURE_SKEW_SECONDS,
+        "evidenceIdsUnique": evidence_ids_unique,
         "checks": [asdict(check) for check in checks],
         "accepted": accepted,
     }
