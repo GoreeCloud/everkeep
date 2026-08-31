@@ -11,3 +11,7 @@ Cloudflare Pages configuration:
 - Root directory: blank
 
 The site is intentionally origin-local. The canonical Everkeep identity is copied from `assets/everkeep.svg` into the isolated public artifact during the build. Public resilience and recovery claims must remain evidence-gated and consistent with the Everkeep contracts and accepted runtime state.
+
+The current source design target is **Glaze UI 2.1.0 Stable**, promotion reference `c49113eb8b93c267613fdf1bbca1f814495acad7`. The public build allowlist publishes `website/glaze-ui-2.1.0.css` and does not publish the retained historical 1.5/2.0 stylesheet sources. Durable recovery, assurance, policy, and status content stays solid; controlled glaze is reserved for interaction and navigation.
+
+Source/build alignment does not establish rendered production acceptance. The exact candidate must still satisfy repository validation and Cloudflare deployment acceptance before the live Continuity Center is used as proof of Glaze UI 2.1 conformance.
