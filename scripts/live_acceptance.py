@@ -196,13 +196,10 @@ def evaluate(
         for name in REQUIRED_CHECKS
     )
     return {
-        "schemaVersion": "1.2",
+        "schemaVersion": "1.1",
         "environment": environment,
         "capturedAt": captured.isoformat(),
         "sourceRevision": source_revision,
-        "evidenceFreshnessMaxAgeSeconds": MAX_EVIDENCE_AGE_SECONDS,
-        "evidenceFutureSkewSeconds": MAX_FUTURE_SKEW_SECONDS,
-        "evidenceIdsUnique": evidence_ids_unique,
         "checks": [asdict(check) for check in checks],
         "accepted": accepted,
     }
