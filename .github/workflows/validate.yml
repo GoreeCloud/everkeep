@@ -88,6 +88,9 @@ jobs:
           test -f dist/robots.txt
           test -f dist/sitemap.xml
           test -f dist/assets/everkeep.svg
+          test ! -f website/glaze-ui-1.5.0.css
+          test ! -f website/glaze-ui-2.0.0.css
+          test ! -f website/GLAZE-UI-2.0-ADOPTION.md
           grep -Fq 'https://everkeep.goreecloud.com/' dist/index.html
           grep -Fq 'name="goreecloud-glaze-ui" content="2.1.0"' dist/index.html
           grep -Fq 'data-glaze-ui="2.1.0"' dist/index.html
@@ -105,7 +108,8 @@ jobs:
           grep -Fq 'simulation-only controlled drill executor' dist/index.html
           grep -Fq 'separately produced current Everkeep evidence' dist/index.html
           grep -Fq 'do not authorize production failover' dist/index.html
+          grep -Fq 'GoreeCloud Identity' dist/index.html
+          grep -Fq 'Owns identity, authentication, authorization' dist/index.html
           ! grep -Fq 'data-glaze-ui="1.5.0"' dist/index.html
           ! grep -Fq 'data-glaze-ui="2.0.0"' dist/index.html
           ! grep -Fq 'Phase 1 core architecture is in development.' dist/index.html
-          ! grep -Fq 'GoreeCloud Identity' dist/index.html
