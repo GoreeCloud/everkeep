@@ -136,6 +136,16 @@ def passing_checks(mod):
     ]
 
 
+def conditional_evidence_schema(schema, check_name):
+    conditions = schema["properties"]["checks"]["items"]["allOf"]
+    for condition in conditions:
+        props = condition.get("if", {}).get("properties", {})
+        name = props.get("name", {}).get("const")
+        if name == check_name:
+            return condition["then"]["properties"]["evidence"]["allOf"][1]
+    raise AssertionError(f"missing conditional schema for {check_name}")
+
+
 def main():
     mod = load("live_acceptance", ROOT / "scripts" / "live_acceptance.py")
     passed = passing_checks(mod)
@@ -201,14 +211,87 @@ def main():
         "staging",
         "production",
     }
-    evidence_schema = schema["properties"]["checks"]["items"]["properties"]["evidence"]
+
+    provenance = schema["$defs"]["authoritativeProvenance"]
     assert {
         "provider",
         "environment",
         "everkeep_revision",
         "evidence_id",
         "observed_at",
-    }.issubset(evidence_schema["required"])
+    }.issubset(provenance["required"])
+
+    # Diagnostic fail/unknown checks may carry only failure details. Provenance
+    # becomes structurally mandatory only for checks that claim authoritative pass.
+    evidence_schema = schema["properties"]["checks"]["items"]["properties"]["evidence"]
+    assert evidence_schema == {"type": "object"}
+    conditions = schema["properties"]["checks"]["items"]["allOf"]
+    assert len(conditions) == 9
+    common = conditions[0]
+    assert common["if"]["properties"]["status"]["const"] == "pass"
+    assert common["if"]["properties"]["authoritative"]["const"] is True
+    assert common["then"]["properties"]["evidence"]["$ref"] == "#/$defs/authoritativeProvenance"
+
+    expected_provider_and_fields = {
+        "everkeep.readiness": (
+            "everkeep",
+            {"ready", "deployed_revision"},
+        ),
+        "postgres.migrations": (
+            "postgresql",
+            {"database_reachable", "migrations_current"},
+        ),
+        "identity.authenticated-flow": (
+            "goreecloud-identity",
+            {
+                "provider_revision",
+                "service_id",
+                "authenticated_request_succeeded",
+                "unauthorized_request_rejected",
+            },
+        ),
+        "privacy.deliberate-denial": (
+            "privacy-shield",
+            {"provider_revision", "denial_observed", "mutation_committed", "decision_id"},
+        ),
+        "wardveil.deliberate-denial": (
+            "wardveil-security",
+            {"provider_revision", "denial_observed", "mutation_committed", "audit_reference"},
+        ),
+        "mesh.delivery-retry": (
+            "goreecloud-mesh",
+            {
+                "provider_revision",
+                "delivery_succeeded",
+                "transient_failure_observed",
+                "retry_preserved",
+                "event_id",
+            },
+        ),
+        "adapter.cursor-restart": (
+            "everkeep",
+            {
+                "restart_observed",
+                "cursor_resumed",
+                "duplicate_detected",
+                "skip_detected",
+                "adapter_id",
+            },
+        ),
+        "runtime.durable-restart": (
+            "everkeep",
+            {
+                "restart_observed",
+                "durable_state_preserved",
+                "idempotency_preserved",
+                "pending_outbox_preserved",
+            },
+        ),
+    }
+    for check_name, (provider, required_fields) in expected_provider_and_fields.items():
+        conditional = conditional_evidence_schema(schema, check_name)
+        assert conditional["properties"]["provider"]["const"] == provider
+        assert required_fields.issubset(conditional["required"])
 
     runbook = (ROOT / "docs" / "LIVE-ACCEPTANCE.md").read_text()
     for required in [
