@@ -5,6 +5,7 @@
 - Canonical design-system authority: `GoreeCloud/goreecloud-glaze-ui`
 - Everkeep visual identity authority: `assets/everkeep.svg`
 - Acceptance state: source/build aligned; exact rendered deployment acceptance remains separate
+- Ecosystem review: included in the **2026-08-31 GoreeCloud public-website Glaze UI 2.1 modernization review**; exact-head CI, Cloudflare preview binding, merge authorization, and post-merge production verification remain required independently.
 
 The Continuity Center follows the Glaze UI 2.1 material rule **Content is solid. Interaction is glazed.** Durable recovery, continuity, assurance, boundary, and status content uses solid Surface material. Navigation and appropriate transient interaction may use controlled glaze.
 
