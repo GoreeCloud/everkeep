@@ -47,7 +47,13 @@ def main()->int:
         req("POST",f"/session/{session}/timeouts",{"implicit":0,"pageLoad":15000,"script":10000});req("POST",f"/session/{session}/url",{"url":TARGET})
         for requested,height in VIEWPORTS:
             req("POST",f"/session/{session}/window/rect",{"width":requested,"height":height,"x":0,"y":0})
-            state=req("POST",f"/session/{session}/execute/sync",{"script":"""const h=document.querySelector('header'),m=document.querySelector('main');const hr=h?.getBoundingClientRect(),mr=m?.getBoundingClientRect();const links=[...document.querySelectorAll('header nav a')].map(x=>x.getBoundingClientRect()).filter(r=>r.width>0&&r.height>0);return {ready:document.readyState,w:innerWidth,sw:document.documentElement.scrollWidth,pos:h?getComputedStyle(h).position:'',hb:hr?.bottom||0,mt:mr?.top||0,minNav:links.length?Math.min(...links.map(r=>r.height)):0};""","args":[]})
+            state=req("POST",f"/session/{session}/execute/sync",{"script":"""
+              const h=document.querySelector('header'),m=document.querySelector('main');
+              const hr=h?.getBoundingClientRect(),mr=m?.getBoundingClientRect();
+              const links=[...document.querySelectorAll('header nav a')].map(x=>x.getBoundingClientRect()).filter(r=>r.width>0&&r.height>0);
+              const offenders=[...document.querySelectorAll('body *')].map((el)=>{const r=el.getBoundingClientRect();return {tag:el.tagName.toLowerCase(),id:el.id||'',cls:String(el.className||'').slice(0,100),left:Math.round(r.left*10)/10,right:Math.round(r.right*10)/10,width:Math.round(r.width*10)/10,text:(el.textContent||'').trim().replace(/\s+/g,' ').slice(0,90)}}).filter(x=>x.width>0&&(x.right>innerWidth+1||x.left<-1)).slice(0,12);
+              return {ready:document.readyState,w:innerWidth,sw:document.documentElement.scrollWidth,pos:h?getComputedStyle(h).position:'',hb:hr?.bottom||0,mt:mr?.top||0,minNav:links.length?Math.min(...links.map(r=>r.height)):0,offenders};
+            ""","args":[]})
             require(isinstance(state,dict),f"layout unreadable at {requested}px");w=int(state.get("w",requested));require(state.get("ready")=="complete",f"page incomplete at {w}px: {state}");require(int(state.get("sw",w+2))<=w+1,f"horizontal overflow at {w}px: {state}");require(state.get("pos") not in {"sticky","fixed"},f"header overlays content at {w}px: {state}");require(float(state.get("mt",0))+1>=float(state.get("hb",0)),f"main overlaps header at {w}px: {state}");require(float(state.get("minNav",0))>=47.5,f"navigation target below 48px at {w}px: {state}")
         print("Continuity Center responsive Chrome geometry passed at 1180, 768, 390, and 320px.");return 0
     except Exception as exc:
