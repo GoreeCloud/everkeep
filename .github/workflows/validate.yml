@@ -77,6 +77,8 @@ jobs:
         run: python3 scripts/test_mesh_evidence.py
       - name: Test authenticated Everkeep Mesh evidence delivery
         run: python3 scripts/test_mesh_delivery.py
+      - name: Validate Continuity Center responsive layout
+        run: python3 scripts/validate_public_responsive.py
       - name: Build Everkeep public website
         run: python3 scripts/build_public_site.py
       - name: Validate Everkeep public website artifact
