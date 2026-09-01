@@ -14,10 +14,12 @@ def main() -> int:
 
     required = {
         "public header remains in normal document flow": ".site-header{position:relative;inset-block-start:auto}",
-        "tablet navigation becomes three columns": "@media(max-width:850px){.nav{align-items:flex-start;flex-direction:column;gap:12px;padding:14px 0}.nav nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))",
-        "phone navigation becomes two columns": "@media(max-width:580px){.wrap{width:min(calc(100% - 1.5rem),1180px)}.nav nav{grid-template-columns:repeat(2,minmax(0,1fr))",
+        "narrow navigation remains a single horizontal row": ".nav nav{display:flex;width:100%;flex-wrap:nowrap;justify-content:flex-start",
+        "narrow navigation scrolls locally instead of widening the page": "overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:none;-webkit-overflow-scrolling:touch",
+        "narrow navigation preserves a deliberate capsule surface": "border-radius:var(--glaze-shape-control);background:color-mix(in srgb,var(--glaze-surface) 88%,transparent)",
+        "navigation targets do not shrink or wrap": ".nav nav a{flex:0 0 auto;width:auto;padding-inline:14px;white-space:nowrap;scroll-snap-align:start}",
+        "webkit navigation scrollbar is hidden without disabling scroll": ".nav nav::-webkit-scrollbar{display:none}",
         "exact-width phone canvas can fit inside the usable viewport": "@media(max-width:380px){body.glaze-canvas{min-inline-size:0}",
-        "narrow navigation becomes one column": ".nav nav{grid-template-columns:1fr}",
         "narrow split/status tracks can shrink below min-content width": ".split,.status-grid{grid-template-columns:minmax(0,1fr)}",
         "split/status children cannot force horizontal overflow": ".split>*,.status-grid>*{min-inline-size:0;max-inline-size:100%}",
         "phone content cards collapse to one column": ".card-grid.six,.card-grid.four,.card-grid.three{grid-template-columns:1fr}",
@@ -28,6 +30,15 @@ def main() -> int:
     for label, marker in required.items():
         if marker not in css:
             errors.append(f"Missing responsive contract: {label}")
+
+    forbidden = {
+        "multi-row tablet navigation": "grid-template-columns:repeat(3,minmax(0,1fr))",
+        "multi-row phone navigation": "grid-template-columns:repeat(2,minmax(0,1fr))",
+        "single-column navigation matrix": ".nav nav{grid-template-columns:1fr}",
+    }
+    for label, marker in forbidden.items():
+        if marker in css:
+            errors.append(f"Responsive navigation regressed to {label}")
 
     sticky = css.rfind(".site-header{position:sticky")
     normal_flow = css.rfind(".site-header{position:relative;inset-block-start:auto}")
@@ -40,7 +51,7 @@ def main() -> int:
             print(f"  - {error}")
         return 1
 
-    print("Continuity Center responsive layout validation passed: normal-flow navigation, 3/2/1-column nav, shrinkable mobile split/status tracks, exact-width 320px fit, single-column phone cards/equation, and full-width narrow actions are protected.")
+    print("Continuity Center responsive layout validation passed: normal-flow header, single-row locally scrollable navigation, shrinkable mobile split/status tracks, exact-width 320px fit, single-column phone cards/equation, and full-width narrow actions are protected.")
     return 0
 
 
