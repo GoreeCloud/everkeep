@@ -18,6 +18,8 @@ def main() -> int:
         "phone navigation becomes two columns": "@media(max-width:580px){.wrap{width:min(calc(100% - 1.5rem),1180px)}.nav nav{grid-template-columns:repeat(2,minmax(0,1fr))",
         "exact-width phone canvas can fit inside the usable viewport": "@media(max-width:380px){body.glaze-canvas{min-inline-size:0}",
         "narrow navigation becomes one column": ".nav nav{grid-template-columns:1fr}",
+        "narrow split/status tracks can shrink below min-content width": ".split,.status-grid{grid-template-columns:minmax(0,1fr)}",
+        "split/status children cannot force horizontal overflow": ".split>*,.status-grid>*{min-inline-size:0;max-inline-size:100%}",
         "phone content cards collapse to one column": ".card-grid.six,.card-grid.four,.card-grid.three{grid-template-columns:1fr}",
         "recovery equation collapses to one column": ".equation{grid-template-columns:1fr}",
         "narrow action buttons become full width": ".actions .button{width:100%}",
@@ -38,7 +40,7 @@ def main() -> int:
             print(f"  - {error}")
         return 1
 
-    print("Continuity Center responsive layout validation passed: normal-flow navigation, 3/2/1-column nav, exact-width 320px fit, single-column phone cards/equation, and full-width narrow actions are protected.")
+    print("Continuity Center responsive layout validation passed: normal-flow navigation, 3/2/1-column nav, shrinkable mobile split/status tracks, exact-width 320px fit, single-column phone cards/equation, and full-width narrow actions are protected.")
     return 0
 
 
