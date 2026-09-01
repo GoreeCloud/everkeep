@@ -86,11 +86,13 @@ jobs:
         run: |
           test -f dist/index.html
           test -f dist/style.css
+          test -f dist/site-polish.css
           test -f dist/glaze-ui-2.1.0.css
           test -f dist/_headers
           test -f dist/robots.txt
           test -f dist/sitemap.xml
           test -f dist/assets/everkeep.svg
+          cmp website/site-polish.css dist/site-polish.css
           test ! -f website/glaze-ui-1.5.0.css
           test ! -f website/glaze-ui-2.0.0.css
           test ! -f website/GLAZE-UI-2.0-ADOPTION.md
