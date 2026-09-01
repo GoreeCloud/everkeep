@@ -47,7 +47,7 @@ def main()->int:
         req("POST",f"/session/{session}/timeouts",{"implicit":0,"pageLoad":15000,"script":10000});req("POST",f"/session/{session}/url",{"url":TARGET})
         for requested,height in VIEWPORTS:
             req("POST",f"/session/{session}/window/rect",{"width":requested,"height":height,"x":0,"y":0})
-            state=req("POST",f"/session/{session}/execute/sync",{"script":"""
+            state=req("POST",f"/session/{session}/execute/sync",{"script":r"""
               const h=document.querySelector('header'),m=document.querySelector('main');
               const hr=h?.getBoundingClientRect(),mr=m?.getBoundingClientRect();
               const links=[...document.querySelectorAll('header nav a')].map(x=>x.getBoundingClientRect()).filter(r=>r.width>0&&r.height>0);
