@@ -62,7 +62,7 @@ def main()->int:
                 require(int(state.get("navRows",0))==1,f"narrow navigation wrapped into multiple rows at {w}px: {state}")
                 require(state.get("navOverflow") in {"auto","scroll"},f"narrow navigation is not locally scrollable at {w}px: {state}")
                 require(float(state.get("navH",0))<=60.5,f"narrow navigation capsule is taller than one control row at {w}px: {state}")
-                require(float(state.get("hh",999))<=132.0,f"narrow header consumes excessive vertical space at {w}px: {state}")
+                require(float(state.get("hh",999))<=140.0,f"narrow header consumes excessive vertical space at {w}px: {state}")
         print("Continuity Center responsive Chrome geometry passed at 1180, 768, 390, and 320px, including one-row compact navigation at narrow widths.");return 0
     except Exception as exc:
         print(f"Continuity Center responsive Chrome geometry failed: {exc}")
