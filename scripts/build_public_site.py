@@ -8,6 +8,7 @@ FILES={
     ROOT/'website'/'index.html': DIST/'index.html',
     ROOT/'website'/'style.css': DIST/'style.css',
     ROOT/'website'/'glaze-ui-2.1.0.css': DIST/'glaze-ui-2.1.0.css',
+    ROOT/'website'/'site-polish.css': DIST/'site-polish.css',
     ROOT/'website'/'_headers': DIST/'_headers',
     ROOT/'website'/'robots.txt': DIST/'robots.txt',
     ROOT/'website'/'sitemap.xml': DIST/'sitemap.xml',

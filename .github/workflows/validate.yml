@@ -11,6 +11,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
       - name: Check out exact source revision
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -77,17 +78,21 @@ jobs:
         run: python3 scripts/test_mesh_evidence.py
       - name: Test authenticated Everkeep Mesh evidence delivery
         run: python3 scripts/test_mesh_delivery.py
+      - name: Validate Continuity Center responsive layout
+        run: python3 scripts/validate_public_responsive.py
       - name: Build Everkeep public website
         run: python3 scripts/build_public_site.py
       - name: Validate Everkeep public website artifact
         run: |
           test -f dist/index.html
           test -f dist/style.css
+          test -f dist/site-polish.css
           test -f dist/glaze-ui-2.1.0.css
           test -f dist/_headers
           test -f dist/robots.txt
           test -f dist/sitemap.xml
           test -f dist/assets/everkeep.svg
+          cmp website/site-polish.css dist/site-polish.css
           test ! -f website/glaze-ui-1.5.0.css
           test ! -f website/glaze-ui-2.0.0.css
           test ! -f website/GLAZE-UI-2.0-ADOPTION.md
@@ -113,3 +118,5 @@ jobs:
           ! grep -Fq 'data-glaze-ui="1.5.0"' dist/index.html
           ! grep -Fq 'data-glaze-ui="2.0.0"' dist/index.html
           ! grep -Fq 'Phase 1 core architecture is in development.' dist/index.html
+      - name: Exercise Continuity Center responsive geometry in Chrome
+        run: python3 scripts/browser_public_responsive.py
