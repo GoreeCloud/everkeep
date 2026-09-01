@@ -32,8 +32,8 @@ def main() -> int:
             errors.append(f"Missing responsive contract: {label}")
 
     forbidden = {
-        "multi-row tablet navigation": "grid-template-columns:repeat(3,minmax(0,1fr))",
-        "multi-row phone navigation": "grid-template-columns:repeat(2,minmax(0,1fr))",
+        "multi-row tablet navigation": ".nav nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))",
+        "multi-row phone navigation": ".nav nav{grid-template-columns:repeat(2,minmax(0,1fr))",
         "single-column navigation matrix": ".nav nav{grid-template-columns:1fr}",
     }
     for label, marker in forbidden.items():
