@@ -6,14 +6,18 @@
   "additionalProperties": false,
   "required": ["schemaVersion", "environment", "capturedAt", "sourceRevision", "checks", "accepted"],
   "$defs": {
+    "revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
     "authoritativeProvenance": {
       "type": "object",
       "required": ["provider", "environment", "everkeep_revision", "evidence_id", "observed_at"],
       "properties": {
         "provider": {"type": "string", "minLength": 1},
         "environment": {"enum": ["staging", "production"]},
-        "everkeep_revision": {"type": "string", "minLength": 7},
-        "provider_revision": {"type": "string", "minLength": 7},
+        "everkeep_revision": {"$ref": "#/$defs/revision"},
+        "provider_revision": {"$ref": "#/$defs/revision"},
         "evidence_id": {"type": "string", "minLength": 1},
         "observed_at": {"type": "string", "format": "date-time"}
       }
@@ -23,7 +27,7 @@
     "schemaVersion": {"const": "1.1"},
     "environment": {"enum": ["staging", "production"]},
     "capturedAt": {"type": "string", "format": "date-time"},
-    "sourceRevision": {"type": "string", "minLength": 7},
+    "sourceRevision": {"$ref": "#/$defs/revision"},
     "checks": {
       "type": "array",
       "minItems": 1,
@@ -82,7 +86,7 @@
                       "properties": {
                         "provider": {"const": "everkeep"},
                         "ready": {"const": true},
-                        "deployed_revision": {"type": "string", "minLength": 7}
+                        "deployed_revision": {"$ref": "#/$defs/revision"}
                       }
                     }
                   ]
@@ -135,7 +139,7 @@
                       "required": ["provider_revision", "service_id", "authenticated_request_succeeded", "unauthorized_request_rejected"],
                       "properties": {
                         "provider": {"const": "goreecloud-identity"},
-                        "provider_revision": {"type": "string", "minLength": 7},
+                        "provider_revision": {"$ref": "#/$defs/revision"},
                         "service_id": {"const": "everkeep"},
                         "authenticated_request_succeeded": {"const": true},
                         "unauthorized_request_rejected": {"const": true}
@@ -164,7 +168,7 @@
                       "required": ["provider_revision", "denial_observed", "mutation_committed", "decision_id"],
                       "properties": {
                         "provider": {"const": "privacy-shield"},
-                        "provider_revision": {"type": "string", "minLength": 7},
+                        "provider_revision": {"$ref": "#/$defs/revision"},
                         "denial_observed": {"const": true},
                         "mutation_committed": {"const": false},
                         "decision_id": {"type": "string", "minLength": 1}
@@ -193,7 +197,7 @@
                       "required": ["provider_revision", "denial_observed", "mutation_committed", "audit_reference"],
                       "properties": {
                         "provider": {"const": "wardveil-security"},
-                        "provider_revision": {"type": "string", "minLength": 7},
+                        "provider_revision": {"$ref": "#/$defs/revision"},
                         "denial_observed": {"const": true},
                         "mutation_committed": {"const": false},
                         "audit_reference": {"type": "string", "minLength": 1}
@@ -222,7 +226,7 @@
                       "required": ["provider_revision", "delivery_succeeded", "transient_failure_observed", "retry_preserved", "event_id"],
                       "properties": {
                         "provider": {"const": "goreecloud-mesh"},
-                        "provider_revision": {"type": "string", "minLength": 7},
+                        "provider_revision": {"$ref": "#/$defs/revision"},
                         "delivery_succeeded": {"const": true},
                         "transient_failure_observed": {"const": true},
                         "retry_preserved": {"const": true},
