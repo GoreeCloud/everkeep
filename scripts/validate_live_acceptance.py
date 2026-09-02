@@ -7,7 +7,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ENVIRONMENT = "staging"
-REVISION = "abcdef1"
+REVISION = "a" * 40
+IDENTITY_REVISION = "b" * 40
+PRIVACY_REVISION = "c" * 40
+WARDVEIL_REVISION = "d" * 40
+MESH_REVISION = "e" * 40
 OBSERVED_AT = "2026-08-31T03:30:00+00:00"
 CAPTURED_AT = datetime(2026, 8, 31, 4, 0, tzinfo=timezone.utc)
 
@@ -37,23 +41,13 @@ def passing_checks(mod):
             "everkeep.readiness",
             "pass",
             True,
-            evidence(
-                "readiness",
-                "everkeep",
-                ready=True,
-                deployed_revision=REVISION,
-            ),
+            evidence("readiness", "everkeep", ready=True, deployed_revision=REVISION),
         ),
         mod.AcceptanceCheck(
             "postgres.migrations",
             "pass",
             True,
-            evidence(
-                "migrations",
-                "postgresql",
-                database_reachable=True,
-                migrations_current=True,
-            ),
+            evidence("migrations", "postgresql", database_reachable=True, migrations_current=True),
         ),
         mod.AcceptanceCheck(
             "identity.authenticated-flow",
@@ -62,7 +56,7 @@ def passing_checks(mod):
             evidence(
                 "identity",
                 "goreecloud-identity",
-                provider_revision="identity01",
+                provider_revision=IDENTITY_REVISION,
                 service_id="everkeep",
                 authenticated_request_succeeded=True,
                 unauthorized_request_rejected=True,
@@ -75,7 +69,7 @@ def passing_checks(mod):
             evidence(
                 "privacy",
                 "privacy-shield",
-                provider_revision="privacy01",
+                provider_revision=PRIVACY_REVISION,
                 denial_observed=True,
                 mutation_committed=False,
                 decision_id="privacy-decision-1",
@@ -88,7 +82,7 @@ def passing_checks(mod):
             evidence(
                 "wardveil",
                 "wardveil-security",
-                provider_revision="wardveil1",
+                provider_revision=WARDVEIL_REVISION,
                 denial_observed=True,
                 mutation_committed=False,
                 audit_reference="wardveil:audit:1",
@@ -101,7 +95,7 @@ def passing_checks(mod):
             evidence(
                 "mesh",
                 "goreecloud-mesh",
-                provider_revision="meshrev1",
+                provider_revision=MESH_REVISION,
                 delivery_succeeded=True,
                 transient_failure_observed=True,
                 retry_preserved=True,
@@ -148,13 +142,8 @@ def conditional_evidence_schema(schema, check_name):
     raise AssertionError(f"missing conditional schema for {check_name}")
 
 
-def evaluate(mod, checks):
-    return mod.evaluate(
-        checks,
-        ENVIRONMENT,
-        REVISION,
-        captured_at=CAPTURED_AT,
-    )
+def evaluate(mod, checks, revision=REVISION):
+    return mod.evaluate(checks, ENVIRONMENT, revision, captured_at=CAPTURED_AT)
 
 
 def main():
@@ -164,34 +153,21 @@ def main():
     assert accepted["accepted"] is True
     assert accepted["capturedAt"] == CAPTURED_AT.isoformat()
 
+    assert evaluate(mod, passed, revision="abcdef1")["accepted"] is False
+
     incomplete = passed[:-1]
     assert evaluate(mod, incomplete)["accepted"] is False
 
     denied = list(passed)
-    denied[0] = mod.AcceptanceCheck(
-        denied[0].name,
-        "fail",
-        True,
-        denied[0].evidence,
-    )
+    denied[0] = mod.AcceptanceCheck(denied[0].name, "fail", True, denied[0].evidence)
     assert evaluate(mod, denied)["accepted"] is False
 
     unauth = list(passed)
-    unauth[0] = mod.AcceptanceCheck(
-        unauth[0].name,
-        "pass",
-        False,
-        unauth[0].evidence,
-    )
+    unauth[0] = mod.AcceptanceCheck(unauth[0].name, "pass", False, unauth[0].evidence)
     assert evaluate(mod, unauth)["accepted"] is False
 
     synthetic = list(passed)
-    synthetic[2] = mod.AcceptanceCheck(
-        "identity.authenticated-flow",
-        "pass",
-        True,
-        {"verified": True},
-    )
+    synthetic[2] = mod.AcceptanceCheck("identity.authenticated-flow", "pass", True, {"verified": True})
     assert evaluate(mod, synthetic)["accepted"] is False
 
     wrong_provider = list(passed)
@@ -208,9 +184,27 @@ def main():
         "wardveil.deliberate-denial",
         "pass",
         True,
-        {**wrong_revision[4].evidence, "everkeep_revision": "deadbee"},
+        {**wrong_revision[4].evidence, "everkeep_revision": "f" * 40},
     )
     assert evaluate(mod, wrong_revision)["accepted"] is False
+
+    short_provider_revision = list(passed)
+    short_provider_revision[2] = mod.AcceptanceCheck(
+        short_provider_revision[2].name,
+        short_provider_revision[2].status,
+        short_provider_revision[2].authoritative,
+        {**short_provider_revision[2].evidence, "provider_revision": "abcdef1"},
+    )
+    assert evaluate(mod, short_provider_revision)["accepted"] is False
+
+    short_deployed_revision = list(passed)
+    short_deployed_revision[0] = mod.AcceptanceCheck(
+        short_deployed_revision[0].name,
+        short_deployed_revision[0].status,
+        short_deployed_revision[0].authoritative,
+        {**short_deployed_revision[0].evidence, "deployed_revision": "abcdef1"},
+    )
+    assert evaluate(mod, short_deployed_revision)["accepted"] is False
 
     duplicate_checks = list(passed) + [passed[0]]
     assert evaluate(mod, duplicate_checks)["accepted"] is False
@@ -220,10 +214,7 @@ def main():
         duplicate_evidence[1].name,
         duplicate_evidence[1].status,
         duplicate_evidence[1].authoritative,
-        {
-            **duplicate_evidence[1].evidence,
-            "evidence_id": duplicate_evidence[0].evidence["evidence_id"],
-        },
+        {**duplicate_evidence[1].evidence, "evidence_id": duplicate_evidence[0].evidence["evidence_id"]},
     )
     assert evaluate(mod, duplicate_evidence)["accepted"] is False
 
@@ -264,26 +255,18 @@ def main():
     assert evaluate(mod, boundary_future)["accepted"] is True
 
     try:
-        mod.evaluate(
-            passed,
-            ENVIRONMENT,
-            REVISION,
-            captured_at=datetime(2026, 8, 31, 4, 0),
-        )
+        mod.evaluate(passed, ENVIRONMENT, REVISION, captured_at=datetime(2026, 8, 31, 4, 0))
     except ValueError:
         pass
     else:
         raise AssertionError("naive acceptance capture time was accepted")
 
-    schema = json.loads(
-        (ROOT / "contracts" / "everkeep.live-acceptance.schema.json").read_text()
-    )
+    schema = json.loads((ROOT / "contracts" / "everkeep.live-acceptance.schema.json").read_text())
     assert schema["properties"]["schemaVersion"]["const"] == "1.1"
     assert "accepted" in schema["required"]
-    assert set(schema["properties"]["environment"]["enum"]) == {
-        "staging",
-        "production",
-    }
+    assert set(schema["properties"]["environment"]["enum"]) == {"staging", "production"}
+    assert schema["$defs"]["revision"]["pattern"] == "^[0-9a-f]{40}$"
+    assert schema["properties"]["sourceRevision"]["$ref"] == "#/$defs/revision"
 
     provenance = schema["$defs"]["authoritativeProvenance"]
     assert {
@@ -293,9 +276,9 @@ def main():
         "evidence_id",
         "observed_at",
     }.issubset(provenance["required"])
+    assert provenance["properties"]["everkeep_revision"]["$ref"] == "#/$defs/revision"
+    assert provenance["properties"]["provider_revision"]["$ref"] == "#/$defs/revision"
 
-    # Diagnostic fail/unknown checks may carry only failure details. Provenance
-    # becomes structurally mandatory only for checks that claim authoritative pass.
     evidence_schema = schema["properties"]["checks"]["items"]["properties"]["evidence"]
     assert evidence_schema == {"type": "object"}
     conditions = schema["properties"]["checks"]["items"]["allOf"]
@@ -306,22 +289,11 @@ def main():
     assert common["then"]["properties"]["evidence"]["$ref"] == "#/$defs/authoritativeProvenance"
 
     expected_provider_and_fields = {
-        "everkeep.readiness": (
-            "everkeep",
-            {"ready", "deployed_revision"},
-        ),
-        "postgres.migrations": (
-            "postgresql",
-            {"database_reachable", "migrations_current"},
-        ),
+        "everkeep.readiness": ("everkeep", {"ready", "deployed_revision"}),
+        "postgres.migrations": ("postgresql", {"database_reachable", "migrations_current"}),
         "identity.authenticated-flow": (
             "goreecloud-identity",
-            {
-                "provider_revision",
-                "service_id",
-                "authenticated_request_succeeded",
-                "unauthorized_request_rejected",
-            },
+            {"provider_revision", "service_id", "authenticated_request_succeeded", "unauthorized_request_rejected"},
         ),
         "privacy.deliberate-denial": (
             "privacy-shield",
@@ -333,32 +305,15 @@ def main():
         ),
         "mesh.delivery-retry": (
             "goreecloud-mesh",
-            {
-                "provider_revision",
-                "delivery_succeeded",
-                "transient_failure_observed",
-                "retry_preserved",
-                "event_id",
-            },
+            {"provider_revision", "delivery_succeeded", "transient_failure_observed", "retry_preserved", "event_id"},
         ),
         "adapter.cursor-restart": (
             "everkeep",
-            {
-                "restart_observed",
-                "cursor_resumed",
-                "duplicate_detected",
-                "skip_detected",
-                "adapter_id",
-            },
+            {"restart_observed", "cursor_resumed", "duplicate_detected", "skip_detected", "adapter_id"},
         ),
         "runtime.durable-restart": (
             "everkeep",
-            {
-                "restart_observed",
-                "durable_state_preserved",
-                "idempotency_preserved",
-                "pending_outbox_preserved",
-            },
+            {"restart_observed", "durable_state_preserved", "idempotency_preserved", "pending_outbox_preserved"},
         ),
     }
     for check_name, (provider, required_fields) in expected_provider_and_fields.items():
@@ -379,6 +334,7 @@ def main():
         "one hour",
         "60 seconds",
         "unique evidence identifier",
+        "40-character",
     ]:
         assert required in runbook
 
