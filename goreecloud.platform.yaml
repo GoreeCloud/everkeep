@@ -1,0 +1,152 @@
+schema_version: '0.2'
+
+component:
+  type: service
+  id: goreecloud-everkeep
+  product_name: Everkeep
+  repository: GoreeCloud/goreecloud-everkeep
+
+lifecycle: development
+version: '0.5.0'
+
+supported_platforms:
+  - linux
+  - web
+
+api:
+  versions: []
+  endpoints: []
+
+platform_systems:
+  manager:
+    result: applicable-blocked
+    version: null
+    evidence:
+      - README.md
+      - ADOPTION.md
+    notes: GoreeCloud Manager must be able to consume bounded Everkeep inventory, lifecycle, health, recovery, and evidence state, but no accepted current Manager integration is established for the Everkeep service itself.
+  privacy_shield:
+    result: applicable-migration-required
+    version: null
+    evidence:
+      - README.md
+      - CONTINUITY.md
+      - contracts/everkeep.mesh-evidence-profile.json
+    notes: Everkeep source contracts preserve Privacy Shield authority over retention, deletion, export, transfer, and succession constraints, but live authoritative provider connectivity and production acceptance remain incomplete.
+  wardveil_security:
+    result: applicable-migration-required
+    version: null
+    evidence:
+      - README.md
+      - SECURITY.md
+      - contracts/everkeep.mesh-evidence-profile.json
+    notes: Everkeep source contracts preserve Wardveil authority for security findings and recovery protection gates, but live authoritative Wardveil connectivity and production acceptance remain incomplete.
+  everkeep:
+    result: not-applicable-justified
+    version: '0.5.0'
+    evidence:
+      - README.md
+      - contracts/continuity.identity.json
+    notes: This repository implements the Everkeep continuity and recovery authority itself; a separate Everkeep-to-Everkeep platform integration is not applicable.
+  glaze_ui:
+    result: applicable-migration-required
+    version: '2.1.0'
+    evidence:
+      - README.md
+      - WEBSITE.md
+    notes: Continuity Center has an accepted repository-specific Glaze UI 2.1.0 production web baseline, while the current Platform Contract consumer baseline is 1.1.0; current-contract reconciliation and acceptance remain required and presentation evidence does not establish recovery readiness.
+  mesh:
+    result: applicable-migration-required
+    version: null
+    evidence:
+      - contracts/everkeep.mesh-evidence-profile.json
+      - runtime/mesh_delivery.py
+    notes: Everkeep defines a minimized Mesh evidence producer profile and runtime delivery client, while runtime delivery production acceptance remains false and live producer identity, routing, target-environment delivery, and end-to-end acceptance remain required.
+    capabilities:
+      - continuity-evidence-producer
+      - recovery-readiness-evidence
+      - recovery-point-evidence
+    dependencies:
+      - goreecloud-identity
+      - goreecloud-mesh
+    published_events: []
+    consumed_events: []
+  identity:
+    result: applicable-migration-required
+    version: null
+    evidence:
+      - README.md
+      - contracts/everkeep.mesh-evidence-profile.json
+    notes: GoreeCloud Identity remains authoritative for actors and service credentials used by Everkeep and Mesh delivery, but live Identity provider connectivity and production credential acceptance remain incomplete.
+
+health:
+  health_endpoint: null
+  readiness_endpoint: null
+
+continuity:
+  backup:
+    required: true
+    requirements:
+      - Protect Everkeep-owned durable resource, protection-policy, recovery-point, evidence, retention, verification, recovery-plan, topology, assurance, drill, rollback, preservation, portability, and succession state.
+      - Protect the PostgreSQL persistence layer and required service configuration without storing reusable credentials in ordinary evidence or Git history.
+  restore:
+    required: true
+    requirements:
+      - Validate isolated clean-target restoration of Everkeep durable state, outbox/event continuity, policy relationships, recovery evidence, and required service behavior before production dependence.
+      - Preserve a recovery path for the recovery authority itself so Everkeep does not become a single unrecoverable dependency.
+  export:
+    required: true
+    requirements:
+      - Preserve documented portable manifests and exports for Everkeep-owned continuity state, recovery metadata, preservation records, and portability evidence without including protected payloads or reusable credentials.
+  portability:
+    required: true
+    requirements:
+      - Keep continuity contracts, evidence models, recovery plans, preservation manifests, and protected-resource relationships independently understandable and migratable across supported infrastructure.
+
+external_dependencies:
+  - name: PostgreSQL
+    purpose: Durable persistence for Everkeep resource, policy, recovery, evidence, assurance, and outbox state.
+    required: true
+    version_constraint: null
+  - name: Cloudflare Pages
+    purpose: Current publication platform for the Continuity Center web presentation surface; not the authority for recovery truth or core service persistence.
+    required: false
+    version_constraint: null
+
+compatibility:
+  platform_contract: '0.2'
+  glaze_ui_required: '1.1.0'
+  requires:
+    - goreecloud-platform-contract==0.2
+    - glaze-ui==1.1.0
+  provides:
+    - everkeep-continuity-status-v1
+    - everkeep-continuity-adoption-v1
+    - everkeep-continuity-acceptance-v1
+    - everkeep-mesh-evidence-profile-v1
+
+evidence:
+  acceptance_tests: []
+  release: []
+
+conformance:
+  status: nonconformant
+  validated_at: null
+  evidence:
+    - README.md
+    - CONTINUITY.md
+    - STATUS.md
+    - ADOPTION.md
+    - SECURITY.md
+    - contracts/continuity.identity.json
+    - contracts/everkeep.mesh-evidence-profile.json
+  blockers:
+    - Everkeep remains in Active Development and source-level continuity architecture does not establish production recovery readiness or production-effect authority.
+    - GoreeCloud Manager integration and acceptance for Everkeep service state are not established.
+    - Live GoreeCloud Identity authority-provider connectivity and production service-credential acceptance remain incomplete.
+    - Live Privacy Shield authority-provider connectivity and production acceptance remain incomplete.
+    - Live Wardveil Security authority-provider connectivity and production acceptance remain incomplete.
+    - Mesh runtime delivery remains production-unaccepted and requires live producer identity, routing, target-environment evidence, and end-to-end acceptance.
+    - Continuity Center requires reconciliation and acceptance against the current Platform Contract Glaze UI baseline despite its separate accepted 2.1.0 repository-specific production web baseline.
+    - Live production failover execution, production rollback, traffic switching, alternate-environment deployment, and provider-specific recovery execution remain unaccepted.
+    - Application-specific production backup, restore, topology, failover, rollback, RPO/RTO, and recovery-assurance evidence remain required for each protected workload.
