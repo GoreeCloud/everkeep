@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail closed on Continuity Center responsive/public-document layout regressions."""
+"""Fail closed on Continuity Center responsive/accessibility regressions."""
 
 from pathlib import Path
 import sys
@@ -14,36 +14,33 @@ def main() -> int:
 
     required = {
         "public header remains in normal document flow": ".site-header{position:relative;inset-block-start:auto}",
-        "narrow navigation remains a single horizontal row": ".nav nav{display:flex;width:100%;flex-wrap:nowrap;justify-content:flex-start",
-        "narrow navigation scrolls locally instead of widening the page": "overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:none;-webkit-overflow-scrolling:touch",
-        "narrow navigation preserves a deliberate capsule surface": "border-radius:var(--glaze-shape-control);background:color-mix(in srgb,var(--glaze-surface) 88%,transparent)",
-        "navigation targets do not shrink or wrap": ".nav nav a{flex:0 0 auto;width:auto;padding-inline:14px;white-space:nowrap;scroll-snap-align:start}",
-        "webkit navigation scrollbar is hidden without disabling scroll": ".nav nav::-webkit-scrollbar{display:none}",
-        "exact-width phone canvas can fit inside the usable viewport": "@media(max-width:380px){body.glaze-canvas{min-inline-size:0}",
-        "narrow split/status tracks can shrink below min-content width": ".split,.status-grid{grid-template-columns:minmax(0,1fr)}",
-        "split/status children cannot force horizontal overflow": ".split>*,.status-grid>*{min-inline-size:0;max-inline-size:100%}",
-        "phone content cards collapse to one column": ".card-grid.six,.card-grid.four,.card-grid.three{grid-template-columns:1fr}",
+        "tablet navigation deliberately recomposes": ".nav nav{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:8px}",
+        "navigation targets retain the 48px floor": ".nav nav a{width:100%;min-height:48px}",
+        "phone navigation becomes one column": "@media(max-width:390px){body{min-inline-size:0}.nav nav{grid-template-columns:1fr}",
+        "tablet cards recompose": ".card-grid.four{grid-template-columns:repeat(2,minmax(0,1fr))}",
+        "phone cards collapse to one column": ".card-grid.six,.card-grid.four{grid-template-columns:1fr}",
         "recovery equation collapses to one column": ".equation{grid-template-columns:1fr}",
-        "narrow action buttons become full width": ".actions .button{width:100%}",
+        "narrow actions become full width": ".actions .action{width:100%;justify-content:center}",
         "public anchors do not reserve sticky-header space": "html{scroll-padding-top:24px}",
+        "reduced motion is supported": "@media(prefers-reduced-motion:reduce)",
+        "reduced transparency is supported": "@media(prefers-reduced-transparency:reduce)",
+        "increased contrast is supported": "@media(prefers-contrast:more)",
+        "forced colors are supported": "@media(forced-colors:active)",
+        "print fallback is supported": "@media print",
     }
     for label, marker in required.items():
         if marker not in css:
-            errors.append(f"Missing responsive contract: {label}")
+            errors.append(f"Missing responsive/accessibility contract: {label}")
 
     forbidden = {
-        "multi-row tablet navigation": ".nav nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))",
-        "multi-row phone navigation": ".nav nav{grid-template-columns:repeat(2,minmax(0,1fr))",
-        "single-column navigation matrix": ".nav nav{grid-template-columns:1fr}",
+        "horizontally scrolling navigation": "overflow-x:auto",
+        "scroll-snap navigation": "scroll-snap-type",
+        "sticky public header": ".site-header{position:sticky",
+        "fixed public header": ".site-header{position:fixed",
     }
     for label, marker in forbidden.items():
         if marker in css:
-            errors.append(f"Responsive navigation regressed to {label}")
-
-    sticky = css.rfind(".site-header{position:sticky")
-    normal_flow = css.rfind(".site-header{position:relative;inset-block-start:auto}")
-    if sticky >= 0 and normal_flow <= sticky:
-        errors.append("Final Continuity Center cascade does not keep public navigation in normal document flow")
+            errors.append(f"Responsive layout regressed to {label}")
 
     if errors:
         print("Continuity Center responsive validation failed:")
@@ -51,7 +48,7 @@ def main() -> int:
             print(f"  - {error}")
         return 1
 
-    print("Continuity Center responsive layout validation passed: normal-flow header, single-row locally scrollable navigation, shrinkable mobile split/status tracks, exact-width 320px fit, single-column phone cards/equation, and full-width narrow actions are protected.")
+    print("Continuity Center responsive layout validation passed: normal-flow header, deliberate two-column/one-column navigation, 48px targets, mobile card/equation recomposition, no horizontal nav scroll, and accessibility fallbacks are protected.")
     return 0
 
 
