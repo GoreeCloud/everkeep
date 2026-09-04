@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exercise the built Continuity Center at screenshot-relevant viewport widths."""
+"""Exercise the built Continuity Center at desktop, tablet, and phone viewport widths."""
 from __future__ import annotations
 import json
 from pathlib import Path
@@ -49,21 +49,17 @@ def main()->int:
             req("POST",f"/session/{session}/window/rect",{"width":requested,"height":height,"x":0,"y":0})
             state=req("POST",f"/session/{session}/execute/sync",{"script":r"""
               const h=document.querySelector('header'),m=document.querySelector('main'),n=document.querySelector('header nav');
-              const hr=h?.getBoundingClientRect(),mr=m?.getBoundingClientRect(),nr=n?.getBoundingClientRect();
+              const hr=h?.getBoundingClientRect(),mr=m?.getBoundingClientRect();
               const links=[...document.querySelectorAll('header nav a')].map(x=>x.getBoundingClientRect()).filter(r=>r.width>0&&r.height>0);
-              const centers=links.map(r=>Math.round((r.top+r.height/2)*10)/10);
-              const navRows=centers.length?new Set(centers).size:0;
-              const offenders=[...document.querySelectorAll('body *')].map((el)=>{const r=el.getBoundingClientRect();return {tag:el.tagName.toLowerCase(),id:el.id||'',cls:String(el.className||'').slice(0,100),left:Math.round(r.left*10)/10,right:Math.round(r.right*10)/10,width:Math.round(r.width*10)/10,text:(el.textContent||'').trim().replace(/\s+/g,' ').slice(0,90)}}).filter(x=>x.width>0&&(x.right>innerWidth+1||x.left<-1)).slice(0,12);
+              const centers=links.map(r=>Math.round((r.top+r.height/2)*10)/10); const navRows=centers.length?new Set(centers).size:0;
+              const offenders=[...document.querySelectorAll('body *')].map((el)=>{const r=el.getBoundingClientRect();return {tag:el.tagName.toLowerCase(),id:el.id||'',cls:String(el.className||'').slice(0,90),left:Math.round(r.left*10)/10,right:Math.round(r.right*10)/10,width:Math.round(r.width*10)/10,text:(el.textContent||'').trim().replace(/\s+/g,' ').slice(0,80)}}).filter(x=>x.width>0&&(x.right>innerWidth+1||x.left<-1)).slice(0,12);
               const ns=n?getComputedStyle(n):null;
-              return {ready:document.readyState,w:innerWidth,sw:document.documentElement.scrollWidth,pos:h?getComputedStyle(h).position:'',hh:hr?.height||0,hb:hr?.bottom||0,mt:mr?.top||0,minNav:links.length?Math.min(...links.map(r=>r.height)):0,navRows,navH:nr?.height||0,navClient:n?.clientWidth||0,navScroll:n?.scrollWidth||0,navOverflow:ns?.overflowX||'',offenders};
+              return {ready:document.readyState,w:innerWidth,sw:document.documentElement.scrollWidth,pos:h?getComputedStyle(h).position:'',hb:hr?.bottom||0,mt:mr?.top||0,minNav:links.length?Math.min(...links.map(r=>r.height)):0,navRows,navClient:n?.clientWidth||0,navScroll:n?.scrollWidth||0,navOverflow:ns?.overflowX||'',offenders};
             ""","args":[]})
-            require(isinstance(state,dict),f"layout unreadable at {requested}px");w=int(state.get("w",requested));require(state.get("ready")=="complete",f"page incomplete at {w}px: {state}");require(int(state.get("sw",w+2))<=w+1,f"horizontal overflow at {w}px: {state}");require(state.get("pos") not in {"sticky","fixed"},f"header overlays content at {w}px: {state}");require(float(state.get("mt",0))+1>=float(state.get("hb",0)),f"main overlaps header at {w}px: {state}");require(float(state.get("minNav",0))>=47.5,f"navigation target below 48px at {w}px: {state}")
-            if w<=850:
-                require(int(state.get("navRows",0))==1,f"narrow navigation wrapped into multiple rows at {w}px: {state}")
-                require(state.get("navOverflow") in {"auto","scroll"},f"narrow navigation is not locally scrollable at {w}px: {state}")
-                require(float(state.get("navH",0))<=60.5,f"narrow navigation capsule is taller than one control row at {w}px: {state}")
-                require(float(state.get("hh",999))<=140.0,f"narrow header consumes excessive vertical space at {w}px: {state}")
-        print("Continuity Center responsive Chrome geometry passed at 1180, 768, 390, and 320px, including one-row compact navigation at narrow widths.");return 0
+            require(isinstance(state,dict),f"layout unreadable at {requested}px");w=int(state.get("w",requested));require(state.get("ready")=="complete",f"page incomplete at {w}px: {state}");require(int(state.get("sw",w+2))<=w+1,f"horizontal overflow at {w}px: {state}");require(state.get("pos") not in {"sticky","fixed"},f"header overlays content at {w}px: {state}");require(float(state.get("mt",0))+1>=float(state.get("hb",0)),f"main overlaps header at {w}px: {state}");require(float(state.get("minNav",0))>=47.5,f"navigation target below 48px at {w}px: {state}");require(float(state.get("navScroll",0))<=float(state.get("navClient",0))+1,f"navigation requires hidden horizontal scrolling at {w}px: {state}")
+            if w<=960 and w>390:require(int(state.get("navRows",0))==2,f"tablet navigation did not recompose to two rows at {w}px: {state}")
+            if w<=390:require(int(state.get("navRows",0))==4,f"phone navigation did not recompose to one item per row at {w}px: {state}")
+        print("Continuity Center responsive Chrome geometry passed at 1180, 768, 390, and 320px with no page/nav overflow and deliberate tablet/phone navigation recomposition.");return 0
     except Exception as exc:
         print(f"Continuity Center responsive Chrome geometry failed: {exc}")
         if log_path:
