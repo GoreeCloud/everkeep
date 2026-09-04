@@ -23,7 +23,8 @@ platform_systems:
     version: null
     evidence:
       - README.md
-    notes: Everkeep may provide minimized resilience and recovery status to GoreeCloud Manager, but current main does not establish accepted live end-to-end Manager integration.
+      - contracts/everkeep.recovery-center.summary.schema.json
+    notes: Everkeep may provide minimized resilience and recovery status to GoreeCloud Manager, but no accepted live end-to-end Manager integration is established by this source candidate.
   privacy_shield:
     result: applicable-blocked
     version: null
@@ -39,6 +40,7 @@ platform_systems:
       - README.md
       - docs/PHASE-2-RECOVERY-ORCHESTRATION.md
       - docs/PHASE-3-FAILOVER-GOVERNANCE.md
+      - docs/RESTORE-VERIFICATION.md
     notes: Everkeep consumes Wardveil security evidence as a gate and coordinates post-recovery verification without inheriting Wardveil security authority; live provider acceptance remains incomplete.
   everkeep:
     result: not-applicable-justified
@@ -58,11 +60,21 @@ platform_systems:
     result: applicable-blocked
     version: null
     evidence:
-      - README.md
-      - docs/PHASE-1-CORE.md
-    notes: Everkeep has source-level Mesh adapter and bounded continuity-signal semantics, but live authenticated Mesh publication/consumption and exact runtime acceptance remain separate open gates.
-    capabilities: []
-    dependencies: []
+      - docs/MESH-EVIDENCE.md
+      - contracts/mesh.integration.json
+      - contracts/everkeep.mesh-evidence-profile.json
+      - contracts/everkeep.platform-evidence.runtime-acceptance.json
+      - runtime/mesh_delivery.py
+      - runtime/platform_registry_delivery.py
+      - scripts/test_mesh_delivery.py
+      - scripts/test_mesh_identity_boundary.py
+      - scripts/test_platform_registry_delivery.py
+    notes: Source-level minimized continuity evidence delivery and producer-bound Platform Registry publication are implemented with separate least-privilege Identity scopes. Everkeep's registry transport explicitly preserves backup and verified-restore as distinct facts. Live Identity issuance/JWKS trust and Mesh publication/consumption acceptance remain separate gates.
+    capabilities:
+      - continuity-evidence-delivery
+      - platform-registry-publication
+    dependencies:
+      - goreecloud-identity
     published_events: []
     consumed_events: []
   identity:
@@ -72,7 +84,12 @@ platform_systems:
       - README.md
       - docs/PHASE-2-RECOVERY-ORCHESTRATION.md
       - docs/PHASE-2-SUCCESSION.md
-    notes: Everkeep recovery, succession, approval, and executor handoff models require GoreeCloud Identity authority, but current source evidence does not establish accepted production Identity issuance or live provider integration.
+      - contracts/mesh.integration.json
+      - runtime/mesh_delivery.py
+      - runtime/platform_registry_delivery.py
+      - scripts/test_mesh_identity_boundary.py
+      - scripts/test_platform_registry_delivery.py
+    notes: Everkeep recovery, succession, approval, executor handoff, evidence delivery, and Platform Registry publication depend on GoreeCloud Identity authority. Source clients request narrowly scoped credentials, but production issuance, workload binding, JWKS trust, rotation/revocation, and live provider integration remain unaccepted.
 
 health:
   health_endpoint: null
@@ -130,11 +147,19 @@ conformance:
     - docs/PHASE-3-FAILOVER-GOVERNANCE.md
     - docs/PHASE-3-FAILOVER-EXECUTOR.md
     - docs/PHASE-3-DRILL-OPERATIONS.md
+    - docs/RESTORE-VERIFICATION.md
+    - contracts/mesh.integration.json
+    - runtime/mesh_delivery.py
+    - runtime/platform_registry_delivery.py
+    - scripts/test_mesh_delivery.py
+    - scripts/test_mesh_identity_boundary.py
+    - scripts/test_platform_registry_delivery.py
     - website/index.html
   blockers:
     - Everkeep remains in Development; source-level recovery and continuity capabilities do not establish production recovery acceptance.
     - Current Stable GLAZE UI V1.1 / 1.1.0 migration and rendered Continuity Center acceptance remain outstanding.
-    - Live GoreeCloud Identity, Privacy Shield, Wardveil Security, GoreeCloud Mesh, Manager, Monitoring, and Notify provider acceptance remains environment- and revision-bound.
+    - Source-level Identity-scoped evidence and Platform Registry clients are implemented, but live GoreeCloud Identity issuance/JWKS trust and end-to-end GoreeCloud Mesh acceptance remain outstanding.
+    - Live Privacy Shield, Wardveil Security, Manager, Monitoring, and Notify provider acceptance remains environment- and revision-bound.
     - Production-effect failover, traffic mutation, production data movement, and infrastructure provisioning remain intentionally outside the current reference executor authority.
     - Verified restore evidence must remain distinct from backup existence and requires independent exact-environment proof.
     - Everkeep's own clean-environment recovery, independent recovery knowledge, rollback, and disaster-recovery acceptance remain incomplete.
