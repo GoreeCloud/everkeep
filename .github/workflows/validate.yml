@@ -78,45 +78,40 @@ jobs:
         run: python3 scripts/test_mesh_evidence.py
       - name: Test authenticated Everkeep Mesh evidence delivery
         run: python3 scripts/test_mesh_delivery.py
-      - name: Validate Continuity Center responsive layout
+      - name: Validate Continuity Center responsive and accessibility rules
         run: python3 scripts/validate_public_responsive.py
-      - name: Build Everkeep public website
+      - name: Build Everkeep public website from immutable V1.1 source
         run: python3 scripts/build_public_site.py
       - name: Validate Everkeep public website artifact
         run: |
           test -f dist/index.html
           test -f dist/style.css
           test -f dist/site-polish.css
-          test -f dist/glaze-ui-2.1.0.css
+          test -f dist/site.js
+          test -f dist/assets/glaze/glaze-v1.1.0.css
           test -f dist/_headers
           test -f dist/robots.txt
           test -f dist/sitemap.xml
           test -f dist/assets/everkeep.svg
+          test "$(find dist/assets/glaze -type f | wc -l)" -eq 13
+          cmp website/style.css dist/style.css
           cmp website/site-polish.css dist/site-polish.css
-          test ! -f website/glaze-ui-1.5.0.css
-          test ! -f website/glaze-ui-2.0.0.css
-          test ! -f website/GLAZE-UI-2.0-ADOPTION.md
+          cmp website/site.js dist/site.js
+          cmp assets/everkeep.svg dist/assets/everkeep.svg
           grep -Fq 'https://everkeep.goreecloud.com/' dist/index.html
-          grep -Fq 'name="goreecloud-glaze-ui" content="2.1.0"' dist/index.html
-          grep -Fq 'data-glaze-ui="2.1.0"' dist/index.html
-          grep -Fq 'Glaze UI 2.1.0 Stable integration' dist/glaze-ui-2.1.0.css
-          grep -Fq 'c49113eb8b93c267613fdf1bbca1f814495acad7' dist/glaze-ui-2.1.0.css
-          grep -Fq 'Content is solid. Interaction is glazed.' dist/glaze-ui-2.1.0.css
-          grep -Fq -- '--glaze-touch-assisted:56px' dist/glaze-ui-2.1.0.css
-          grep -Fq 'data-glaze-density=compact' dist/glaze-ui-2.1.0.css
-          grep -Fq 'data-glaze-performance=reduced' dist/glaze-ui-2.1.0.css
-          grep -Fq 'forced-colors:active' dist/glaze-ui-2.1.0.css
-          grep -Fq 'glaze-navigation-capsule' dist/index.html
-          grep -Fq 'Everkeep never turns an unsupported capability into a protection claim.' dist/index.html
-          grep -Fq 'Phase 3.5 continuity control-plane implementation is current.' dist/index.html
-          grep -Fq 'Recovery Center 1.5' dist/index.html
-          grep -Fq 'simulation-only controlled drill executor' dist/index.html
-          grep -Fq 'separately produced current Everkeep evidence' dist/index.html
-          grep -Fq 'do not authorize production failover' dist/index.html
-          grep -Fq 'GoreeCloud Identity' dist/index.html
-          grep -Fq 'Owns identity, authentication, authorization' dist/index.html
-          ! grep -Fq 'data-glaze-ui="1.5.0"' dist/index.html
-          ! grep -Fq 'data-glaze-ui="2.0.0"' dist/index.html
-          ! grep -Fq 'Phase 1 core architecture is in development.' dist/index.html
+          grep -Fq 'data-glaze-version="1.1"' dist/index.html
+          grep -Fq 'name="goreecloud-glaze-ui" content="1.1.0"' dist/index.html
+          grep -Fq 'data-glaze-ui="1.1.0"' dist/index.html
+          grep -Fq 'assets/glaze/glaze-v1.1.0.css' dist/index.html
+          grep -Fq 'glz11-soft-glaze' dist/index.html
+          grep -Fq 'Everkeep is GoreeCloud' dist/index.html
+          grep -Fq 'A backup existing is not the same as being recoverable.' dist/index.html
+          grep -Fq 'Normalized continuity states' dist/index.html
+          grep -Fq 'GoreeCloud Identity · Mesh' dist/index.html
+          grep -Fq 'GLAZE UI V1.1 defines presentation only.' dist/index.html
+          ! grep -Fq 'Glaze UI 2.1' dist/index.html
+          ! grep -Fq 'data-glaze-ui="2.1.0"' dist/index.html
+          ! test -f website/glaze-ui-2.1.0.css
+          ! test -f website/GLAZE-UI-2.1-ADOPTION.md
       - name: Exercise Continuity Center responsive geometry in Chrome
         run: python3 scripts/browser_public_responsive.py

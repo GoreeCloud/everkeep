@@ -24,7 +24,8 @@ platform_systems:
     evidence:
       - README.md
       - ADOPTION.md
-    notes: GoreeCloud Manager must be able to consume bounded Everkeep inventory, lifecycle, health, recovery, and evidence state, but no accepted current Manager integration is established for the Everkeep service itself.
+      - contracts/everkeep.recovery-center.summary.schema.json
+    notes: GoreeCloud Manager may consume bounded Everkeep inventory, lifecycle, health, recovery, and evidence state, but no accepted live end-to-end Manager integration is established by this candidate.
   privacy_shield:
     result: applicable-migration-required
     version: null
@@ -32,15 +33,16 @@ platform_systems:
       - README.md
       - CONTINUITY.md
       - contracts/everkeep.mesh-evidence-profile.json
-    notes: Everkeep source contracts preserve Privacy Shield authority over retention, deletion, export, transfer, and succession constraints, but live authoritative provider connectivity and production acceptance remain incomplete.
+    notes: Everkeep source contracts preserve Privacy Shield authority over retention, deletion, export, transfer, recovery, and succession constraints, but live authoritative provider connectivity and production acceptance remain incomplete.
   wardveil_security:
     result: applicable-migration-required
     version: null
     evidence:
       - README.md
       - SECURITY.md
+      - docs/RESTORE-VERIFICATION.md
       - contracts/everkeep.mesh-evidence-profile.json
-    notes: Everkeep source contracts preserve Wardveil authority for security findings and recovery protection gates, but live authoritative Wardveil connectivity and production acceptance remain incomplete.
+    notes: Everkeep consumes Wardveil security evidence as a recovery gate without inheriting Wardveil security authority; live authoritative Wardveil connectivity and production acceptance remain incomplete.
   everkeep:
     result: not-applicable-justified
     version: '0.5.0'
@@ -49,35 +51,49 @@ platform_systems:
       - contracts/continuity.identity.json
     notes: This repository implements the Everkeep continuity and recovery authority itself; a separate Everkeep-to-Everkeep platform integration is not applicable.
   glaze_ui:
-    result: applicable-migration-required
-    version: '2.1.0'
+    result: applicable-blocked
+    version: '1.1.0'
     evidence:
-      - README.md
       - WEBSITE.md
-    notes: Continuity Center has an accepted repository-specific Glaze UI 2.1.0 production web baseline, while the current Platform Contract consumer baseline is 1.1.0; current-contract reconciliation and acceptance remain required and presentation evidence does not establish recovery readiness.
+      - website/index.html
+      - website/glaze.lock.json
+      - scripts/build_public_site.py
+      - scripts/validate_public_responsive.py
+      - scripts/browser_public_responsive.py
+    notes: The Continuity Center source candidate activates and immutably pins GLAZE UI V1.1 / 1.1.0, but the published 1.1.0 CSS graph has a known missing transitive import. GoreeCloud Glaze UI PR #129 prepares a corrected 1.1.1 release candidate, but 1.1.1 is not current Stable. Everkeep publication acceptance remains blocked until a corrected immutable Stable release exists, this consumer is explicitly re-pinned, and exact-revision source, rendered, accessibility, and deployed-byte acceptance is repeated.
   mesh:
-    result: applicable-migration-required
+    result: applicable-blocked
     version: null
     evidence:
+      - docs/MESH-EVIDENCE.md
+      - contracts/mesh.integration.json
       - contracts/everkeep.mesh-evidence-profile.json
+      - contracts/everkeep.platform-evidence.runtime-acceptance.json
       - runtime/mesh_delivery.py
-    notes: Everkeep defines a minimized Mesh evidence producer profile and runtime delivery client, while runtime delivery production acceptance remains false and live producer identity, routing, target-environment delivery, and end-to-end acceptance remain required.
+      - runtime/platform_registry_delivery.py
+      - scripts/test_mesh_delivery.py
+      - scripts/test_mesh_identity_boundary.py
+      - scripts/test_platform_registry_delivery.py
+    notes: Source-level minimized continuity evidence delivery and producer-bound Platform Registry publication are implemented with separate least-privilege GoreeCloud Identity scopes. Everkeep's registry transport preserves backup and verified-restore as distinct facts. Live Identity issuance/JWKS trust and Mesh publication/consumption acceptance remain separate gates.
     capabilities:
-      - continuity-evidence-producer
-      - recovery-readiness-evidence
-      - recovery-point-evidence
+      - continuity-evidence-delivery
+      - platform-registry-publication
     dependencies:
       - goreecloud-identity
       - goreecloud-mesh
     published_events: []
     consumed_events: []
   identity:
-    result: applicable-migration-required
+    result: applicable-blocked
     version: null
     evidence:
       - README.md
-      - contracts/everkeep.mesh-evidence-profile.json
-    notes: GoreeCloud Identity remains authoritative for actors and service credentials used by Everkeep and Mesh delivery, but live Identity provider connectivity and production credential acceptance remain incomplete.
+      - contracts/mesh.integration.json
+      - runtime/mesh_delivery.py
+      - runtime/platform_registry_delivery.py
+      - scripts/test_mesh_identity_boundary.py
+      - scripts/test_platform_registry_delivery.py
+    notes: GoreeCloud Identity remains authoritative for actors and service credentials used by Everkeep recovery, succession, evidence delivery, and Platform Registry publication. Source clients request narrowly scoped credentials, but production issuance, workload binding, JWKS trust, rotation/revocation, and live provider integration remain unaccepted.
 
 health:
   health_endpoint: null
@@ -87,25 +103,27 @@ continuity:
   backup:
     required: true
     requirements:
-      - Protect Everkeep-owned durable resource, protection-policy, recovery-point, evidence, retention, verification, recovery-plan, topology, assurance, drill, rollback, preservation, portability, and succession state.
+      - Protect Everkeep-owned durable resource, protection-policy, recovery-point, evidence, retention, verification, recovery-plan, topology, assurance, drill, rollback, preservation, portability, succession, and outbox state.
       - Protect the PostgreSQL persistence layer and required service configuration without storing reusable credentials in ordinary evidence or Git history.
+      - A successful backup operation must never independently establish verified restoration or recovery readiness.
   restore:
     required: true
     requirements:
-      - Validate isolated clean-target restoration of Everkeep durable state, outbox/event continuity, policy relationships, recovery evidence, and required service behavior before production dependence.
-      - Preserve a recovery path for the recovery authority itself so Everkeep does not become a single unrecoverable dependency.
+      - Validate isolated clean-target restoration of Everkeep durable state, outbox/event continuity, policy relationships, recovery evidence, recovery topology, governance history, and required service behavior before production dependence.
+      - Preserve a recovery path for the recovery authority itself so Everkeep does not become a circular single unrecoverable dependency.
+      - Verified restore state requires independent exact-environment evidence; backup existence alone cannot satisfy restore acceptance.
   export:
     required: true
     requirements:
-      - Preserve documented portable manifests and exports for Everkeep-owned continuity state, recovery metadata, preservation records, and portability evidence without including protected payloads or reusable credentials.
+      - Preserve documented portable manifests and exports for Everkeep-owned continuity state, recovery metadata, preservation records, portability evidence, and continuity history without including protected payloads or reusable credentials.
   portability:
     required: true
     requirements:
-      - Keep continuity contracts, evidence models, recovery plans, preservation manifests, and protected-resource relationships independently understandable and migratable across supported infrastructure.
+      - Keep continuity contracts, evidence models, recovery plans, preservation manifests, protected-resource relationships, topology, and recovery knowledge independently understandable and migratable across supported infrastructure.
 
 external_dependencies:
   - name: PostgreSQL
-    purpose: Durable persistence for Everkeep resource, policy, recovery, evidence, assurance, and outbox state.
+    purpose: Durable persistence for Everkeep resource, policy, recovery, evidence, assurance, governance, and outbox state.
     required: true
     version_constraint: null
   - name: Cloudflare Pages
@@ -124,6 +142,7 @@ compatibility:
     - everkeep-continuity-adoption-v1
     - everkeep-continuity-acceptance-v1
     - everkeep-mesh-evidence-profile-v1
+    - everkeep-platform-registry-publication-v1
 
 evidence:
   acceptance_tests: []
@@ -138,15 +157,27 @@ conformance:
     - STATUS.md
     - ADOPTION.md
     - SECURITY.md
+    - WEBSITE.md
     - contracts/continuity.identity.json
     - contracts/everkeep.mesh-evidence-profile.json
+    - contracts/mesh.integration.json
+    - runtime/mesh_delivery.py
+    - runtime/platform_registry_delivery.py
+    - scripts/test_mesh_delivery.py
+    - scripts/test_mesh_identity_boundary.py
+    - scripts/test_platform_registry_delivery.py
+    - website/index.html
+    - website/glaze.lock.json
   blockers:
     - Everkeep remains in Active Development and source-level continuity architecture does not establish production recovery readiness or production-effect authority.
+    - The current immutable GLAZE UI 1.1.0 web graph contains a known missing transitive import; a corrected immutable Stable release, explicit Everkeep re-pin, and repeated exact-revision consumer acceptance are required before current Glaze conformance can be claimed.
     - GoreeCloud Manager integration and acceptance for Everkeep service state are not established.
     - Live GoreeCloud Identity authority-provider connectivity and production service-credential acceptance remain incomplete.
     - Live Privacy Shield authority-provider connectivity and production acceptance remain incomplete.
     - Live Wardveil Security authority-provider connectivity and production acceptance remain incomplete.
-    - Mesh runtime delivery remains production-unaccepted and requires live producer identity, routing, target-environment evidence, and end-to-end acceptance.
-    - Continuity Center requires reconciliation and acceptance against the current Platform Contract Glaze UI baseline despite its separate accepted 2.1.0 repository-specific production web baseline.
+    - Source-level Identity-scoped Mesh evidence and Platform Registry clients are implemented, but live producer identity, routing, target-environment delivery, registry publication, and end-to-end Mesh acceptance remain outstanding.
     - Live production failover execution, production rollback, traffic switching, alternate-environment deployment, and provider-specific recovery execution remain unaccepted.
-    - Application-specific production backup, restore, topology, failover, rollback, RPO/RTO, and recovery-assurance evidence remain required for each protected workload.
+    - Successful backup evidence does not establish verified restoration; application-specific clean-target restore, topology, failover, rollback, RPO/RTO, and recovery-assurance evidence remain required for each protected workload.
+    - Everkeep's own clean-environment recovery, independent recovery knowledge, rollback, and disaster-recovery acceptance remain incomplete.
+    - Target-environment failure-mode, dependency, key-material, monitoring, rollback, publication, and production acceptance remain pending.
+    - Required Stable acceptance-test and published release evidence has not been produced.
