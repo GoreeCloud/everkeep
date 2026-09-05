@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/everkeep/contracts/everkeep.restore-verification.v1.1.schema.json",
+  "title": "Everkeep Restore Verification Evidence v1.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "verificationId",
+    "environment",
+    "capturedAt",
+    "freshUntil",
+    "everkeepSourceRevision",
+    "target",
+    "status",
+    "authoritative",
+    "exercise",
+    "evidenceRefs"
+  ],
+  "properties": {
+    "schemaVersion": {"const": "1.1"},
+    "verificationId": {"type": "string", "minLength": 1},
+    "environment": {"enum": ["staging", "production"]},
+    "capturedAt": {"type": "string", "format": "date-time"},
+    "freshUntil": {"type": "string", "format": "date-time"},
+    "everkeepSourceRevision": {"type": "string", "minLength": 7},
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["system", "component", "resourceId", "deployedRevision"],
+      "properties": {
+        "system": {"type": "string", "minLength": 1},
+        "component": {"type": "string", "minLength": 1},
+        "resourceId": {"type": "string", "minLength": 1},
+        "deployedRevision": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "status": {"enum": ["pass", "fail", "unknown"]},
+    "authoritative": {"type": "boolean"},
+    "exercise": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recoveryPointId",
+        "startedAt",
+        "completedAt",
+        "isolatedVerification",
+        "integrityVerified",
+        "restoredStateVerified",
+        "promotionToProductionPerformed"
+      ],
+      "properties": {
+        "recoveryPointId": {"type": "string", "minLength": 1},
+        "startedAt": {"type": "string", "format": "date-time"},
+        "completedAt": {"type": "string", "format": "date-time"},
+        "isolatedVerification": {"type": "boolean"},
+        "integrityVerified": {"type": "boolean"},
+        "restoredStateVerified": {"type": "boolean"},
+        "promotionToProductionPerformed": {"type": "boolean"},
+        "rtoMeasuredSeconds": {"type": ["integer", "null"], "minimum": 0},
+        "notes": {"type": "string"}
+      }
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "securityStateAuthorityTransferred": {"const": false}
+  }
+}
