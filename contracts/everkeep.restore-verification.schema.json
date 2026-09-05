@@ -9,7 +9,6 @@
     "verificationId",
     "environment",
     "capturedAt",
-    "freshUntil",
     "everkeepSourceRevision",
     "target",
     "status",
@@ -18,11 +17,10 @@
     "evidenceRefs"
   ],
   "properties": {
-    "schemaVersion": {"const": "1.1"},
+    "schemaVersion": {"const": "1.0"},
     "verificationId": {"type": "string", "minLength": 1},
     "environment": {"enum": ["staging", "production"]},
     "capturedAt": {"type": "string", "format": "date-time"},
-    "freshUntil": {"type": "string", "format": "date-time"},
     "everkeepSourceRevision": {"type": "string", "minLength": 7},
     "target": {
       "type": "object",
