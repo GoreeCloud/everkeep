@@ -6,7 +6,7 @@ Everkeep owns GoreeCloud recovery and restore-verification authority. This contr
 
 A recovery capability, backup, snapshot, PITR bookmark, healthy storage backend, or successful deployment is not restore verification. Restore verification requires an actual bounded exercise against an identified recovery point and target revision, followed by integrity and restored-state verification.
 
-The canonical machine-readable contract is `contracts/everkeep.restore-verification.schema.json`.
+The canonical machine-readable contract is `contracts/everkeep.restore-verification.schema.json`. Contract version 1.1 adds an explicit `freshUntil` deadline so passing evidence cannot remain acceptable indefinitely merely because the target revision has not changed.
 
 ## Required target binding
 
@@ -23,10 +23,13 @@ A consumer may treat a restore verification as passed only when all of the follo
 - `isolatedVerification` is `true`;
 - `integrityVerified` is `true`;
 - `restoredStateVerified` is `true`;
-- at least one evidence reference is present; and
-- timestamps describe a completed exercise rather than a future or incomplete operation.
+- at least one evidence reference is present;
+- timestamps describe a completed exercise rather than a future or incomplete operation; and
+- `freshUntil` is a timezone-qualified timestamp later than `capturedAt` and has not expired at the time of consumption.
 
 A restore verification should normally run in an isolated recovery/test target. `promotionToProductionPerformed` records whether the exercise promoted restored state into production; a passing verification does not require production promotion.
+
+`freshUntil` is an evidence-validity boundary, not a scheduling command. The producer or applicable policy determines the deadline. Consumers may shorten that validity for their own stricter policy but must not extend, replace, or ignore the Everkeep deadline.
 
 ## Wardveil Security integration
 
@@ -41,7 +44,7 @@ For the Wardveil Cloudflare persistence runtime, the intended target values are:
 
 ## Fail-closed behavior
 
-Missing, malformed, non-authoritative, unknown, failed, stale-target, revision-mismatched, integrity-unverified, or restored-state-unverified evidence must not satisfy a restore-verification requirement. PITR availability remains recovery-capability evidence only until this separate restore exercise succeeds.
+Missing, malformed, non-authoritative, unknown, failed, expired, stale-target, revision-mismatched, integrity-unverified, or restored-state-unverified evidence must not satisfy a restore-verification requirement. A missing, invalid, timezone-less, future-captured, or expired `freshUntil` boundary fails closed. PITR availability remains recovery-capability evidence only until this separate restore exercise succeeds.
 
 ## Authority boundary
 
