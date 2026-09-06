@@ -1,12 +1,12 @@
 # Everkeep Restore Verification Evidence
 
-Everkeep owns GoreeCloud recovery and restore-verification authority. This contract provides a resource-scoped evidence record that other GoreeCloud systems may consume when they need proof that a real recovery exercise completed successfully.
+Everkeep owns GoreeCloud recovery and restore-verification authority. These contracts provide resource-scoped evidence records that other GoreeCloud systems may consume when they need proof that a real recovery exercise completed successfully.
 
 ## Purpose
 
 A recovery capability, backup, snapshot, PITR bookmark, healthy storage backend, or successful deployment is not restore verification. Restore verification requires an actual bounded exercise against an identified recovery point and target revision, followed by integrity and restored-state verification.
 
-The canonical machine-readable contract is `contracts/everkeep.restore-verification.schema.json`.
+The existing version 1.0 contract remains available at `contracts/everkeep.restore-verification.schema.json` for consumers that explicitly pin it. The additive version 1.1 contract is `contracts/everkeep.restore-verification.v1.1.schema.json`; it adds an explicit `freshUntil` deadline so passing evidence cannot remain acceptable indefinitely merely because the target revision has not changed. Publishing version 1.1 does not silently upgrade a version 1.0 consumer.
 
 ## Required target binding
 
@@ -14,7 +14,7 @@ Every record identifies the target system, component, resource, and exact deploy
 
 ## Passing evidence
 
-A consumer may treat a restore verification as passed only when all of the following are true:
+For both versions, a consumer may treat a restore verification as passed only when all of the following are true:
 
 - `environment` matches the environment being accepted;
 - `status` is `pass`;
@@ -26,7 +26,11 @@ A consumer may treat a restore verification as passed only when all of the follo
 - at least one evidence reference is present; and
 - timestamps describe a completed exercise rather than a future or incomplete operation.
 
+Version 1.1 additionally requires `freshUntil` to be a timezone-qualified timestamp later than `capturedAt` and unexpired at the time of consumption.
+
 A restore verification should normally run in an isolated recovery/test target. `promotionToProductionPerformed` records whether the exercise promoted restored state into production; a passing verification does not require production promotion.
+
+For version 1.1, `freshUntil` is an evidence-validity boundary, not a scheduling command. The producer or applicable policy determines the deadline. Consumers may shorten that validity for their own stricter policy but must not extend, replace, or ignore the Everkeep deadline.
 
 ## Wardveil Security integration
 
@@ -39,9 +43,11 @@ For the Wardveil Cloudflare persistence runtime, the intended target values are:
 - resourceId: `goreecloud-wardveil-persistence`
 - deployedRevision: the exact 40-character Wardveil production revision being accepted.
 
+A Wardveil consumer that still pins version 1.0 remains on version 1.0 until Wardveil deliberately adopts and validates version 1.1. The existence of the new schema alone does not change Wardveil acceptance behavior.
+
 ## Fail-closed behavior
 
-Missing, malformed, non-authoritative, unknown, failed, stale-target, revision-mismatched, integrity-unverified, or restored-state-unverified evidence must not satisfy a restore-verification requirement. PITR availability remains recovery-capability evidence only until this separate restore exercise succeeds.
+Missing, malformed, non-authoritative, unknown, failed, stale-target, revision-mismatched, integrity-unverified, or restored-state-unverified evidence must not satisfy a restore-verification requirement. For version 1.1, a missing, invalid, timezone-less, future-captured, or expired `freshUntil` boundary also fails closed. PITR availability remains recovery-capability evidence only until this separate restore exercise succeeds.
 
 ## Authority boundary
 
