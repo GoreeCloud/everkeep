@@ -50,10 +50,12 @@
   },
   "reference_adoptions": [
     "examples/goreecloud-backup.adoption.json",
-    "examples/goreecloud-manager.adoption.json"
+    "examples/goreecloud-manager.adoption.json",
+    "examples/goreecloud-care.adoption.json"
   ],
   "reference_acceptance_policies": [
-    "examples/goreecloud-backup.acceptance.json"
+    "examples/goreecloud-backup.acceptance.json",
+    "examples/goreecloud-care.acceptance.json"
   ],
   "required_documents": [
     "README.md",
