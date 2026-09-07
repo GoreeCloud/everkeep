@@ -53,8 +53,8 @@
     ]
   },
   "acceptance": {
-    "everkeep_integrated": false,
-    "everkeep_ready": false,
+    "everkeep_integrated": true,
+    "everkeep_ready": true,
     "target_runtime_acceptance_required": true,
     "exact_revision_acceptance_required": true
   }
