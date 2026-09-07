@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "project": "GoreeCloud Care",
+  "repository": "GoreeCloud/goreecloud-zorin-os",
+  "role": "producer",
+  "dimensions": [
+    "restore_capability",
+    "migration",
+    "documentation",
+    "provenance"
+  ],
+  "read_only": true,
+  "fail_closed": true,
+  "status_schema": "contracts/continuity.status.schema.json",
+  "authoritative_sources": [
+    "GoreeCloud/goreecloud-zorin-os/apps/goreecloud-care/scripts/build-deb.sh",
+    "GoreeCloud/goreecloud-zorin-os/apps/goreecloud-care/CHANGELOG.md",
+    "representative-device package lifecycle evidence"
+  ],
+  "notes": "Reference adoption manifest for GoreeCloud Care package restore, rollback, migration, documentation, and exact-source provenance. Care persists no substantial application-owned user dataset. This reference does not assert Everkeep integration, readiness, Release Candidate status, Stable status, or production acceptance."
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "application": "GoreeCloud Care",
+  "producer": "GoreeCloud/goreecloud-zorin-os/apps/goreecloud-care",
+  "status_schema": "contracts/continuity.status.schema.json",
+  "freshness": {
+    "required_for_ready": true,
+    "rule": "Ready evidence is valid only for the exact immutable Care candidate source revision and exact package checksum it names. Any source, package, recovery-script, dependency, or target-environment change invalidates prior ready evidence until lifecycle acceptance is repeated."
+  },
+  "failure_behavior": {
+    "producer_unavailable": "unknown",
+    "malformed_evidence": "attention",
+    "missing_required_evidence": "attention",
+    "failed_restore_validation": "attention",
+    "summary_rule": "The Care continuity summary must never be more favorable than any required exact-candidate restore-capability evidence. Missing, failed, stale, mismatched, or malformed lifecycle evidence blocks ready."
+  },
+  "required_ready_evidence": {
+    "restore_capability": [
+      "Exact candidate Debian package installs and passes installed validation on the representative supported target.",
+      "Candidate removal succeeds and package-owned executable, helper, policy, desktop, icon, and metadata paths are absent afterward.",
+      "Exact candidate reinstalls and passes installed validation.",
+      "A retained previous Development package can be installed with an explicit downgrade and the previous runtime/report path remains functional.",
+      "The exact candidate can be restored after downgrade and passes installed validation again.",
+      "Final installed state matches the exact candidate package version, source revision, and recorded package SHA-256."
+    ],
+    "migration": [
+      "Upgrade and downgrade behavior is exercised for the exact candidate against a retained prior Development package.",
+      "Care continues to persist no substantial application-owned user dataset requiring a separate data migration."
+    ],
+    "documentation": [
+      "Current recovery documentation records irreversible maintenance boundaries and package rollback behavior.",
+      "Current release-acceptance documentation records the exact-candidate recovery and rollback qualification gate."
+    ],
+    "provenance": [
+      "Exact source revision is recorded.",
+      "Exact Debian package SHA-256 is recorded and matches the accepted artifact.",
+      "Exact validation workflow run and retained artifact identity are recorded.",
+      "The accepted package is built from the GoreeCloud/goreecloud-zorin-os Care component authority."
+    ]
+  },
+  "sensitive_evidence": {
+    "forbidden": [
+      "passwords",
+      "tokens",
+      "authentication tokens",
+      "private keys",
+      "recovery codes",
+      "secret values",
+      "PolicyKit authentication material",
+      "raw private file contents",
+      "unredacted home-directory inventory",
+      "reusable credentials"
+    ]
+  },
+  "acceptance": {
+    "everkeep_integrated": false,
+    "everkeep_ready": false,
+    "target_runtime_acceptance_required": true,
+    "exact_revision_acceptance_required": true
+  }
+}
