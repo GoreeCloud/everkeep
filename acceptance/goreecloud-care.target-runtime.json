@@ -3,11 +3,11 @@
   "application": "GoreeCloud Care",
   "producer": "GoreeCloud/goreecloud-zorin-os/apps/goreecloud-care",
   "candidate": {
-    "source_revision": "4f7aecd6fa5a6fdd6efb496e606c29457c18fefb",
-    "source_tree": "07e688fbbe3b18ba37ba8f30eb6dd410b6ab6c7e",
+    "source_revision": "334b53102c5fe0bd5d348397ba8b13cc5608ada2",
+    "source_tree": "4d8c243adb456913687045e67df509fb66736c28",
     "runtime_version": "0.1.0-dev22",
     "package_version": "0.1.0~dev22",
-    "package_sha256": "2e5b92350bb397194ce6472c3d8b54a2d30e37dbd6d79c3ed470d14c61334ac4"
+    "package_sha256": "b1bd308efd7803f6707f0b3ff2f41e56c46c6644094ba5a72d04b0b02bfe7a87"
   },
   "target": {
     "name": "Zorin OS 17.3 representative laptop",
@@ -21,17 +21,16 @@
     "provenance"
   ],
   "evidence": {
-    "local_tests": 134,
+    "local_tests": 144,
     "source_validation": "passed",
     "package_lifecycle": "passed",
     "references": [
-      "GoreeCloud Care Development run 34157086443",
-      "Care package artifact 10031339696",
-      "Care cross-environment evidence artifact 10031343369",
-      "Care Platform Contract run 34157086919",
-      "Representative Zorin OS 17.3 exact-candidate acceptance on 2026-09-07: same-version reinstall, remove, fresh reinstall, dev17 downgrade, dev22 restore, final state, protected target handoff, and package SHA-256 2e5b92350bb397194ce6472c3d8b54a2d30e37dbd6d79c3ed470d14c61334ac4",
-      "Privacy Shield exact runtime acceptance 84cc60dbb90b81f693defc25df4235d4b34d32b7",
-      "Wardveil current exact-target evidence PR 138"
+      "GoreeCloud Care Release Candidate run 34169330536",
+      "Care RC package artifact 10035195254",
+      "Care RC cross-environment evidence artifact 10035188251",
+      "Care Platform Contract run 34169330837",
+      "Representative Zorin OS 17.3 exact Release Candidate acceptance on 2026-09-07: exact source/tree identity, 144 local tests, source validation, reproducible package SHA-256 b1bd308efd7803f6707f0b3ff2f41e56c46c6644094ba5a72d04b0b02bfe7a87, same-version reinstall, removal, fresh reinstall, accepted dev17 downgrade, dev22 restore, final installed state, protected Care-owned target handoff, and no Care cleanup action",
+      "Care continuity after target acceptance: attention / target-accepted-governance-pending, proving Care did not self-promote Everkeep"
     ]
   },
   "acceptance": {
@@ -39,6 +38,6 @@
     "exact_revision_accepted": true,
     "everkeep_integration_promoted": true,
     "everkeep_ready_promoted": true,
-    "freshness_rule": "This governed Everkeep promotion applies only to GoreeCloud Care source revision 4f7aecd6fa5a6fdd6efb496e606c29457c18fefb, Care source tree 07e688fbbe3b18ba37ba8f30eb6dd410b6ab6c7e, runtime 0.1.0-dev22, package 0.1.0~dev22, package SHA-256 2e5b92350bb397194ce6472c3d8b54a2d30e37dbd6d79c3ed470d14c61334ac4, and the Zorin OS 17.3 representative target. Any candidate source, tree, package, checksum, recovery-script, dependency, or representative-target change invalidates this ready promotion until exact-candidate lifecycle acceptance is repeated and governed again."
+    "freshness_rule": "This governed Everkeep promotion applies only to GoreeCloud Care Release Candidate source revision 334b53102c5fe0bd5d348397ba8b13cc5608ada2, Care source tree 4d8c243adb456913687045e67df509fb66736c28, runtime 0.1.0-dev22, package 0.1.0~dev22, package SHA-256 b1bd308efd7803f6707f0b3ff2f41e56c46c6644094ba5a72d04b0b02bfe7a87, and the Zorin OS 17.3 representative target. Any candidate source, tree, package, checksum, recovery-script, dependency, or representative-target change invalidates this ready promotion until exact-candidate lifecycle acceptance is repeated and governed again."
   }
 }
