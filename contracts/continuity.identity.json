@@ -46,7 +46,8 @@
   "contracts": {
     "status_schema": "contracts/continuity.status.schema.json",
     "adoption_schema": "contracts/continuity.adoption.schema.json",
-    "acceptance_schema": "contracts/continuity.acceptance.schema.json"
+    "acceptance_schema": "contracts/continuity.acceptance.schema.json",
+    "target_runtime_acceptance_schema": "contracts/continuity.target-runtime-acceptance.schema.json"
   },
   "reference_adoptions": [
     "examples/goreecloud-backup.adoption.json",
@@ -56,6 +57,9 @@
   "reference_acceptance_policies": [
     "examples/goreecloud-backup.acceptance.json",
     "examples/goreecloud-care.acceptance.json"
+  ],
+  "target_runtime_acceptance_records": [
+    "acceptance/goreecloud-care.target-runtime.json"
   ],
   "required_documents": [
     "README.md",

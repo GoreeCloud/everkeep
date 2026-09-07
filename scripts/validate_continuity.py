@@ -12,6 +12,7 @@ CONTRACT_PATH = ROOT / "contracts" / "continuity.identity.json"
 STATUS_SCHEMA_PATH = ROOT / "contracts" / "continuity.status.schema.json"
 ADOPTION_SCHEMA_PATH = ROOT / "contracts" / "continuity.adoption.schema.json"
 ACCEPTANCE_SCHEMA_PATH = ROOT / "contracts" / "continuity.acceptance.schema.json"
+TARGET_ACCEPTANCE_SCHEMA_PATH = ROOT / "contracts" / "continuity.target-runtime-acceptance.schema.json"
 
 EXPECTED_NAME = "Everkeep"
 EXPECTED_SHORT = "Everkeep"
@@ -140,11 +141,65 @@ def validate_reference_acceptance(path: Path, acceptance_schema: dict) -> None:
         fail(f"{path.name} cannot be Everkeep ready without integration acceptance")
 
 
+def validate_target_runtime_acceptance(path: Path, schema: dict) -> None:
+    record = load_json(path, f"target runtime acceptance {path.name}")
+    required = set(schema.get("required", []))
+    if not required.issubset(record):
+        fail(f"{path.name} is missing required target-runtime acceptance fields")
+    if record.get("schema_version") != 1:
+        fail(f"{path.name} schema_version must be 1")
+
+    candidate = record.get("candidate", {})
+    for key, length in (("source_revision", 40), ("source_tree", 40), ("package_sha256", 64)):
+        value = candidate.get(key)
+        if not isinstance(value, str) or len(value) != length or any(ch not in "0123456789abcdef" for ch in value):
+            fail(f"{path.name} candidate.{key} must be a lowercase hexadecimal value of length {length}")
+    for key in ("runtime_version", "package_version"):
+        if not isinstance(candidate.get(key), str) or not candidate[key]:
+            fail(f"{path.name} candidate.{key} must be non-empty")
+
+    target = record.get("target", {})
+    if target.get("representative") is not True:
+        fail(f"{path.name} target must be explicitly representative")
+    if target.get("status") not in {"passed", "failed", "unknown"}:
+        fail(f"{path.name} target status is invalid")
+
+    dimensions = record.get("dimensions")
+    if not isinstance(dimensions, list) or not dimensions or len(dimensions) != len(set(dimensions)):
+        fail(f"{path.name} must declare unique continuity dimensions")
+    if any(dimension not in EXPECTED_DIMENSIONS for dimension in dimensions):
+        fail(f"{path.name} declares unsupported continuity dimensions")
+
+    evidence = record.get("evidence", {})
+    if not isinstance(evidence.get("local_tests"), int) or evidence["local_tests"] < 1:
+        fail(f"{path.name} must record a positive local test count")
+    if evidence.get("source_validation") != "passed" or evidence.get("package_lifecycle") != "passed":
+        fail(f"{path.name} must record passed source and package-lifecycle validation")
+    references = evidence.get("references")
+    if not isinstance(references, list) or not references or not all(isinstance(item, str) and item for item in references):
+        fail(f"{path.name} must contain concrete evidence references")
+
+    acceptance = record.get("acceptance", {})
+    if acceptance.get("target_runtime_status") != target.get("status"):
+        fail(f"{path.name} target status and acceptance status must match")
+    if target.get("status") == "passed" and acceptance.get("exact_revision_accepted") is not True:
+        fail(f"{path.name} passed target evidence must explicitly accept the exact revision")
+    for key in ("exact_revision_accepted", "everkeep_integration_promoted", "everkeep_ready_promoted"):
+        if not isinstance(acceptance.get(key), bool):
+            fail(f"{path.name} acceptance.{key} must be boolean")
+    if acceptance.get("everkeep_ready_promoted") is True and acceptance.get("everkeep_integration_promoted") is not True:
+        fail(f"{path.name} cannot promote Everkeep readiness without integration promotion")
+    freshness_rule = acceptance.get("freshness_rule")
+    if not isinstance(freshness_rule, str) or not freshness_rule.strip():
+        fail(f"{path.name} must define an exact-candidate freshness rule")
+
+
 def main() -> None:
     contract = load_json(CONTRACT_PATH, "identity contract")
     status_schema = load_json(STATUS_SCHEMA_PATH, "status schema")
     adoption_schema = load_json(ADOPTION_SCHEMA_PATH, "adoption schema")
     acceptance_schema = load_json(ACCEPTANCE_SCHEMA_PATH, "acceptance schema")
+    target_acceptance_schema = load_json(TARGET_ACCEPTANCE_SCHEMA_PATH, "target runtime acceptance schema")
 
     identity = contract.get("identity", {})
     boundaries = contract.get("boundaries", {})
@@ -165,6 +220,8 @@ def main() -> None:
         fail("identity contract must pin the canonical adoption schema")
     if contracts.get("acceptance_schema") != "contracts/continuity.acceptance.schema.json":
         fail("identity contract must pin the canonical acceptance schema")
+    if contracts.get("target_runtime_acceptance_schema") != "contracts/continuity.target-runtime-acceptance.schema.json":
+        fail("identity contract must pin the target runtime acceptance schema")
 
     for key in ("is_backup_engine", "is_storage_platform", "is_secret_store", "is_generic_remediation_api"):
         if boundaries.get(key) is not False:
@@ -215,6 +272,10 @@ def main() -> None:
     if acceptance_dimensions != EXPECTED_DIMENSIONS:
         fail("acceptance schema dimension enum drifted from status contract")
 
+    target_dimensions = target_acceptance_schema.get("properties", {}).get("dimensions", {}).get("items", {}).get("enum")
+    if target_dimensions != EXPECTED_DIMENSIONS:
+        fail("target runtime acceptance schema dimension enum drifted from status contract")
+
     reference_adoptions = contract.get("reference_adoptions", [])
     if not reference_adoptions:
         fail("identity contract must declare reference adoption manifests")
@@ -226,6 +287,12 @@ def main() -> None:
         fail("identity contract must declare reference acceptance policies")
     for relative_path in reference_acceptance:
         validate_reference_acceptance(ROOT / relative_path, acceptance_schema)
+
+    target_acceptance_records = contract.get("target_runtime_acceptance_records", [])
+    if not target_acceptance_records:
+        fail("identity contract must declare target runtime acceptance records")
+    for relative_path in target_acceptance_records:
+        validate_target_runtime_acceptance(ROOT / relative_path, target_acceptance_schema)
 
     canonical_asset = visual_identity.get("canonical_asset")
     visual_status = visual_identity.get("status")
