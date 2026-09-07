@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/contracts/continuity.target-runtime-acceptance.schema.json",
+  "title": "Everkeep Target Runtime Acceptance Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "application",
+    "producer",
+    "candidate",
+    "target",
+    "dimensions",
+    "evidence",
+    "acceptance"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "application": {"type": "string", "minLength": 1, "maxLength": 160},
+    "producer": {"type": "string", "minLength": 1, "maxLength": 240},
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_revision", "source_tree", "runtime_version", "package_version", "package_sha256"],
+      "properties": {
+        "source_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "runtime_version": {"type": "string", "minLength": 1},
+        "package_version": {"type": "string", "minLength": 1},
+        "package_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "representative", "status"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "representative": {"const": true},
+        "status": {"enum": ["passed", "failed", "unknown"]}
+      }
+    },
+    "dimensions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "backup_coverage",
+          "restore_capability",
+          "recovery_freshness",
+          "portability",
+          "migration",
+          "dependency_recovery",
+          "redundancy",
+          "documentation",
+          "ownership_custody",
+          "succession",
+          "preservation",
+          "provenance"
+        ]
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["local_tests", "source_validation", "package_lifecycle", "references"],
+      "properties": {
+        "local_tests": {"type": "integer", "minimum": 1},
+        "source_validation": {"const": "passed"},
+        "package_lifecycle": {"const": "passed"},
+        "references": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 1000}
+        }
+      }
+    },
+    "acceptance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_runtime_status",
+        "exact_revision_accepted",
+        "everkeep_integration_promoted",
+        "everkeep_ready_promoted",
+        "freshness_rule"
+      ],
+      "properties": {
+        "target_runtime_status": {"enum": ["passed", "failed", "unknown"]},
+        "exact_revision_accepted": {"type": "boolean"},
+        "everkeep_integration_promoted": {"type": "boolean"},
+        "everkeep_ready_promoted": {"type": "boolean"},
+        "freshness_rule": {"type": "string", "minLength": 1, "maxLength": 1000}
+      }
+    }
+  }
+}
