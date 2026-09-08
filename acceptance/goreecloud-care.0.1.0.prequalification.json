@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "record_type": "care-continuity-prequalification",
+  "application": "GoreeCloud Care",
+  "producer": "GoreeCloud/goreecloud-zorin-os/apps/goreecloud-care",
+  "candidate": {
+    "source_revision": "bbc4779454c2887b810aa0ddc9e8a686a4c68ebd",
+    "source_tree": "ebe028347c978b6d09fb1d2af011729249f63bc3",
+    "runtime_version": "0.1.0",
+    "package_version": "0.1.0",
+    "package_sha256": "819cff6e0132bf6b09df0986682995c25b14c39e74982f725efd0b5a21b71160"
+  },
+  "target": {
+    "name": "Zorin OS 17.3 representative laptop",
+    "representative": true,
+    "status": "pending"
+  },
+  "dimensions": [
+    "restore_capability",
+    "migration",
+    "documentation",
+    "provenance"
+  ],
+  "automated_prequalification": {
+    "care_ci_run_id": 34180765807,
+    "care_ci_run_number": 421,
+    "care_test_count": 143,
+    "platform_contract_run_id": 34180766156,
+    "primary_artifact_id": 10038827656,
+    "primary_artifact_digest": "0a2762b77889159b6b9711045e7f6867d764b22650fc7acb61f7811796c3d91e",
+    "cross_environment_artifact_id": 10038821545,
+    "cross_environment_artifact_digest": "f5c61281b092777e6a9b77a22e4152fde059adbccee2e2637b2d8b008b9e7e03",
+    "source_validation": "passed",
+    "same_environment_reproducibility": "passed",
+    "cross_umask_package_identity": "passed",
+    "cross_environment_package_identity": "passed",
+    "package_lifecycle_prequalification": "passed",
+    "same_version_exact_package_reinstall": "passed",
+    "rollback_package": "0.1.0~dev17",
+    "care_cleanup_invoked": false
+  },
+  "acceptance": {
+    "target_runtime_status": "pending",
+    "exact_revision_accepted": false,
+    "everkeep_integration_promoted": false,
+    "everkeep_ready_promoted": false,
+    "local_governance_record_installed": false,
+    "local_continuity_expected_state": "attention",
+    "stable_promotion_authorized": false
+  },
+  "remaining_requirements": [
+    "Physical Zorin OS 17.3 representative acceptance must pass for the exact source, source tree, package version, and package SHA-256.",
+    "The Care-owned representative target handoff must be generated root-protected without Care self-promoting Everkeep.",
+    "A separate Everkeep governance record must be promoted only after exact target acceptance and must exactly match the accepted source, tree, package, checksum, and target.",
+    "The governed Everkeep record must then be installed locally under /var/lib/goreecloud/everkeep/acceptance with a root-owned non-writable trust path and re-evaluated by Care.",
+    "Care continuity may report ready / everkeep-promoted only after that exact local governance installation succeeds.",
+    "Stable promotion remains a separate lifecycle decision after all applicable platform systems are resolved."
+  ],
+  "predecessor_authority": {
+    "everkeep_revision": "d6192dc2a38d5749df561f0638860c974faae8ff",
+    "care_revision": "334b53102c5fe0bd5d348397ba8b13cc5608ada2",
+    "historical_only": true
+  }
+}
