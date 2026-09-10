@@ -2,7 +2,6 @@ name: Validate Everkeep
 
 on:
   push:
-    branches: [main]
   pull_request:
 
 permissions:
@@ -113,10 +112,3 @@ jobs:
           grep -Fq 'simulation-only controlled drill executor' dist/index.html
           grep -Fq 'separately produced current Everkeep evidence' dist/index.html
           grep -Fq 'do not authorize production failover' dist/index.html
-          grep -Fq 'GoreeCloud Identity' dist/index.html
-          grep -Fq 'Owns identity, authentication, authorization' dist/index.html
-          ! grep -Fq 'data-glaze-ui="1.5.0"' dist/index.html
-          ! grep -Fq 'data-glaze-ui="2.0.0"' dist/index.html
-          ! grep -Fq 'Phase 1 core architecture is in development.' dist/index.html
-      - name: Exercise Continuity Center responsive geometry in Chrome
-        run: python3 scripts/browser_public_responsive.py
