@@ -23,7 +23,7 @@
     "environment": {"enum": ["staging", "production"]},
     "capturedAt": {"type": "string", "format": "date-time"},
     "freshUntil": {"type": "string", "format": "date-time"},
-    "everkeepSourceRevision": {"type": "string", "minLength": 7},
+    "everkeepSourceRevision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
     "target": {
       "type": "object",
       "additionalProperties": false,
