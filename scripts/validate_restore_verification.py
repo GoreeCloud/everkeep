@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -7,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_V10 = ROOT / "contracts" / "everkeep.restore-verification.schema.json"
 SCHEMA_V11 = ROOT / "contracts" / "everkeep.restore-verification.v1.1.schema.json"
 DOC = ROOT / "docs" / "RESTORE-VERIFICATION.md"
+EXACT_REVISION = re.compile(r"^[0-9a-f]{40}$")
 
 
 def require(condition: bool, message: str):
@@ -26,10 +28,15 @@ def parse_timestamp(value: object) -> datetime | None:
     return parsed.astimezone(timezone.utc)
 
 
+def exact_revision(value: object) -> bool:
+    return isinstance(value, str) and EXACT_REVISION.fullmatch(value) is not None
+
+
 def consumer_accepts_v11(
     record: dict,
     environment: str,
     target_revision: str,
+    everkeep_source_revision: str,
     now: datetime | None = None,
 ) -> bool:
     target = record.get("target", {})
@@ -40,7 +47,11 @@ def consumer_accepts_v11(
         return False
     if record.get("status") != "pass" or record.get("authoritative") is not True:
         return False
-    if target.get("deployedRevision") != target_revision:
+    if not exact_revision(target_revision) or target.get("deployedRevision") != target_revision:
+        return False
+    if not exact_revision(everkeep_source_revision):
+        return False
+    if record.get("everkeepSourceRevision") != everkeep_source_revision:
         return False
     if target.get("system") != "Wardveil Security":
         return False
@@ -96,6 +107,10 @@ def main():
 
     require(schema_v11["properties"]["schemaVersion"]["const"] == "1.1", "restore verification v1.1 schema must be version 1.1")
     require(schema_v11["properties"]["freshUntil"]["format"] == "date-time", "v1.1 freshUntil must be a date-time")
+    require(
+        schema_v11["properties"]["everkeepSourceRevision"]["pattern"] == "^[0-9a-f]{40}$",
+        "Everkeep source revision must be an exact SHA",
+    )
     target = schema_v11["properties"]["target"]
     require(target["properties"]["deployedRevision"]["pattern"] == "^[0-9a-f]{40}$", "target revision must be exact SHA")
     require(schema_v11["properties"]["securityStateAuthorityTransferred"]["const"] is False, "security authority must not transfer")
@@ -105,6 +120,7 @@ def main():
         require(field in exercise_required, f"restore exercise missing required field: {field}")
 
     revision = "a" * 40
+    everkeep_revision = "e" * 40
     fixed_now = datetime(2026, 9, 5, 16, 0, tzinfo=timezone.utc)
     good = {
         "schemaVersion": "1.1",
@@ -112,7 +128,7 @@ def main():
         "environment": "production",
         "capturedAt": "2026-09-05T15:30:00Z",
         "freshUntil": "2026-09-06T15:30:00Z",
-        "everkeepSourceRevision": "e246fb0e7c97a6f1da75188b25042b0611c57095",
+        "everkeepSourceRevision": everkeep_revision,
         "target": {
             "system": "Wardveil Security",
             "component": "Cloudflare persistence runtime",
@@ -133,36 +149,82 @@ def main():
         "evidenceRefs": ["everkeep:test:restore"],
         "securityStateAuthorityTransferred": False,
     }
-    require(consumer_accepts_v11(good, "production", revision, fixed_now), "valid fresh v1.1 restore evidence must satisfy consumer gate")
+    require(
+        consumer_accepts_v11(good, "production", revision, everkeep_revision, fixed_now),
+        "valid fresh v1.1 restore evidence must satisfy consumer gate",
+    )
 
     for field, value in [("status", "fail"), ("authoritative", False)]:
         bad = dict(good)
         bad[field] = value
-        require(not consumer_accepts_v11(bad, "production", revision, fixed_now), f"consumer must reject {field}={value}")
+        require(
+            not consumer_accepts_v11(bad, "production", revision, everkeep_revision, fixed_now),
+            f"consumer must reject {field}={value}",
+        )
 
     mismatch = json.loads(json.dumps(good))
     mismatch["target"]["deployedRevision"] = "b" * 40
-    require(not consumer_accepts_v11(mismatch, "production", revision, fixed_now), "consumer must reject revision mismatch")
+    require(
+        not consumer_accepts_v11(mismatch, "production", revision, everkeep_revision, fixed_now),
+        "consumer must reject target revision mismatch",
+    )
+
+    everkeep_mismatch = json.loads(json.dumps(good))
+    everkeep_mismatch["everkeepSourceRevision"] = "f" * 40
+    require(
+        not consumer_accepts_v11(
+            everkeep_mismatch,
+            "production",
+            revision,
+            everkeep_revision,
+            fixed_now,
+        ),
+        "consumer must reject Everkeep source revision mismatch",
+    )
+
+    require(
+        not consumer_accepts_v11(good, "production", "short-revision", everkeep_revision, fixed_now),
+        "consumer must reject a non-exact expected target revision",
+    )
+    require(
+        not consumer_accepts_v11(good, "production", revision, "short-revision", fixed_now),
+        "consumer must reject a non-exact expected Everkeep source revision",
+    )
 
     unverified = json.loads(json.dumps(good))
     unverified["exercise"]["restoredStateVerified"] = False
-    require(not consumer_accepts_v11(unverified, "production", revision, fixed_now), "consumer must reject unverified restored state")
+    require(
+        not consumer_accepts_v11(unverified, "production", revision, everkeep_revision, fixed_now),
+        "consumer must reject unverified restored state",
+    )
 
     expired = json.loads(json.dumps(good))
     expired["freshUntil"] = "2026-09-05T15:45:00Z"
-    require(not consumer_accepts_v11(expired, "production", revision, fixed_now), "consumer must reject expired restore evidence")
+    require(
+        not consumer_accepts_v11(expired, "production", revision, everkeep_revision, fixed_now),
+        "consumer must reject expired restore evidence",
+    )
 
     missing_freshness = json.loads(json.dumps(good))
     del missing_freshness["freshUntil"]
-    require(not consumer_accepts_v11(missing_freshness, "production", revision, fixed_now), "consumer must reject v1.1 restore evidence without freshness")
+    require(
+        not consumer_accepts_v11(missing_freshness, "production", revision, everkeep_revision, fixed_now),
+        "consumer must reject v1.1 restore evidence without freshness",
+    )
 
     future_capture = json.loads(json.dumps(good))
     future_capture["capturedAt"] = "2026-09-05T16:30:00Z"
-    require(not consumer_accepts_v11(future_capture, "production", revision, fixed_now), "consumer must reject future-captured restore evidence")
+    require(
+        not consumer_accepts_v11(future_capture, "production", revision, everkeep_revision, fixed_now),
+        "consumer must reject future-captured restore evidence",
+    )
 
     naive_timestamp = json.loads(json.dumps(good))
     naive_timestamp["freshUntil"] = "2026-09-06T15:30:00"
-    require(not consumer_accepts_v11(naive_timestamp, "production", revision, fixed_now), "consumer must reject timezone-less freshness evidence")
+    require(
+        not consumer_accepts_v11(naive_timestamp, "production", revision, everkeep_revision, fixed_now),
+        "consumer must reject timezone-less freshness evidence",
+    )
 
     for phrase in [
         "PITR availability remains recovery-capability evidence only",
