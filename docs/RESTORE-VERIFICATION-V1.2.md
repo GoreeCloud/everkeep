@@ -15,6 +15,7 @@ A passing v1.2 record binds:
 
 - the exact verification-attempt identifier expected by the consumer;
 - the exact isolated environment identifier;
+- the exact target system and component expected by the consumer;
 - the exact recovery point identifier;
 - the exact recovery point artifact digest;
 - the exact Everkeep source revision and tree;
@@ -25,11 +26,11 @@ A passing v1.2 record binds:
 - integrity verification and restored-state verification; and
 - one or more workload-specific checks with bounded evidence references.
 
-The verification-attempt binding prevents evidence from another otherwise-compatible restore verification from being replayed as the requested verification. The execution mode is fixed to `real_isolated_restore`. A simulation cannot satisfy this contract. Source mutation and production promotion are both fixed to false.
+The verification-attempt binding prevents evidence from another otherwise-compatible restore verification from being replayed as the requested verification. Target system and component are consumer-supplied exact bindings, not descriptive labels; a valid record for a different system or runtime component must fail closed even when its resource ID, revision, recovery point, and digest otherwise match. The execution mode is fixed to `real_isolated_restore`. A simulation cannot satisfy this contract. Source mutation and production promotion are both fixed to false.
 
 ## Fail-closed consumption
 
-A consumer must reject v1.2 evidence when the verification attempt, environment, protected resource, target revision, Everkeep revision/tree, recovery-point identity, artifact digest, workload checks, timestamps, freshness, integrity, restored-state verification, or authority-transfer boundary does not match the expected scope. Missing or failed workload checks remain non-recoverable.
+A consumer must reject v1.2 evidence when the verification attempt, environment, target system, target component, protected resource, target revision, Everkeep revision/tree, recovery-point identity, artifact digest, workload checks, timestamps, freshness, integrity, restored-state verification, or authority-transfer boundary does not match the expected scope. Missing or failed workload checks remain non-recoverable.
 
 The consumer evaluation clock must be a timezone-aware datetime. Missing, malformed, or timezone-naive evaluation clocks fail closed rather than bypassing or crashing freshness evaluation.
 
@@ -39,6 +40,6 @@ Consumers may shorten evidence freshness, but they must not extend Everkeep's ev
 
 Everkeep remains the recovery and restore-verification authority. This evidence records what was observed during a bounded restore exercise; it does not grant Privacy Shield, Wardveil, Identity, Manager, Mesh, or the restored workload any additional authority.
 
-A passing source contract or validation run does not prove that any real production workload has been restored. A real record must be generated from an actual isolated restore and separately accepted for the exact verification attempt, workload, recovery point, artifact, and environment.
+A passing source contract or validation run does not prove that any real production workload has been restored. A real record must be generated from an actual isolated restore and separately accepted for the exact verification attempt, workload, target system/component, recovery point, artifact, and environment.
 
 This contract does not authorize production failover, production promotion, traffic switching, destructive recovery actions, release approval, or Stable qualification.
