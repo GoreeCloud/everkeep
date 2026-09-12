@@ -49,7 +49,9 @@ def require(condition: bool, message: str) -> None:
 
 
 def parse_timestamp(value: object) -> datetime | None:
-    if not isinstance(value, str) or not value:
+    if not isinstance(value, str) or not value or value != value.strip():
+        return None
+    if any(unicodedata.category(char).startswith("C") for char in value):
         return None
     try:
         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
@@ -195,7 +197,7 @@ def consumer_accepts_v12(
     if now.tzinfo is None or now.utcoffset() is None:
         return False
     current = now.astimezone(timezone.utc)
-    return produced <= started < completed <= captured <= current <= fresh_until
+    return produced <= started < completed <= captured < fresh_until and captured <= current <= fresh_until
 
 
 def fixture() -> dict:
@@ -361,6 +363,8 @@ def main() -> None:
         (("execution", "workloadChecks", 0, "id"), " service-start"),
         (("execution", "workloadChecks", 0, "evidenceRef"), "evidence:service-start "),
         (("evidenceRefs", 0), " evidence:restore-log"),
+        (("capturedAt",), " 2026-09-12T04:45:00Z"),
+        (("execution", "completedAt"), "2026-09-12T04:40:00Z\n"),
     ):
         bad = json.loads(json.dumps(good))
         target = bad
@@ -368,6 +372,10 @@ def main() -> None:
             target = target[key]
         target[path[-1]] = value
         mutations.append(bad)
+    zero_freshness = json.loads(json.dumps(good))
+    zero_freshness["capturedAt"] = "2026-09-12T05:00:00Z"
+    zero_freshness["freshUntil"] = "2026-09-12T05:00:00Z"
+    mutations.append(zero_freshness)
     expired = json.loads(json.dumps(good))
     expired["freshUntil"] = "2026-09-12T04:50:00Z"
     mutations.append(expired)
