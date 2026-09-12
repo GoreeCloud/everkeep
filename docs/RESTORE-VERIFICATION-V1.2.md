@@ -34,7 +34,7 @@ A consumer must reject v1.2 evidence when the verification attempt, environment,
 
 The consumer evaluation clock must be a timezone-aware datetime. Missing, malformed, or timezone-naive evaluation clocks fail closed rather than bypassing or crashing freshness evaluation.
 
-A consumer must also provide a positive maximum evidence age. Missing, non-duration, zero, or negative consumer freshness ceilings fail closed. Acceptance ends at the earlier of Everkeep's `freshUntil` boundary and the consumer-selected maximum age measured from `capturedAt`. Consumers may shorten evidence freshness, but they must not extend Everkeep's evidence validity. V1.2 deliberately defines no global default maximum age; the consuming operation or policy must choose and justify its own positive bound.
+A consumer must provide a positive **consumer-supplied maximum evidence age**. Missing, non-duration, zero, or negative consumer freshness ceilings fail closed. Acceptance ends at the earlier of Everkeep's `freshUntil` boundary and the consumer-supplied maximum evidence age measured from `capturedAt`. Consumers may shorten evidence freshness, but they must not extend Everkeep's evidence validity. V1.2 deliberately defines no global default maximum age; the consuming operation or policy must choose and justify its own positive bound.
 
 ## Authority boundary
 
