@@ -11,6 +11,7 @@ SCHEMA = ROOT / "contracts" / "everkeep.restore-verification.v1.2.schema.json"
 DOC = ROOT / "docs" / "RESTORE-VERIFICATION-V1.2.md"
 HEX40 = set("0123456789abcdef")
 MAX_EVIDENCE_REFERENCE_LENGTH = 1000
+MAX_EVIDENCE_REFERENCES = 256
 TOP_LEVEL_FIELDS = {
     "schemaVersion",
     "verificationId",
@@ -158,7 +159,11 @@ def consumer_accepts_v12(
         return False
 
     evidence_refs = record.get("evidenceRefs")
-    if not isinstance(evidence_refs, list) or not evidence_refs:
+    if (
+        not isinstance(evidence_refs, list)
+        or not evidence_refs
+        or len(evidence_refs) > MAX_EVIDENCE_REFERENCES
+    ):
         return False
     normalized_evidence_refs: list[str] = []
     for value in evidence_refs:
@@ -297,6 +302,10 @@ def main() -> None:
         is False,
         "verification must not promote production",
     )
+    require(
+        schema["properties"]["evidenceRefs"]["maxItems"] == MAX_EVIDENCE_REFERENCES,
+        "schema and consumer evidence-reference limits must match",
+    )
 
     good = fixture()
     require(accepted(good), "valid exact isolated restore evidence must pass")
@@ -333,6 +342,14 @@ def main() -> None:
     duplicate_evidence_manifest = json.loads(json.dumps(good))
     duplicate_evidence_manifest["evidenceRefs"].append("evidence:service-start")
     mutations.append(duplicate_evidence_manifest)
+    oversized_evidence_manifest = json.loads(json.dumps(good))
+    oversized_evidence_manifest["evidenceRefs"] = [
+        f"evidence:manifest:{index}" for index in range(MAX_EVIDENCE_REFERENCES + 1)
+    ]
+    oversized_evidence_manifest["evidenceRefs"].extend(
+        ["evidence:service-start", "evidence:data-integrity"]
+    )
+    mutations.append(oversized_evidence_manifest)
     extra_top_level = json.loads(json.dumps(good))
     extra_top_level["productionReady"] = True
     mutations.append(extra_top_level)
