@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -67,9 +68,11 @@ def bounded_text(value: object, maximum: int) -> str | None:
     if not isinstance(value, str):
         return None
     normalized = value.strip()
-    if not normalized or len(normalized) > maximum:
+    if not normalized or normalized != value or len(value) > maximum:
         return None
-    return normalized
+    if any(unicodedata.category(char).startswith("C") for char in value):
+        return None
+    return value
 
 
 def bounded_reference(value: object) -> str | None:
@@ -350,6 +353,21 @@ def main() -> None:
         for index in range(129)
     ]
     mutations.append(oversized_checks)
+    for path, value in (
+        (("verificationId",), " isolated-restore-1"),
+        (("target", "system"), "GoreeCloud Example "),
+        (("target", "component"), "example-runtime\n"),
+        (("recoveryPoint", "id"), " recovery-point-1"),
+        (("execution", "workloadChecks", 0, "id"), " service-start"),
+        (("execution", "workloadChecks", 0, "evidenceRef"), "evidence:service-start "),
+        (("evidenceRefs", 0), " evidence:restore-log"),
+    ):
+        bad = json.loads(json.dumps(good))
+        target = bad
+        for key in path[:-1]:
+            target = target[key]
+        target[path[-1]] = value
+        mutations.append(bad)
     expired = json.loads(json.dumps(good))
     expired["freshUntil"] = "2026-09-12T04:50:00Z"
     mutations.append(expired)
