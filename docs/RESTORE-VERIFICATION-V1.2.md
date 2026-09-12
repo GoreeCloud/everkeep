@@ -34,7 +34,9 @@ A consumer must reject v1.2 evidence when the verification attempt, environment,
 
 The consumer evaluation clock must be a timezone-aware datetime. Missing, malformed, or timezone-naive evaluation clocks fail closed rather than bypassing or crashing freshness evaluation.
 
-Consumers may shorten evidence freshness, but they must not extend Everkeep's evidence validity.
+Consumers may shorten evidence freshness, but they must not extend Everkeep's evidence validity. The v1.2 consumer therefore requires a **consumer-supplied maximum evidence age** as a positive duration. Acceptance ends when either Everkeep's producer-declared `freshUntil` boundary is reached or the consumer's maximum age from `capturedAt` is reached, whichever comes first. Missing, malformed, zero, or negative consumer freshness ceilings fail closed.
+
+This consumer-side ceiling prevents an arbitrarily long producer-declared freshness window from making old restore-verification evidence acceptable indefinitely. It does not choose a universal GoreeCloud recovery-evidence lifetime; each consuming operation or policy must choose and justify its own maximum age. A passing source validator demonstrates that the shortening rule is enforced, not that any particular production freshness duration has been approved.
 
 ## Authority boundary
 
