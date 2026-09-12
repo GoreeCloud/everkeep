@@ -89,6 +89,7 @@ def closed_shape(value: object, fields: set[str]) -> bool:
 def consumer_accepts_v12(
     record: dict,
     *,
+    expected_verification_id: str,
     expected_environment_id: str,
     expected_resource_id: str,
     expected_target_revision: str,
@@ -102,7 +103,8 @@ def consumer_accepts_v12(
         return False
     if record.get("schemaVersion") != "1.2":
         return False
-    if bounded_text(record.get("verificationId"), 160) is None:
+    verification_id = bounded_text(record.get("verificationId"), 160)
+    if verification_id is None or verification_id != expected_verification_id:
         return False
     if record.get("environment") != "isolated":
         return False
@@ -265,6 +267,7 @@ def fixture() -> dict:
 def accepted(record: dict) -> bool:
     return consumer_accepts_v12(
         record,
+        expected_verification_id="isolated-restore-1",
         expected_environment_id="recovery-sandbox-1",
         expected_resource_id="resource-1",
         expected_target_revision="c" * 40,
@@ -317,6 +320,7 @@ def main() -> None:
 
     mutations = []
     for path, value in (
+        (("verificationId",), "isolated-restore-2"),
         (("environmentId",), "other-sandbox"),
         (("everkeepSourceRevision",), "e" * 40),
         (("target", "deployedRevision"), "e" * 40),
