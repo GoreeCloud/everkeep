@@ -94,6 +94,8 @@ def consumer_accepts_v12(
     expected_target_revision: str,
     expected_everkeep_revision: str,
     expected_everkeep_tree: str,
+    expected_recovery_point_id: str,
+    expected_artifact_sha256: str,
     now: datetime,
 ) -> bool:
     if not closed_shape(record, TOP_LEVEL_FIELDS):
@@ -143,9 +145,10 @@ def consumer_accepts_v12(
     ):
         return False
     recovery_point_id = bounded_text(recovery_point.get("id"), 256)
-    if recovery_point_id is None:
+    if recovery_point_id is None or recovery_point_id != expected_recovery_point_id:
         return False
-    if not exact_sha(recovery_point.get("artifactSha256"), 64):
+    artifact_sha256 = recovery_point.get("artifactSha256")
+    if artifact_sha256 != expected_artifact_sha256 or not exact_sha(artifact_sha256, 64):
         return False
     if execution.get("mode") != "real_isolated_restore":
         return False
@@ -267,6 +270,8 @@ def accepted(record: dict) -> bool:
         expected_target_revision="c" * 40,
         expected_everkeep_revision="a" * 40,
         expected_everkeep_tree="b" * 40,
+        expected_recovery_point_id="recovery-point-1",
+        expected_artifact_sha256="d" * 64,
         now=datetime(2026, 9, 12, 5, 0, tzinfo=timezone.utc),
     )
 
@@ -316,6 +321,8 @@ def main() -> None:
         (("everkeepSourceRevision",), "e" * 40),
         (("target", "deployedRevision"), "e" * 40),
         (("recoveryPoint", "id"), ""),
+        (("recoveryPoint", "id"), "recovery-point-2"),
+        (("recoveryPoint", "artifactSha256"), "e" * 64),
         (("execution", "mode"), "simulation"),
         (("execution", "integrityVerified"), False),
         (("execution", "restoredStateVerified"), False),
