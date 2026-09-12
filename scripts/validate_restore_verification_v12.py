@@ -91,6 +91,8 @@ def consumer_accepts_v12(
     *,
     expected_verification_id: str,
     expected_environment_id: str,
+    expected_target_system: str,
+    expected_target_component: str,
     expected_resource_id: str,
     expected_target_revision: str,
     expected_everkeep_revision: str,
@@ -134,9 +136,11 @@ def consumer_accepts_v12(
         return False
     if not closed_shape(execution, EXECUTION_FIELDS):
         return False
-    if bounded_text(target.get("system"), 160) is None:
+    target_system = bounded_text(target.get("system"), 160)
+    if target_system is None or target_system != expected_target_system:
         return False
-    if bounded_text(target.get("component"), 160) is None:
+    target_component = bounded_text(target.get("component"), 160)
+    if target_component is None or target_component != expected_target_component:
         return False
     if target.get("resourceId") != expected_resource_id:
         return False
@@ -273,6 +277,8 @@ def accepted(
         record,
         expected_verification_id="isolated-restore-1",
         expected_environment_id="recovery-sandbox-1",
+        expected_target_system="GoreeCloud Example",
+        expected_target_component="example-runtime",
         expected_resource_id="resource-1",
         expected_target_revision="c" * 40,
         expected_everkeep_revision="a" * 40,
@@ -336,6 +342,8 @@ def main() -> None:
         (("verificationId",), "isolated-restore-2"),
         (("environmentId",), "other-sandbox"),
         (("everkeepSourceRevision",), "e" * 40),
+        (("target", "system"), "GoreeCloud Other"),
+        (("target", "component"), "other-runtime"),
         (("target", "deployedRevision"), "e" * 40),
         (("recoveryPoint", "id"), ""),
         (("recoveryPoint", "id"), "recovery-point-2"),
@@ -426,6 +434,7 @@ def main() -> None:
     for phrase in (
         "Backup Exists is not Recoverable",
         "real isolated restore",
+        "exact target system and component",
         "exact recovery point artifact digest",
         "exact Everkeep source revision and tree",
         "exact deployed target revision",
