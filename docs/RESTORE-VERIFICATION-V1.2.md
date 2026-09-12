@@ -31,6 +31,8 @@ The verification-attempt binding prevents evidence from another otherwise-compat
 
 A consumer must reject v1.2 evidence when the verification attempt, environment, protected resource, target revision, Everkeep revision/tree, recovery-point identity, artifact digest, workload checks, timestamps, freshness, integrity, restored-state verification, or authority-transfer boundary does not match the expected scope. Missing or failed workload checks remain non-recoverable.
 
+The consumer evaluation clock must be a timezone-aware datetime. Missing, malformed, or timezone-naive evaluation clocks fail closed rather than bypassing or crashing freshness evaluation.
+
 Consumers may shorten evidence freshness, but they must not extend Everkeep's evidence validity.
 
 ## Authority boundary

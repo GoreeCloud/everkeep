@@ -97,7 +97,7 @@ def consumer_accepts_v12(
     expected_everkeep_tree: str,
     expected_recovery_point_id: str,
     expected_artifact_sha256: str,
-    now: datetime,
+    now: object,
 ) -> bool:
     if not closed_shape(record, TOP_LEVEL_FIELDS):
         return False
@@ -204,7 +204,7 @@ def consumer_accepts_v12(
     fresh_until = parse_timestamp(record.get("freshUntil"))
     if None in (produced, started, completed, captured, fresh_until):
         return False
-    if now.tzinfo is None or now.utcoffset() is None:
+    if not isinstance(now, datetime) or now.tzinfo is None or now.utcoffset() is None:
         return False
     current = now.astimezone(timezone.utc)
     return produced <= started < completed <= captured < fresh_until and captured <= current <= fresh_until
@@ -264,7 +264,11 @@ def fixture() -> dict:
     }
 
 
-def accepted(record: dict) -> bool:
+def accepted(
+    record: dict,
+    *,
+    now: object = datetime(2026, 9, 12, 5, 0, tzinfo=timezone.utc),
+) -> bool:
     return consumer_accepts_v12(
         record,
         expected_verification_id="isolated-restore-1",
@@ -275,7 +279,7 @@ def accepted(record: dict) -> bool:
         expected_everkeep_tree="b" * 40,
         expected_recovery_point_id="recovery-point-1",
         expected_artifact_sha256="d" * 64,
-        now=datetime(2026, 9, 12, 5, 0, tzinfo=timezone.utc),
+        now=now,
     )
 
 
@@ -317,6 +321,15 @@ def main() -> None:
 
     good = fixture()
     require(accepted(good), "valid exact isolated restore evidence must pass")
+    require(
+        not accepted(good, now="2026-09-12T05:00:00Z"),
+        "non-datetime evaluation clock must fail closed",
+    )
+    require(
+        not accepted(good, now=datetime(2026, 9, 12, 5, 0)),
+        "timezone-naive evaluation clock must fail closed",
+    )
+    require(not accepted(good, now=None), "missing evaluation clock must fail closed")
 
     mutations = []
     for path, value in (
