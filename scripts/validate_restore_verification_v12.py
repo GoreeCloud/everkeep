@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCHEMA = ROOT / "contracts" / "everkeep.restore-verification.v1.2.schema.json"
 DOC = ROOT / "docs" / "RESTORE-VERIFICATION-V1.2.md"
 HEX40 = set("0123456789abcdef")
+MAX_EVIDENCE_REFERENCE_LENGTH = 1024
 
 
 def require(condition: bool, message: str) -> None:
@@ -30,6 +31,15 @@ def parse_timestamp(value: object) -> datetime | None:
 
 def exact_sha(value: object, length: int) -> bool:
     return isinstance(value, str) and len(value) == length and set(value) <= HEX40
+
+
+def bounded_reference(value: object) -> str | None:
+    if not isinstance(value, str):
+        return None
+    normalized = value.strip()
+    if not normalized or len(normalized) > MAX_EVIDENCE_REFERENCE_LENGTH:
+        return None
+    return normalized
 
 
 def consumer_accepts_v12(
@@ -68,6 +78,9 @@ def consumer_accepts_v12(
         return False
     if target.get("deployedRevision") != expected_target_revision or not exact_sha(target.get("deployedRevision"), 40):
         return False
+    recovery_point_id = recovery_point.get("id")
+    if not isinstance(recovery_point_id, str) or not recovery_point_id.strip():
+        return False
     if not exact_sha(recovery_point.get("artifactSha256"), 64):
         return False
     if execution.get("mode") != "real_isolated_restore":
@@ -78,6 +91,19 @@ def consumer_accepts_v12(
         return False
     if execution.get("integrityVerified") is not True or execution.get("restoredStateVerified") is not True:
         return False
+
+    evidence_refs = record.get("evidenceRefs")
+    if not isinstance(evidence_refs, list) or not evidence_refs:
+        return False
+    normalized_evidence_refs: list[str] = []
+    for value in evidence_refs:
+        normalized = bounded_reference(value)
+        if normalized is None:
+            return False
+        normalized_evidence_refs.append(normalized)
+    if len(set(normalized_evidence_refs)) != len(normalized_evidence_refs):
+        return False
+    evidence_ref_set = set(normalized_evidence_refs)
 
     checks = execution.get("workloadChecks")
     if not isinstance(checks, list) or not checks:
@@ -92,12 +118,9 @@ def consumer_accepts_v12(
         check_ids.add(check_id)
         if check.get("status") != "pass":
             return False
-        if not isinstance(check.get("evidenceRef"), str) or not check["evidenceRef"]:
+        check_evidence = bounded_reference(check.get("evidenceRef"))
+        if check_evidence is None or check_evidence not in evidence_ref_set:
             return False
-
-    evidence_refs = record.get("evidenceRefs")
-    if not isinstance(evidence_refs, list) or not evidence_refs or len(set(evidence_refs)) != len(evidence_refs):
-        return False
 
     produced = parse_timestamp(recovery_point.get("producedAt"))
     started = parse_timestamp(execution.get("startedAt"))
@@ -148,7 +171,12 @@ def fixture() -> dict:
         },
         "status": "pass",
         "authoritative": True,
-        "evidenceRefs": ["evidence:restore-log", "evidence:artifact-digest"],
+        "evidenceRefs": [
+            "evidence:restore-log",
+            "evidence:artifact-digest",
+            "evidence:service-start",
+            "evidence:data-integrity",
+        ],
         "externalAuthorityTransferred": False,
     }
 
@@ -184,6 +212,7 @@ def main() -> None:
         (("environmentId",), "other-sandbox"),
         (("everkeepSourceRevision",), "e" * 40),
         (("target", "deployedRevision"), "e" * 40),
+        (("recoveryPoint", "id"), ""),
         (("execution", "mode"), "simulation"),
         (("execution", "integrityVerified"), False),
         (("execution", "restoredStateVerified"), False),
@@ -199,6 +228,15 @@ def main() -> None:
     failed_check = json.loads(json.dumps(good))
     failed_check["execution"]["workloadChecks"][0]["status"] = "fail"
     mutations.append(failed_check)
+    orphan_check_evidence = json.loads(json.dumps(good))
+    orphan_check_evidence["execution"]["workloadChecks"][0]["evidenceRef"] = "evidence:not-in-manifest"
+    mutations.append(orphan_check_evidence)
+    malformed_evidence_manifest = json.loads(json.dumps(good))
+    malformed_evidence_manifest["evidenceRefs"][0] = {"unexpected": "object"}
+    mutations.append(malformed_evidence_manifest)
+    duplicate_evidence_manifest = json.loads(json.dumps(good))
+    duplicate_evidence_manifest["evidenceRefs"].append("evidence:service-start")
+    mutations.append(duplicate_evidence_manifest)
     expired = json.loads(json.dumps(good))
     expired["freshUntil"] = "2026-09-12T04:50:00Z"
     mutations.append(expired)
