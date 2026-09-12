@@ -22,7 +22,7 @@ A passing v1.2 record binds:
 - the exact protected resource identifier;
 - the exact deployed target revision;
 - the recovery point production time;
-- restore start, completion, capture, and freshness times;
+- restore start, completion, capture, and producer freshness times;
 - integrity verification and restored-state verification; and
 - one or more workload-specific checks with bounded evidence references.
 
@@ -34,14 +34,12 @@ A consumer must reject v1.2 evidence when the verification attempt, environment,
 
 The consumer evaluation clock must be a timezone-aware datetime. Missing, malformed, or timezone-naive evaluation clocks fail closed rather than bypassing or crashing freshness evaluation.
 
-Consumers may shorten evidence freshness, but they must not extend Everkeep's evidence validity. The v1.2 consumer therefore requires a **consumer-supplied maximum evidence age** as a positive duration. Acceptance ends when either Everkeep's producer-declared `freshUntil` boundary is reached or the consumer's maximum age from `capturedAt` is reached, whichever comes first. Missing, malformed, zero, or negative consumer freshness ceilings fail closed.
-
-This consumer-side ceiling prevents an arbitrarily long producer-declared freshness window from making old restore-verification evidence acceptable indefinitely. It does not choose a universal GoreeCloud recovery-evidence lifetime; each consuming operation or policy must choose and justify its own maximum age. A passing source validator demonstrates that the shortening rule is enforced, not that any particular production freshness duration has been approved.
+A consumer must also provide a positive maximum evidence age. Missing, non-duration, zero, or negative consumer freshness ceilings fail closed. Acceptance ends at the earlier of Everkeep's `freshUntil` boundary and the consumer-selected maximum age measured from `capturedAt`. Consumers may shorten evidence freshness, but they must not extend Everkeep's evidence validity. V1.2 deliberately defines no global default maximum age; the consuming operation or policy must choose and justify its own positive bound.
 
 ## Authority boundary
 
 Everkeep remains the recovery and restore-verification authority. This evidence records what was observed during a bounded restore exercise; it does not grant Privacy Shield, Wardveil, Identity, Manager, Mesh, or the restored workload any additional authority.
 
-A passing source contract or validation run does not prove that any real production workload has been restored. A real record must be generated from an actual isolated restore and separately accepted for the exact verification attempt, workload, target system/component, recovery point, artifact, and environment.
+A passing source contract or validation run does not prove that any real production workload has been restored. A real record must be generated from an actual isolated restore and separately accepted for the exact verification attempt, workload, target system/component, recovery point, artifact, environment, and consumer freshness policy.
 
 This contract does not authorize production failover, production promotion, traffic switching, destructive recovery actions, release approval, or Stable qualification.
