@@ -9,7 +9,37 @@ ROOT = Path(__file__).resolve().parents[1]
 SCHEMA = ROOT / "contracts" / "everkeep.restore-verification.v1.2.schema.json"
 DOC = ROOT / "docs" / "RESTORE-VERIFICATION-V1.2.md"
 HEX40 = set("0123456789abcdef")
-MAX_EVIDENCE_REFERENCE_LENGTH = 1024
+MAX_EVIDENCE_REFERENCE_LENGTH = 1000
+TOP_LEVEL_FIELDS = {
+    "schemaVersion",
+    "verificationId",
+    "environment",
+    "environmentId",
+    "capturedAt",
+    "freshUntil",
+    "everkeepSourceRevision",
+    "everkeepSourceTree",
+    "target",
+    "recoveryPoint",
+    "execution",
+    "status",
+    "authoritative",
+    "evidenceRefs",
+    "externalAuthorityTransferred",
+}
+TARGET_FIELDS = {"system", "component", "resourceId", "deployedRevision"}
+RECOVERY_POINT_FIELDS = {"id", "artifactSha256", "producedAt"}
+EXECUTION_FIELDS = {
+    "mode",
+    "startedAt",
+    "completedAt",
+    "sourceMutationAllowed",
+    "productionPromotionPerformed",
+    "integrityVerified",
+    "restoredStateVerified",
+    "workloadChecks",
+}
+WORKLOAD_CHECK_FIELDS = {"id", "status", "evidenceRef"}
 
 
 def require(condition: bool, message: str) -> None:
@@ -33,13 +63,21 @@ def exact_sha(value: object, length: int) -> bool:
     return isinstance(value, str) and len(value) == length and set(value) <= HEX40
 
 
-def bounded_reference(value: object) -> str | None:
+def bounded_text(value: object, maximum: int) -> str | None:
     if not isinstance(value, str):
         return None
     normalized = value.strip()
-    if not normalized or len(normalized) > MAX_EVIDENCE_REFERENCE_LENGTH:
+    if not normalized or len(normalized) > maximum:
         return None
     return normalized
+
+
+def bounded_reference(value: object) -> str | None:
+    return bounded_text(value, MAX_EVIDENCE_REFERENCE_LENGTH)
+
+
+def closed_shape(value: object, fields: set[str]) -> bool:
+    return isinstance(value, dict) and set(value) == fields
 
 
 def consumer_accepts_v12(
@@ -52,11 +90,17 @@ def consumer_accepts_v12(
     expected_everkeep_tree: str,
     now: datetime,
 ) -> bool:
+    if not closed_shape(record, TOP_LEVEL_FIELDS):
+        return False
     if record.get("schemaVersion") != "1.2":
+        return False
+    if bounded_text(record.get("verificationId"), 160) is None:
         return False
     if record.get("environment") != "isolated":
         return False
     if record.get("environmentId") != expected_environment_id:
+        return False
+    if bounded_text(record.get("environmentId"), 160) is None:
         return False
     if record.get("status") != "pass" or record.get("authoritative") is not True:
         return False
@@ -66,20 +110,34 @@ def consumer_accepts_v12(
         return False
     if record.get("everkeepSourceTree") != expected_everkeep_tree:
         return False
-    if not exact_sha(record.get("everkeepSourceRevision"), 40) or not exact_sha(record.get("everkeepSourceTree"), 40):
+    if not exact_sha(record.get("everkeepSourceRevision"), 40) or not exact_sha(
+        record.get("everkeepSourceTree"), 40
+    ):
         return False
 
     target = record.get("target")
     recovery_point = record.get("recoveryPoint")
     execution = record.get("execution")
-    if not isinstance(target, dict) or not isinstance(recovery_point, dict) or not isinstance(execution, dict):
+    if not closed_shape(target, TARGET_FIELDS):
+        return False
+    if not closed_shape(recovery_point, RECOVERY_POINT_FIELDS):
+        return False
+    if not closed_shape(execution, EXECUTION_FIELDS):
+        return False
+    if bounded_text(target.get("system"), 160) is None:
+        return False
+    if bounded_text(target.get("component"), 160) is None:
         return False
     if target.get("resourceId") != expected_resource_id:
         return False
-    if target.get("deployedRevision") != expected_target_revision or not exact_sha(target.get("deployedRevision"), 40):
+    if bounded_text(target.get("resourceId"), 256) is None:
         return False
-    recovery_point_id = recovery_point.get("id")
-    if not isinstance(recovery_point_id, str) or not recovery_point_id.strip():
+    if target.get("deployedRevision") != expected_target_revision or not exact_sha(
+        target.get("deployedRevision"), 40
+    ):
+        return False
+    recovery_point_id = bounded_text(recovery_point.get("id"), 256)
+    if recovery_point_id is None:
         return False
     if not exact_sha(recovery_point.get("artifactSha256"), 64):
         return False
@@ -89,7 +147,9 @@ def consumer_accepts_v12(
         return False
     if execution.get("productionPromotionPerformed") is not False:
         return False
-    if execution.get("integrityVerified") is not True or execution.get("restoredStateVerified") is not True:
+    if execution.get("integrityVerified") is not True or execution.get(
+        "restoredStateVerified"
+    ) is not True:
         return False
 
     evidence_refs = record.get("evidenceRefs")
@@ -106,14 +166,14 @@ def consumer_accepts_v12(
     evidence_ref_set = set(normalized_evidence_refs)
 
     checks = execution.get("workloadChecks")
-    if not isinstance(checks, list) or not checks:
+    if not isinstance(checks, list) or not checks or len(checks) > 128:
         return False
     check_ids: set[str] = set()
     for check in checks:
-        if not isinstance(check, dict):
+        if not closed_shape(check, WORKLOAD_CHECK_FIELDS):
             return False
-        check_id = check.get("id")
-        if not isinstance(check_id, str) or not check_id or check_id in check_ids:
+        check_id = bounded_text(check.get("id"), 160)
+        if check_id is None or check_id in check_ids:
             return False
         check_ids.add(check_id)
         if check.get("status") != "pass":
@@ -165,8 +225,16 @@ def fixture() -> dict:
             "integrityVerified": True,
             "restoredStateVerified": True,
             "workloadChecks": [
-                {"id": "service-start", "status": "pass", "evidenceRef": "evidence:service-start"},
-                {"id": "data-integrity", "status": "pass", "evidenceRef": "evidence:data-integrity"},
+                {
+                    "id": "service-start",
+                    "status": "pass",
+                    "evidenceRef": "evidence:service-start",
+                },
+                {
+                    "id": "data-integrity",
+                    "status": "pass",
+                    "evidenceRef": "evidence:data-integrity",
+                },
             ],
         },
         "status": "pass",
@@ -197,12 +265,33 @@ def main() -> None:
     schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
     doc = DOC.read_text(encoding="utf-8")
     require(schema.get("additionalProperties") is False, "v1.2 restore contract must be closed")
-    require(schema["properties"]["schemaVersion"]["const"] == "1.2", "v1.2 schema version mismatch")
-    require(schema["properties"]["environment"]["const"] == "isolated", "v1.2 must bind isolated environment")
-    require(schema["properties"]["externalAuthorityTransferred"]["const"] is False, "external authority must not transfer")
-    require(schema["properties"]["execution"]["properties"]["mode"]["const"] == "real_isolated_restore", "simulation must not satisfy v1.2")
-    require(schema["properties"]["execution"]["properties"]["sourceMutationAllowed"]["const"] is False, "restore verification must preserve source")
-    require(schema["properties"]["execution"]["properties"]["productionPromotionPerformed"]["const"] is False, "verification must not promote production")
+    require(
+        schema["properties"]["schemaVersion"]["const"] == "1.2",
+        "v1.2 schema version mismatch",
+    )
+    require(
+        schema["properties"]["environment"]["const"] == "isolated",
+        "v1.2 must bind isolated environment",
+    )
+    require(
+        schema["properties"]["externalAuthorityTransferred"]["const"] is False,
+        "external authority must not transfer",
+    )
+    require(
+        schema["properties"]["execution"]["properties"]["mode"]["const"]
+        == "real_isolated_restore",
+        "simulation must not satisfy v1.2",
+    )
+    require(
+        schema["properties"]["execution"]["properties"]["sourceMutationAllowed"]["const"]
+        is False,
+        "restore verification must preserve source",
+    )
+    require(
+        schema["properties"]["execution"]["properties"]["productionPromotionPerformed"]["const"]
+        is False,
+        "verification must not promote production",
+    )
 
     good = fixture()
     require(accepted(good), "valid exact isolated restore evidence must pass")
@@ -229,7 +318,9 @@ def main() -> None:
     failed_check["execution"]["workloadChecks"][0]["status"] = "fail"
     mutations.append(failed_check)
     orphan_check_evidence = json.loads(json.dumps(good))
-    orphan_check_evidence["execution"]["workloadChecks"][0]["evidenceRef"] = "evidence:not-in-manifest"
+    orphan_check_evidence["execution"]["workloadChecks"][0]["evidenceRef"] = (
+        "evidence:not-in-manifest"
+    )
     mutations.append(orphan_check_evidence)
     malformed_evidence_manifest = json.loads(json.dumps(good))
     malformed_evidence_manifest["evidenceRefs"][0] = {"unexpected": "object"}
@@ -237,6 +328,28 @@ def main() -> None:
     duplicate_evidence_manifest = json.loads(json.dumps(good))
     duplicate_evidence_manifest["evidenceRefs"].append("evidence:service-start")
     mutations.append(duplicate_evidence_manifest)
+    extra_top_level = json.loads(json.dumps(good))
+    extra_top_level["productionReady"] = True
+    mutations.append(extra_top_level)
+    extra_target = json.loads(json.dumps(good))
+    extra_target["target"]["authorityTransfer"] = True
+    mutations.append(extra_target)
+    extra_execution = json.loads(json.dumps(good))
+    extra_execution["execution"]["directProductionWrite"] = True
+    mutations.append(extra_execution)
+    extra_workload_check = json.loads(json.dumps(good))
+    extra_workload_check["execution"]["workloadChecks"][0]["accepted"] = True
+    mutations.append(extra_workload_check)
+    oversized_checks = json.loads(json.dumps(good))
+    oversized_checks["execution"]["workloadChecks"] = [
+        {
+            "id": f"check-{index}",
+            "status": "pass",
+            "evidenceRef": "evidence:service-start",
+        }
+        for index in range(129)
+    ]
+    mutations.append(oversized_checks)
     expired = json.loads(json.dumps(good))
     expired["freshUntil"] = "2026-09-12T04:50:00Z"
     mutations.append(expired)
