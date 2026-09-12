@@ -5,7 +5,7 @@
 
 ## Recovery truth boundary
 
-**Backup Exists is not Recoverable.** Version 1.2 is an additive restore-verification contract for evidence that a specific recovery point was actually restored into a specific isolated environment and that the restored workload was checked successfully.
+**Backup Exists is not Recoverable.** Version 1.2 is an additive restore-verification contract for evidence that a specific recovery point was actually restored into a specific isolated environment and that the restored workload was checked successfully. It requires evidence from a **real isolated restore**, not a simulation or presentation-only exercise.
 
 The older v1.0 and v1.1 contracts remain available for pinned consumers. V1.2 does not silently reinterpret their evidence.
 
