@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 import unicodedata
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -99,6 +99,7 @@ def consumer_accepts_v12(
     expected_everkeep_tree: str,
     expected_recovery_point_id: str,
     expected_artifact_sha256: str,
+    max_evidence_age: object,
     now: object,
 ) -> bool:
     if not closed_shape(record, TOP_LEVEL_FIELDS):
@@ -210,8 +211,14 @@ def consumer_accepts_v12(
         return False
     if not isinstance(now, datetime) or now.tzinfo is None or now.utcoffset() is None:
         return False
+    if not isinstance(max_evidence_age, timedelta) or max_evidence_age <= timedelta(0):
+        return False
     current = now.astimezone(timezone.utc)
-    return produced <= started < completed <= captured < fresh_until and captured <= current <= fresh_until
+    return (
+        produced <= started < completed <= captured < fresh_until
+        and captured <= current <= fresh_until
+        and current - captured <= max_evidence_age
+    )
 
 
 def fixture() -> dict:
@@ -271,6 +278,7 @@ def fixture() -> dict:
 def accepted(
     record: dict,
     *,
+    max_evidence_age: object = timedelta(hours=1),
     now: object = datetime(2026, 9, 12, 5, 0, tzinfo=timezone.utc),
 ) -> bool:
     return consumer_accepts_v12(
@@ -285,6 +293,7 @@ def accepted(
         expected_everkeep_tree="b" * 40,
         expected_recovery_point_id="recovery-point-1",
         expected_artifact_sha256="d" * 64,
+        max_evidence_age=max_evidence_age,
         now=now,
     )
 
@@ -336,6 +345,49 @@ def main() -> None:
         "timezone-naive evaluation clock must fail closed",
     )
     require(not accepted(good, now=None), "missing evaluation clock must fail closed")
+    require(
+        not accepted(good, max_evidence_age=None),
+        "missing consumer freshness ceiling must fail closed",
+    )
+    require(
+        not accepted(good, max_evidence_age="1 hour"),
+        "non-duration consumer freshness ceiling must fail closed",
+    )
+    require(
+        not accepted(good, max_evidence_age=timedelta(0)),
+        "zero consumer freshness ceiling must fail closed",
+    )
+    require(
+        not accepted(good, max_evidence_age=-timedelta(seconds=1)),
+        "negative consumer freshness ceiling must fail closed",
+    )
+    require(
+        not accepted(good, max_evidence_age=timedelta(minutes=10)),
+        "consumer freshness ceiling must shorten producer-declared validity",
+    )
+    require(
+        accepted(good, max_evidence_age=timedelta(minutes=15)),
+        "consumer freshness ceiling must include evidence at the exact age boundary",
+    )
+
+    long_producer_window = json.loads(json.dumps(good))
+    long_producer_window["freshUntil"] = "2027-09-12T04:45:00Z"
+    require(
+        accepted(
+            long_producer_window,
+            max_evidence_age=timedelta(hours=1),
+            now=datetime(2026, 9, 12, 5, 0, tzinfo=timezone.utc),
+        ),
+        "consumer may accept current evidence even when producer validity is longer",
+    )
+    require(
+        not accepted(
+            long_producer_window,
+            max_evidence_age=timedelta(hours=1),
+            now=datetime(2026, 9, 12, 6, 0, tzinfo=timezone.utc),
+        ),
+        "producer-declared long freshness must not outlive consumer maximum evidence age",
+    )
 
     mutations = []
     for path, value in (
@@ -438,6 +490,7 @@ def main() -> None:
         "exact recovery point artifact digest",
         "exact Everkeep source revision and tree",
         "exact deployed target revision",
+        "consumer-supplied maximum evidence age",
         "simulation cannot satisfy this contract",
         "does not authorize production failover",
     ):
