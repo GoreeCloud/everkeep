@@ -28,9 +28,15 @@ A passing v1.2 record binds:
 
 The verification-attempt binding prevents evidence from another otherwise-compatible restore verification from being replayed as the requested verification. Target system and component are consumer-supplied exact bindings, not descriptive labels; a valid record for a different system or runtime component must fail closed even when its resource ID, revision, recovery point, and digest otherwise match. The execution mode is fixed to `real_isolated_restore`. A simulation cannot satisfy this contract. Source mutation and production promotion are both fixed to false.
 
+## Evidence reference integrity
+
+V1.2 uses **content-addressed credential-safe evidence references** for both the evidence manifest and every workload-check reference. References must use the form `evidence+sha256:<64-lowercase-hex>:<logical-locator>` and the logical locator is deliberately limited to credential-free path segments.
+
+Transport URLs, query strings, fragments, user-info syntax, percent-encoded path material, backslashes, surrounding whitespace, control characters, mutable legacy `evidence:` identifiers, and other non-canonical reference forms fail closed. A workload check may reference only an immutable evidence reference that is also present in the record's evidence manifest. The digest binds the referenced evidence bytes; the logical locator remains descriptive rather than becoming a credential, transport authority, or mutable "latest" pointer.
+
 ## Fail-closed consumption
 
-A consumer must reject v1.2 evidence when the verification attempt, environment, target system, target component, protected resource, target revision, Everkeep revision/tree, recovery-point identity, artifact digest, workload checks, timestamps, freshness, integrity, restored-state verification, or authority-transfer boundary does not match the expected scope. Missing or failed workload checks remain non-recoverable.
+A consumer must reject v1.2 evidence when the verification attempt, environment, target system, target component, protected resource, target revision, Everkeep revision/tree, recovery-point identity, artifact digest, workload checks, timestamps, freshness, integrity, restored-state verification, evidence-reference integrity, or authority-transfer boundary does not match the expected scope. Missing or failed workload checks remain non-recoverable.
 
 The consumer evaluation clock must be a timezone-aware datetime. Missing, malformed, or timezone-naive evaluation clocks fail closed rather than bypassing or crashing freshness evaluation.
 
