@@ -83,7 +83,12 @@
             "properties": {
               "id": {"type": "string", "minLength": 1, "maxLength": 160},
               "status": {"type": "string", "enum": ["pass", "fail", "unknown"]},
-              "evidenceRef": {"type": "string", "minLength": 1, "maxLength": 1000}
+              "evidenceRef": {
+                "type": "string",
+                "minLength": 82,
+                "maxLength": 1000,
+                "pattern": "^evidence\\+sha256:[0-9a-f]{64}:[A-Za-z0-9][A-Za-z0-9._-]*(/[A-Za-z0-9][A-Za-z0-9._-]*)*$"
+              }
             }
           }
         }
@@ -96,7 +101,12 @@
       "minItems": 1,
       "maxItems": 256,
       "uniqueItems": true,
-      "items": {"type": "string", "minLength": 1, "maxLength": 1000}
+      "items": {
+        "type": "string",
+        "minLength": 82,
+        "maxLength": 1000,
+        "pattern": "^evidence\\+sha256:[0-9a-f]{64}:[A-Za-z0-9][A-Za-z0-9._-]*(/[A-Za-z0-9][A-Za-z0-9._-]*)*$"
+      }
     },
     "externalAuthorityTransferred": {"const": false}
   }
