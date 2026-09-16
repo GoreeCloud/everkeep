@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 import unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -12,6 +13,10 @@ DOC = ROOT / "docs" / "RESTORE-VERIFICATION-V1.2.md"
 HEX40 = set("0123456789abcdef")
 MAX_EVIDENCE_REFERENCE_LENGTH = 1000
 MAX_EVIDENCE_REFERENCES = 256
+EVIDENCE_REFERENCE_PATTERN = (
+    r"^evidence\+sha256:[0-9a-f]{64}:[A-Za-z0-9][A-Za-z0-9._-]*(?:/[A-Za-z0-9][A-Za-z0-9._-]*)*$"
+)
+EVIDENCE_REFERENCE = re.compile(EVIDENCE_REFERENCE_PATTERN)
 TOP_LEVEL_FIELDS = {
     "schemaVersion",
     "verificationId",
@@ -79,7 +84,10 @@ def bounded_text(value: object, maximum: int) -> str | None:
 
 
 def bounded_reference(value: object) -> str | None:
-    return bounded_text(value, MAX_EVIDENCE_REFERENCE_LENGTH)
+    reference = bounded_text(value, MAX_EVIDENCE_REFERENCE_LENGTH)
+    if reference is None or EVIDENCE_REFERENCE.fullmatch(reference) is None:
+        return None
+    return reference
 
 
 def closed_shape(value: object, fields: set[str]) -> bool:
@@ -222,6 +230,10 @@ def consumer_accepts_v12(
 
 
 def fixture() -> dict:
+    restore_log = "evidence+sha256:" + "1" * 64 + ":restore/log.json"
+    artifact_digest = "evidence+sha256:" + "2" * 64 + ":restore/artifact-digest.json"
+    service_start = "evidence+sha256:" + "3" * 64 + ":workload/service-start.json"
+    data_integrity = "evidence+sha256:" + "4" * 64 + ":workload/data-integrity.json"
     return {
         "schemaVersion": "1.2",
         "verificationId": "isolated-restore-1",
@@ -254,22 +266,22 @@ def fixture() -> dict:
                 {
                     "id": "service-start",
                     "status": "pass",
-                    "evidenceRef": "evidence:service-start",
+                    "evidenceRef": service_start,
                 },
                 {
                     "id": "data-integrity",
                     "status": "pass",
-                    "evidenceRef": "evidence:data-integrity",
+                    "evidenceRef": data_integrity,
                 },
             ],
         },
         "status": "pass",
         "authoritative": True,
         "evidenceRefs": [
-            "evidence:restore-log",
-            "evidence:artifact-digest",
-            "evidence:service-start",
-            "evidence:data-integrity",
+            restore_log,
+            artifact_digest,
+            service_start,
+            data_integrity,
         ],
         "externalAuthorityTransferred": False,
     }
@@ -332,6 +344,15 @@ def main() -> None:
     require(
         schema["properties"]["evidenceRefs"]["maxItems"] == MAX_EVIDENCE_REFERENCES,
         "schema and consumer evidence-reference limits must match",
+    )
+    require(
+        schema["properties"]["evidenceRefs"]["items"]["pattern"] == EVIDENCE_REFERENCE_PATTERN,
+        "manifest evidence-reference schema and consumer grammar must match",
+    )
+    require(
+        schema["properties"]["execution"]["properties"]["workloadChecks"]["items"]["properties"]["evidenceRef"]["pattern"]
+        == EVIDENCE_REFERENCE_PATTERN,
+        "workload evidence-reference schema and consumer grammar must match",
     )
 
     good = fixture()
@@ -417,22 +438,20 @@ def main() -> None:
     mutations.append(failed_check)
     orphan_check_evidence = json.loads(json.dumps(good))
     orphan_check_evidence["execution"]["workloadChecks"][0]["evidenceRef"] = (
-        "evidence:not-in-manifest"
+        "evidence+sha256:" + "9" * 64 + ":workload/not-in-manifest.json"
     )
     mutations.append(orphan_check_evidence)
     malformed_evidence_manifest = json.loads(json.dumps(good))
     malformed_evidence_manifest["evidenceRefs"][0] = {"unexpected": "object"}
     mutations.append(malformed_evidence_manifest)
     duplicate_evidence_manifest = json.loads(json.dumps(good))
-    duplicate_evidence_manifest["evidenceRefs"].append("evidence:service-start")
+    duplicate_evidence_manifest["evidenceRefs"].append(good["evidenceRefs"][2])
     mutations.append(duplicate_evidence_manifest)
     oversized_evidence_manifest = json.loads(json.dumps(good))
     oversized_evidence_manifest["evidenceRefs"] = [
-        f"evidence:manifest:{index}" for index in range(MAX_EVIDENCE_REFERENCES + 1)
+        f"evidence+sha256:{index:064x}:manifest/{index}.json"
+        for index in range(MAX_EVIDENCE_REFERENCES + 1)
     ]
-    oversized_evidence_manifest["evidenceRefs"].extend(
-        ["evidence:service-start", "evidence:data-integrity"]
-    )
     mutations.append(oversized_evidence_manifest)
     extra_top_level = json.loads(json.dumps(good))
     extra_top_level["productionReady"] = True
@@ -451,7 +470,7 @@ def main() -> None:
         {
             "id": f"check-{index}",
             "status": "pass",
-            "evidenceRef": "evidence:service-start",
+            "evidenceRef": good["evidenceRefs"][2],
         }
         for index in range(129)
     ]
@@ -462,8 +481,8 @@ def main() -> None:
         (("target", "component"), "example-runtime\n"),
         (("recoveryPoint", "id"), " recovery-point-1"),
         (("execution", "workloadChecks", 0, "id"), " service-start"),
-        (("execution", "workloadChecks", 0, "evidenceRef"), "evidence:service-start "),
-        (("evidenceRefs", 0), " evidence:restore-log"),
+        (("execution", "workloadChecks", 0, "evidenceRef"), good["evidenceRefs"][2] + " "),
+        (("evidenceRefs", 0), " " + good["evidenceRefs"][0]),
         (("capturedAt",), " 2026-09-12T04:45:00Z"),
         (("execution", "completedAt"), "2026-09-12T04:40:00Z\n"),
     ):
@@ -472,6 +491,18 @@ def main() -> None:
         for key in path[:-1]:
             target = target[key]
         target[path[-1]] = value
+        mutations.append(bad)
+    for unsafe_reference in (
+        "evidence:restore-log",
+        "evidence+sha256:" + "5" * 64 + ":https://evidence.example/restore",
+        "evidence+sha256:" + "5" * 64 + ":restore/current.json?token=secret",
+        "evidence+sha256:" + "5" * 64 + ":user@host/restore.json",
+        "evidence+sha256:" + "5" * 64 + ":restore/%2E%2E/secret",
+        "evidence+sha256:" + "5" * 64 + ":restore/report.json#fragment",
+        "evidence+sha256:" + "5" * 64 + ":restore\\report.json",
+    ):
+        bad = json.loads(json.dumps(good))
+        bad["evidenceRefs"][0] = unsafe_reference
         mutations.append(bad)
     zero_freshness = json.loads(json.dumps(good))
     zero_freshness["capturedAt"] = "2026-09-12T05:00:00Z"
@@ -491,6 +522,7 @@ def main() -> None:
         "exact Everkeep source revision and tree",
         "exact deployed target revision",
         "consumer-supplied maximum evidence age",
+        "content-addressed credential-safe evidence references",
         "simulation cannot satisfy this contract",
         "does not authorize production failover",
     ):
