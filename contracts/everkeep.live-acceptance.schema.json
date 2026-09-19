@@ -5,11 +5,29 @@
   "type": "object",
   "additionalProperties": false,
   "required": ["schemaVersion", "environment", "capturedAt", "sourceRevision", "checks", "accepted"],
+  "$defs": {
+    "revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "authoritativeProvenance": {
+      "type": "object",
+      "required": ["provider", "environment", "everkeep_revision", "evidence_id", "observed_at"],
+      "properties": {
+        "provider": {"type": "string", "minLength": 1},
+        "environment": {"enum": ["staging", "production"]},
+        "everkeep_revision": {"$ref": "#/$defs/revision"},
+        "provider_revision": {"$ref": "#/$defs/revision"},
+        "evidence_id": {"type": "string", "minLength": 1},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    }
+  },
   "properties": {
-    "schemaVersion": {"const": "1.0"},
+    "schemaVersion": {"const": "1.1"},
     "environment": {"enum": ["staging", "production"]},
     "capturedAt": {"type": "string", "format": "date-time"},
-    "sourceRevision": {"type": "string", "minLength": 7},
+    "sourceRevision": {"$ref": "#/$defs/revision"},
     "checks": {
       "type": "array",
       "minItems": 1,
@@ -18,11 +36,268 @@
         "additionalProperties": false,
         "required": ["name", "status", "authoritative", "evidence"],
         "properties": {
-          "name": {"type": "string"},
+          "name": {
+            "enum": [
+              "everkeep.readiness",
+              "postgres.migrations",
+              "identity.authenticated-flow",
+              "privacy.deliberate-denial",
+              "wardveil.deliberate-denial",
+              "mesh.delivery-retry",
+              "adapter.cursor-restart",
+              "runtime.durable-restart"
+            ]
+          },
           "status": {"enum": ["pass", "fail", "unknown"]},
           "authoritative": {"type": "boolean"},
           "evidence": {"type": "object"}
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {"const": "pass"},
+                "authoritative": {"const": true}
+              },
+              "required": ["status", "authoritative"]
+            },
+            "then": {
+              "properties": {
+                "evidence": {"$ref": "#/$defs/authoritativeProvenance"}
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "name": {"const": "everkeep.readiness"},
+                "status": {"const": "pass"},
+                "authoritative": {"const": true}
+              },
+              "required": ["name", "status", "authoritative"]
+            },
+            "then": {
+              "properties": {
+                "evidence": {
+                  "allOf": [
+                    {"$ref": "#/$defs/authoritativeProvenance"},
+                    {
+                      "required": ["ready", "deployed_revision"],
+                      "properties": {
+                        "provider": {"const": "everkeep"},
+                        "ready": {"const": true},
+                        "deployed_revision": {"$ref": "#/$defs/revision"}
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "name": {"const": "postgres.migrations"},
+                "status": {"const": "pass"},
+                "authoritative": {"const": true}
+              },
+              "required": ["name", "status", "authoritative"]
+            },
+            "then": {
+              "properties": {
+                "evidence": {
+                  "allOf": [
+                    {"$ref": "#/$defs/authoritativeProvenance"},
+                    {
+                      "required": ["database_reachable", "migrations_current"],
+                      "properties": {
+                        "provider": {"const": "postgresql"},
+                        "database_reachable": {"const": true},
+                        "migrations_current": {"const": true}
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "name": {"const": "identity.authenticated-flow"},
+                "status": {"const": "pass"},
+                "authoritative": {"const": true}
+              },
+              "required": ["name", "status", "authoritative"]
+            },
+            "then": {
+              "properties": {
+                "evidence": {
+                  "allOf": [
+                    {"$ref": "#/$defs/authoritativeProvenance"},
+                    {
+                      "required": ["provider_revision", "service_id", "authenticated_request_succeeded", "unauthorized_request_rejected"],
+                      "properties": {
+                        "provider": {"const": "goreecloud-identity"},
+                        "provider_revision": {"$ref": "#/$defs/revision"},
+                        "service_id": {"const": "everkeep"},
+                        "authenticated_request_succeeded": {"const": true},
+                        "unauthorized_request_rejected": {"const": true}
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "name": {"const": "privacy.deliberate-denial"},
+                "status": {"const": "pass"},
+                "authoritative": {"const": true}
+              },
+              "required": ["name", "status", "authoritative"]
+            },
+            "then": {
+              "properties": {
+                "evidence": {
+                  "allOf": [
+                    {"$ref": "#/$defs/authoritativeProvenance"},
+                    {
+                      "required": ["provider_revision", "denial_observed", "mutation_committed", "decision_id"],
+                      "properties": {
+                        "provider": {"const": "privacy-shield"},
+                        "provider_revision": {"$ref": "#/$defs/revision"},
+                        "denial_observed": {"const": true},
+                        "mutation_committed": {"const": false},
+                        "decision_id": {"type": "string", "minLength": 1}
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "name": {"const": "wardveil.deliberate-denial"},
+                "status": {"const": "pass"},
+                "authoritative": {"const": true}
+              },
+              "required": ["name", "status", "authoritative"]
+            },
+            "then": {
+              "properties": {
+                "evidence": {
+                  "allOf": [
+                    {"$ref": "#/$defs/authoritativeProvenance"},
+                    {
+                      "required": ["provider_revision", "denial_observed", "mutation_committed", "audit_reference"],
+                      "properties": {
+                        "provider": {"const": "wardveil-security"},
+                        "provider_revision": {"$ref": "#/$defs/revision"},
+                        "denial_observed": {"const": true},
+                        "mutation_committed": {"const": false},
+                        "audit_reference": {"type": "string", "minLength": 1}
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "name": {"const": "mesh.delivery-retry"},
+                "status": {"const": "pass"},
+                "authoritative": {"const": true}
+              },
+              "required": ["name", "status", "authoritative"]
+            },
+            "then": {
+              "properties": {
+                "evidence": {
+                  "allOf": [
+                    {"$ref": "#/$defs/authoritativeProvenance"},
+                    {
+                      "required": ["provider_revision", "delivery_succeeded", "transient_failure_observed", "retry_preserved", "event_id"],
+                      "properties": {
+                        "provider": {"const": "goreecloud-mesh"},
+                        "provider_revision": {"$ref": "#/$defs/revision"},
+                        "delivery_succeeded": {"const": true},
+                        "transient_failure_observed": {"const": true},
+                        "retry_preserved": {"const": true},
+                        "event_id": {"type": "string", "minLength": 1}
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "name": {"const": "adapter.cursor-restart"},
+                "status": {"const": "pass"},
+                "authoritative": {"const": true}
+              },
+              "required": ["name", "status", "authoritative"]
+            },
+            "then": {
+              "properties": {
+                "evidence": {
+                  "allOf": [
+                    {"$ref": "#/$defs/authoritativeProvenance"},
+                    {
+                      "required": ["restart_observed", "cursor_resumed", "duplicate_detected", "skip_detected", "adapter_id"],
+                      "properties": {
+                        "provider": {"const": "everkeep"},
+                        "restart_observed": {"const": true},
+                        "cursor_resumed": {"const": true},
+                        "duplicate_detected": {"const": false},
+                        "skip_detected": {"const": false},
+                        "adapter_id": {"type": "string", "minLength": 1}
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "name": {"const": "runtime.durable-restart"},
+                "status": {"const": "pass"},
+                "authoritative": {"const": true}
+              },
+              "required": ["name", "status", "authoritative"]
+            },
+            "then": {
+              "properties": {
+                "evidence": {
+                  "allOf": [
+                    {"$ref": "#/$defs/authoritativeProvenance"},
+                    {
+                      "required": ["restart_observed", "durable_state_preserved", "idempotency_preserved", "pending_outbox_preserved"],
+                      "properties": {
+                        "provider": {"const": "everkeep"},
+                        "restart_observed": {"const": true},
+                        "durable_state_preserved": {"const": true},
+                        "idempotency_preserved": {"const": true},
+                        "pending_outbox_preserved": {"const": true}
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
       }
     },
     "accepted": {"type": "boolean"}
