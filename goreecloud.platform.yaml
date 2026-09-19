@@ -1,7 +1,7 @@
-schema_version: '0.3'
+schema_version: '0.4'
 
 component:
-  type: platform-system
+  type: service
   id: goreecloud-everkeep
   product_name: Everkeep
   repository: GoreeCloud/goreecloud-everkeep
@@ -54,7 +54,7 @@ platform_systems:
     evidence:
       - README.md
       - WEBSITE.md
-    notes: Continuity Center has an accepted repository-specific Glaze UI 2.1.0 production web baseline, while the current Platform Contract consumer baseline is 1.3.0; current-contract migration and acceptance remain required and presentation evidence does not establish recovery readiness.
+    notes: Continuity Center has an accepted repository-specific Glaze UI 2.1.0 production web baseline, while the current Platform Contract consumer baseline is GLAZE UI V1.5 / 1.5.1; current-contract migration and acceptance remain required and presentation evidence does not establish recovery readiness.
   mesh:
     result: applicable-migration-required
     version: null
@@ -78,13 +78,21 @@ platform_systems:
       - README.md
       - contracts/everkeep.mesh-evidence-profile.json
     notes: GoreeCloud Identity remains authoritative for actors and service credentials used by Everkeep and Mesh delivery, but live Identity provider connectivity and production credential acceptance remain incomplete.
-  sync:
+  policy:
     result: applicable-blocked
     version: null
     evidence:
       - README.md
       - CONTINUITY.md
-    notes: Everkeep must preserve the boundary between synchronization and recovery, protect Sync-owned durable configuration and control state where applicable, and coordinate restore/reconciliation semantics without treating synchronized replicas as backup evidence. No accepted Everkeep-to-Sync runtime integration is established by the current main source baseline.
+    notes: Everkeep owns resilience, recovery, preservation, portability, continuity, succession, and digital-legacy semantics within its authority, but GoreeCloud Policy is a separate Integral Platform System. No accepted GoreeCloud Policy runtime contract, decision exchange, distribution, enforcement-coordination integration, or Everkeep-specific acceptance is established.
+
+  observability:
+    result: applicable-blocked
+    version: null
+    evidence:
+      - README.md
+      - STATUS.md
+    notes: Everkeep produces continuity, recovery, verification, drill, and assurance evidence, but GoreeCloud Observability remains a separate Integral Platform System. No accepted Observability runtime integration, telemetry or health contract, freshness or completeness acceptance, or Everkeep-specific production evidence is established.
 
 health:
   health_endpoint: null
@@ -121,11 +129,11 @@ external_dependencies:
     version_constraint: null
 
 compatibility:
-  platform_contract: '0.3'
-  glaze_ui_required: '1.3.0'
+  platform_contract: '0.4'
+  glaze_ui_required: '1.5.1'
   requires:
-    - goreecloud-platform-contract==0.3
-    - glaze-ui==1.3.0
+    - goreecloud-platform-contract==0.4
+    - glaze-ui==1.5.1
   provides:
     - everkeep-continuity-status-v1
     - everkeep-continuity-adoption-v1
@@ -151,10 +159,12 @@ conformance:
     - Everkeep remains in Active Development and source-level continuity architecture does not establish production recovery readiness or production-effect authority.
     - GoreeCloud Manager integration and acceptance for Everkeep service state are not established.
     - GoreeCloud Sync continuity/recovery integration and production acceptance are not established.
+    - GoreeCloud Policy integration remains blocked pending an accepted platform Policy runtime contract plus Everkeep-specific decision, distribution, enforcement-coordination, and evidence acceptance.
+    - GoreeCloud Observability integration remains blocked pending an accepted platform Observability runtime contract plus Everkeep-specific health, telemetry, freshness, completeness, diagnostics, and operational-evidence acceptance.
     - Live GoreeCloud Identity authority-provider connectivity and production service-credential acceptance remain incomplete.
     - Live Privacy Shield authority-provider connectivity and production acceptance remain incomplete.
     - Live Wardveil Security authority-provider connectivity and production acceptance remain incomplete.
     - Mesh runtime delivery remains production-unaccepted and requires live producer identity, routing, target-environment evidence, and end-to-end acceptance.
-    - Continuity Center requires migration and acceptance against the current Stable Glaze UI 1.3.0 baseline despite its separate accepted 2.1.0 repository-specific production web baseline.
+    - Continuity Center requires migration and acceptance against the current Stable Glaze UI 1.5.1 baseline despite its separate historical 2.1.0 repository-specific production web evidence.
     - Live production failover execution, production rollback, traffic switching, alternate-environment deployment, and provider-specific recovery execution remain unaccepted.
     - Application-specific production backup, restore, topology, failover, rollback, RPO/RTO, and recovery-assurance evidence remain required for each protected workload.
