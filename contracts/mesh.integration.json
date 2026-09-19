@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "platform": "everkeep",
   "producer_repository": "GoreeCloud/goreecloud-everkeep",
   "consumer_repository": "GoreeCloud/goreecloud-mesh",
@@ -14,5 +14,23 @@
     "valid_until_required_for_validated": true,
     "consumer_override_allowed": false
   },
-  "purpose": "Allows GoreeCloud Mesh to consume bounded Everkeep continuity evidence while Everkeep remains authoritative for resilience, recovery, preservation, portability, succession, digital-legacy state, and evidence validity."
+  "purpose": "Allows GoreeCloud Mesh to consume bounded Everkeep continuity evidence while Everkeep remains authoritative for resilience, recovery, preservation, portability, succession, digital-legacy state, and evidence validity. Identity-authenticated transport remains coordination-only and does not establish recovery truth or production acceptance.",
+  "identity_authenticated_evidence_delivery": {
+    "credential_authority": "goreecloud-identity",
+    "service_id": "everkeep",
+    "audience": "goreecloud-mesh",
+    "required_scope": "mesh.evidence.write",
+    "fresh_credential_provider_supported": true,
+    "credential_requested_per_delivery": true,
+    "destination_validated_before_credential_request": true,
+    "credential_persisted_by_everkeep_client": false,
+    "credential_in_evidence_allowed": false,
+    "credential_in_receipt_allowed": false,
+    "arbitrary_remote_error_reflection_allowed": false,
+    "transport_error_chaining_allowed": false,
+    "success_receipt_body_bounded": true,
+    "malformed_success_receipt_sanitized": true,
+    "production_identity_issuance_accepted": false,
+    "live_mesh_delivery_accepted": false
+  }
 }
