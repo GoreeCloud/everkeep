@@ -1,0 +1,51 @@
+# Everkeep Restore Verification v1.2 — Exact Isolated Restore Evidence
+
+**Roadmap:** FR-004  
+**Lifecycle:** Development source candidate
+
+## Recovery truth boundary
+
+**Backup Exists is not Recoverable.** Version 1.2 is an additive restore-verification contract for evidence that a specific recovery point was actually restored into a specific isolated environment and that the restored workload was checked successfully. It requires evidence from a **real isolated restore**, not a simulation or presentation-only exercise.
+
+The older v1.0 and v1.1 contracts remain available for pinned consumers. V1.2 does not silently reinterpret their evidence.
+
+## Exact identity binding
+
+A passing v1.2 record binds:
+
+- the exact verification-attempt identifier expected by the consumer;
+- the exact isolated environment identifier;
+- the exact target system and component expected by the consumer;
+- the exact recovery point identifier;
+- the exact recovery point artifact digest;
+- the exact Everkeep source revision and tree;
+- the exact protected resource identifier;
+- the exact deployed target revision;
+- the recovery point production time;
+- restore start, completion, capture, and producer freshness times;
+- integrity verification and restored-state verification; and
+- one or more workload-specific checks with bounded evidence references.
+
+The verification-attempt binding prevents evidence from another otherwise-compatible restore verification from being replayed as the requested verification. Target system and component are consumer-supplied exact bindings, not descriptive labels; a valid record for a different system or runtime component must fail closed even when its resource ID, revision, recovery point, and digest otherwise match. The execution mode is fixed to `real_isolated_restore`. A simulation cannot satisfy this contract. Source mutation and production promotion are both fixed to false.
+
+## Evidence reference integrity
+
+V1.2 uses **content-addressed credential-safe evidence references** for both the evidence manifest and every workload-check reference. References must use the form `evidence+sha256:<64-lowercase-hex>:<logical-locator>` and the logical locator is deliberately limited to credential-free path segments.
+
+Transport URLs, query strings, fragments, user-info syntax, percent-encoded path material, backslashes, surrounding whitespace, control characters, mutable legacy `evidence:` identifiers, and other non-canonical reference forms fail closed. A workload check may reference only an immutable evidence reference that is also present in the record's evidence manifest. The digest binds the referenced evidence bytes; the logical locator remains descriptive rather than becoming a credential, transport authority, or mutable "latest" pointer.
+
+## Fail-closed consumption
+
+A consumer must reject v1.2 evidence when the verification attempt, environment, target system, target component, protected resource, target revision, Everkeep revision/tree, recovery-point identity, artifact digest, workload checks, timestamps, freshness, integrity, restored-state verification, evidence-reference integrity, or authority-transfer boundary does not match the expected scope. Missing or failed workload checks remain non-recoverable.
+
+The consumer evaluation clock must be a timezone-aware datetime. Missing, malformed, or timezone-naive evaluation clocks fail closed rather than bypassing or crashing freshness evaluation.
+
+A consumer must provide a positive **consumer-supplied maximum evidence age**. Missing, non-duration, zero, or negative consumer freshness ceilings fail closed. Acceptance ends at the earlier of Everkeep's `freshUntil` boundary and the consumer-supplied maximum evidence age measured from `capturedAt`. Consumers may shorten evidence freshness, but they must not extend Everkeep's evidence validity. V1.2 deliberately defines no global default maximum age; the consuming operation or policy must choose and justify its own positive bound.
+
+## Authority boundary
+
+Everkeep remains the recovery and restore-verification authority. This evidence records what was observed during a bounded restore exercise; it does not grant Privacy Shield, Wardveil, Identity, Manager, Mesh, or the restored workload any additional authority.
+
+A passing source contract or validation run does not prove that any real production workload has been restored. A real record must be generated from an actual isolated restore and separately accepted for the exact verification attempt, workload, target system/component, recovery point, artifact, environment, and consumer freshness policy.
+
+This contract does not authorize production failover, production promotion, traffic switching, destructive recovery actions, release approval, or Stable qualification.

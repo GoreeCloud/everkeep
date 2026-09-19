@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goreecloud.dev/everkeep/contracts/everkeep.restore-verification.v1.2.schema.json",
+  "title": "Everkeep Exact Isolated Restore Verification Evidence v1.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "verificationId",
+    "environment",
+    "environmentId",
+    "capturedAt",
+    "freshUntil",
+    "everkeepSourceRevision",
+    "everkeepSourceTree",
+    "target",
+    "recoveryPoint",
+    "execution",
+    "status",
+    "authoritative",
+    "evidenceRefs",
+    "externalAuthorityTransferred"
+  ],
+  "properties": {
+    "schemaVersion": {"const": "1.2"},
+    "verificationId": {"type": "string", "minLength": 1, "maxLength": 160},
+    "environment": {"const": "isolated"},
+    "environmentId": {"type": "string", "minLength": 1, "maxLength": 160},
+    "capturedAt": {"type": "string", "format": "date-time"},
+    "freshUntil": {"type": "string", "format": "date-time"},
+    "everkeepSourceRevision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "everkeepSourceTree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["system", "component", "resourceId", "deployedRevision"],
+      "properties": {
+        "system": {"type": "string", "minLength": 1, "maxLength": 160},
+        "component": {"type": "string", "minLength": 1, "maxLength": 160},
+        "resourceId": {"type": "string", "minLength": 1, "maxLength": 256},
+        "deployedRevision": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "recoveryPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "artifactSha256", "producedAt"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 256},
+        "artifactSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "producedAt": {"type": "string", "format": "date-time"}
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "startedAt",
+        "completedAt",
+        "sourceMutationAllowed",
+        "productionPromotionPerformed",
+        "integrityVerified",
+        "restoredStateVerified",
+        "workloadChecks"
+      ],
+      "properties": {
+        "mode": {"const": "real_isolated_restore"},
+        "startedAt": {"type": "string", "format": "date-time"},
+        "completedAt": {"type": "string", "format": "date-time"},
+        "sourceMutationAllowed": {"const": false},
+        "productionPromotionPerformed": {"const": false},
+        "integrityVerified": {"type": "boolean"},
+        "restoredStateVerified": {"type": "boolean"},
+        "workloadChecks": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "status", "evidenceRef"],
+            "properties": {
+              "id": {"type": "string", "minLength": 1, "maxLength": 160},
+              "status": {"type": "string", "enum": ["pass", "fail", "unknown"]},
+              "evidenceRef": {
+                "type": "string",
+                "minLength": 82,
+                "maxLength": 1000,
+                "pattern": "^evidence\\+sha256:[0-9a-f]{64}:[A-Za-z0-9][A-Za-z0-9._-]*(?:/[A-Za-z0-9][A-Za-z0-9._-]*)*$"
+              }
+            }
+          }
+        }
+      }
+    },
+    "status": {"type": "string", "enum": ["pass", "fail", "unknown"]},
+    "authoritative": {"type": "boolean"},
+    "evidenceRefs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 82,
+        "maxLength": 1000,
+        "pattern": "^evidence\\+sha256:[0-9a-f]{64}:[A-Za-z0-9][A-Za-z0-9._-]*(?:/[A-Za-z0-9][A-Za-z0-9._-]*)*$"
+      }
+    },
+    "externalAuthorityTransferred": {"const": false}
+  }
+}
