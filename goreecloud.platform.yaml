@@ -54,7 +54,7 @@ platform_systems:
     evidence:
       - README.md
       - WEBSITE.md
-    notes: Continuity Center has an accepted repository-specific Glaze UI 2.1.0 production web baseline, while the current Platform Contract consumer baseline is GLAZE UI V1.5 / 1.5.1; current-contract migration and acceptance remain required and presentation evidence does not establish recovery readiness.
+    notes: Continuity Center has an accepted repository-specific Glaze UI 2.1.0 production web baseline, while the current shared consumer baseline is GLAZE UI V1.6 / 1.6.0; current-contract migration and acceptance remain required and presentation evidence does not establish recovery readiness.
   mesh:
     result: applicable-migration-required
     version: null
