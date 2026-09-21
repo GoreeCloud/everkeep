@@ -4,7 +4,7 @@ component:
   type: service
   id: goreecloud-everkeep
   product_name: Everkeep
-  repository: GoreeCloud/goreecloud-everkeep
+  repository: GoreeCloud/everkeep
 
 lifecycle: development
 version: '0.5.0'
