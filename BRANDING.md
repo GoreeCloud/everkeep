@@ -6,6 +6,16 @@ The official product name is **Everkeep**. Everkeep is the GoreeCloud platform i
 
 The repository-synchronized canonical identity asset is `assets/everkeep.svg`. Branding authority is maintained by the canonical GoreeCloud branding repository, `GoreeCloud/branding-assets`.
 
+Current approved identity: **Continuity Core**.
+
+Canonical source: `systems/everkeep/everkeep.svg`.
+
+Canonical branding revision: `c0fe79ed59e15087166a543c47eac67ef382f3fd`.
+
+Canonical asset blob: `df94dfee34632a3e6684b1d49aa306b3174065fa`.
+
+The local `assets/everkeep.svg` file is a synchronized consumer derivative and must match that canonical source exactly.
+
 ## Usage rules
 
 - Do not use generic placeholders in place of the approved Everkeep identity.
