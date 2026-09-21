@@ -40,7 +40,8 @@ class RepositoryBaselineTests(unittest.TestCase):
     def test_governed_root_baseline_is_complete(self) -> None:
         self.assertEqual(len(validator.REQUIRED_ROOT_FILES), 15)
         self.assertIn("PRIVACY POLICY.md", validator.REQUIRED_ROOT_FILES)
-        self.assertIn("NOTES.md", validator.REQUIRED_ROOT_FILES)\n        self.assertIn("CAPABILITIES.md", validator.REQUIRED_ROOT_FILES)
+        self.assertIn("NOTES.md", validator.REQUIRED_ROOT_FILES)
+        self.assertIn("CAPABILITIES.md", validator.REQUIRED_ROOT_FILES)
 
     def test_complete_baseline_passes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
