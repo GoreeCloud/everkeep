@@ -23,6 +23,8 @@ class RepositoryBaselineTests(unittest.TestCase):
             path.parent.mkdir(parents=True, exist_ok=True)
             if relative == "goreecloud.platform.yaml":
                 content = "component:\n  repository: GoreeCloud/everkeep\n"
+            elif relative == validator.ROADMAP:
+                content = "**Canonical repository:** GoreeCloud/everkeep\nmeaningful roadmap control\n"
             elif relative == validator.VALIDATION_WORKFLOW:
                 content = (
                     "persist-credentials: false\n"
@@ -62,12 +64,23 @@ class RepositoryBaselineTests(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 validator.validate_repository_baseline(root)
 
-    def test_stale_repository_identity_fails(self) -> None:
+    def test_stale_platform_repository_identity_fails(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             self.populate(root)
             (root / "goreecloud.platform.yaml").write_text(
                 "component:\n  repository: GoreeCloud/goreecloud-everkeep\n", encoding="utf-8"
+            )
+            with self.assertRaises(SystemExit):
+                validator.validate_repository_baseline(root)
+
+    def test_stale_roadmap_repository_identity_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.populate(root)
+            (root / validator.ROADMAP).write_text(
+                "**Canonical repository:** GoreeCloud/goreecloud-everkeep\nmeaningful roadmap control\n",
+                encoding="utf-8",
             )
             with self.assertRaises(SystemExit):
                 validator.validate_repository_baseline(root)
