@@ -1,19 +1,42 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
-  <title id="title">Everkeep</title>
-  <desc id="desc">A fixed preserved keystone remains centered between two independent continuity rails as systems change around it.</desc>
+  <title id="title">Everkeep — Continuity Core</title>
+  <desc id="desc">A durable faceted preservation core wrapped by one continuous recovery loop, representing continuity, verified restoration, succession, and long-term survival.</desc>
   <defs>
-    <linearGradient id="everkeep-keystone" x1="11" y1="12" x2="53" y2="52" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#2DD4BF"/>
-      <stop offset=".52" stop-color="#3B82F6"/>
-      <stop offset="1" stop-color="#8B5CF6"/>
+    <linearGradient id="ek-core" x1="13" y1="10" x2="51" y2="55" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22D3EE"/>
+      <stop offset=".48" stop-color="#3B82F6"/>
+      <stop offset="1" stop-color="#7C3AED"/>
     </linearGradient>
-    <linearGradient id="everkeep-keystone-core" x1="24" y1="21" x2="40" y2="43" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#F8FAFC"/>
-      <stop offset="1" stop-color="#E0F2FE"/>
+    <linearGradient id="ek-loop" x1="7" y1="12" x2="57" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5EEAD4"/>
+      <stop offset=".50" stop-color="#60A5FA"/>
+      <stop offset="1" stop-color="#C084FC"/>
+    </linearGradient>
+    <linearGradient id="ek-jewel" x1="23" y1="21" x2="42" y2="43" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#DDE7FF"/>
     </linearGradient>
   </defs>
-  <path d="M17 12C11.5 22 11.5 42 17 52" fill="none" stroke="url(#everkeep-keystone)" stroke-width="6" stroke-linecap="round"/>
-  <path d="M47 12C52.5 22 52.5 42 47 52" fill="none" stroke="url(#everkeep-keystone)" stroke-width="6" stroke-linecap="round"/>
-  <path d="M32 19L42 26V38L32 45L22 38V26Z" fill="url(#everkeep-keystone-core)" stroke="url(#everkeep-keystone)" stroke-width="3.5" stroke-linejoin="round"/>
-  <path d="M28 32H36" fill="none" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
+
+  <path d="M8.5 27.2C11.1 15.2 20.4 8 32 8c8.8 0 16.7 4.3 21.5 11.3"
+        fill="none" stroke="#102A43" stroke-opacity=".18" stroke-width="9" stroke-linecap="round"/>
+  <path d="M8.5 27.2C11.1 15.2 20.4 8 32 8c8.8 0 16.7 4.3 21.5 11.3"
+        fill="none" stroke="url(#ek-loop)" stroke-width="6.5" stroke-linecap="round"/>
+
+  <path d="M32 11.5 50 21.8v20.4L32 52.5 14 42.2V21.8L32 11.5Z" fill="url(#ek-core)"/>
+  <path d="m32 11.5 18 10.3-18 10.3-18-10.3L32 11.5Z" fill="#FFFFFF" opacity=".16"/>
+  <path d="m14 21.8 18 10.3v20.4L14 42.2V21.8Z" fill="#0F172A" opacity=".10"/>
+  <path d="m50 21.8-18 10.3v20.4l18-10.3V21.8Z" fill="#312E81" opacity=".12"/>
+
+  <path d="M32 21.5 42.5 32 32 42.5 21.5 32 32 21.5Z" fill="url(#ek-jewel)"/>
+  <path d="M32 26.2 37.8 32 32 37.8 26.2 32 32 26.2Z" fill="#315BCE"/>
+  <path d="M32 28.8 35.2 32 32 35.2 28.8 32 32 28.8Z" fill="#F8FAFC"/>
+
+  <path d="M55.5 36.8C52.9 48.8 43.6 56 32 56c-8.8 0-16.7-4.3-21.5-11.3"
+        fill="none" stroke="#102A43" stroke-opacity=".22" stroke-width="9" stroke-linecap="round"/>
+  <path d="M55.5 36.8C52.9 48.8 43.6 56 32 56c-8.8 0-16.7-4.3-21.5-11.3"
+        fill="none" stroke="url(#ek-loop)" stroke-width="6.5" stroke-linecap="round"/>
+
+  <path d="M17.8 15.2c3.6-2.5 8.1-4 13.2-4.1" fill="none" stroke="#E6FFFB" stroke-opacity=".72" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M46.2 48.8c-3.6 2.5-8.1 4-13.2 4.1" fill="none" stroke="#F3E8FF" stroke-opacity=".60" stroke-width="2.2" stroke-linecap="round"/>
 </svg>
