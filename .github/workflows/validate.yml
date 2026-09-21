@@ -26,6 +26,10 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.13'
+      - name: Validate repository documentation baseline
+        run: python3 scripts/validate_repository_baseline.py
+      - name: Test repository documentation baseline
+        run: python3 scripts/test_repository_baseline.py
       - name: Validate Everkeep identity contract
         run: python3 scripts/validate_continuity.py
       - name: Validate evidence validity contract
