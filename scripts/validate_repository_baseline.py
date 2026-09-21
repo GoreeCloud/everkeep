@@ -21,6 +21,7 @@ REQUIRED_ROOT_FILES = (
     "PRIVACY POLICY.md",
     "NOTES.md",
     "SECURITY.md",
+    "CAPABILITIES.md",
     ".gitignore",
     ".editorconfig",
     "goreecloud.platform.yaml",
