@@ -7,13 +7,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 VALIDATION_WORKFLOW = ".github/workflows/validate.yml"
-ROADMAP = "FEATURE-ROADMAP.md"
+ROADMAP = "PLANNED-FEATURES.md"
 
 REQUIRED_ROOT_FILES = (
     "README.md",
     "SPECIFICATIONS.md",
     "FEATURES.md",
-    "FEATURE-ROADMAP.md",
+    "IMPLEMENTED-FEATURES.md",
+    "PLANNED-FEATURES.md",
+    "CHANGELOGS.md",
     "BENEFITS.md",
     "COMPETITIVE-OBJECTIVES.md",
     "BRANDING.md",
@@ -65,9 +67,9 @@ def validate_repository_baseline(root: Path = ROOT) -> list[str]:
     if roadmap.is_file():
         roadmap_text = roadmap.read_text(encoding="utf-8")
         if "**Canonical repository:** GoreeCloud/everkeep" not in roadmap_text:
-            problems.append("feature roadmap does not identify canonical repository GoreeCloud/everkeep")
+            problems.append("planned-feature record does not identify canonical repository GoreeCloud/everkeep")
         if "GoreeCloud/goreecloud-everkeep" in roadmap_text:
-            problems.append("feature roadmap contains stale repository identity GoreeCloud/goreecloud-everkeep")
+            problems.append("planned-feature record contains stale repository identity GoreeCloud/goreecloud-everkeep")
 
     workflow = root / VALIDATION_WORKFLOW
     if workflow.is_file():
