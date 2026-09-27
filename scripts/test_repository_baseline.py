@@ -38,7 +38,7 @@ class RepositoryBaselineTests(unittest.TestCase):
             path.write_text(content, encoding="utf-8")
 
     def test_governed_root_baseline_is_complete(self) -> None:
-        self.assertEqual(len(validator.REQUIRED_ROOT_FILES), 15)
+        self.assertEqual(len(validator.REQUIRED_ROOT_FILES), 17)
         self.assertIn("PRIVACY POLICY.md", validator.REQUIRED_ROOT_FILES)
         self.assertIn("NOTES.md", validator.REQUIRED_ROOT_FILES)
         self.assertIn("CAPABILITIES.md", validator.REQUIRED_ROOT_FILES)
@@ -47,7 +47,7 @@ class RepositoryBaselineTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             self.populate(root)
-            self.assertEqual(len(validator.validate_repository_baseline(root)), 17)
+            self.assertEqual(len(validator.validate_repository_baseline(root)), 19)
 
     def test_missing_required_file_fails(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
