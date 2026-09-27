@@ -1,0 +1,83 @@
+# Historical Drive Feature Roadmap Migration Source — Everkeep
+
+> **Status:** Historical, non-authoritative migration evidence.  
+> **Source:** Former Google Drive roadmap, captured during repository migration on 2026-09-27.  
+> **Rule:** Do not synchronize this file with Google Drive. Current feature truth is in `IMPLEMENTED-FEATURES.md`, `PLANNED-FEATURES.md`, and `CHANGELOGS.md`.
+
+Everkeep
+Feature Roadmap
+Active roadmap control • As of September 21, 2026
+Purpose
+This document is the Drive-side feature roadmap control for Everkeep. It records current planned and recommended feature work without replacing the authoritative project record, repository implementation evidence, release gates, or GoreeCloud Tasks Management.
+Roadmap
+Current platform checkpoint
+Repository-roadmap identity reconciliation is verified through PR #74 / 74f27d2ad3bc86df8b60a35f93768f105579ce57 after exact candidate 5b2f8c4e5c3f2e8c601c09469ee4e17e38b6ecc4 passed Validate Everkeep run 35628611367 and isolated-restore v1.2 run 35628611130; post-merge Validate Everkeep run 35628749488 and isolated-restore v1.2 run 35628749847 passed on exact main. The canonical repository is GoreeCloud/everkeep, and repository baseline validation now rejects the stale superseded pre-rename roadmap identity. This reconciliation changes documentation/governance only and does not alter recovery-verification or live-acceptance implementation baselines, production recovery, deployment, release, or Stable state. The live-acceptance implementation baseline is d55d6317e084de8732681721eaad073c6bb6e725. The recovery-verification implementation baseline remains ba2f8cd478187a137edeea0a9826dacdc8e0e154, whose post-merge Validate Everkeep run 35456627139 and isolated-restore v1.2 run 35456627096 succeeded. Live-acceptance evidence v1.1 was integrated through PR #67; exact candidate 516cde3ce54d3d419514c699d7d37b48385233b9 passed Validate Everkeep run 35458567380, and that implementation-bearing merged revision passed post-merge run 35458609637. The repository continues to use Platform Contract 0.4, evaluates exactly nine Integral Platform Systems, treats GoreeCloud Sync as separately governed, requires Stable Glaze UI 1.6.0, and keeps application-specific production acceptance blocked where real evidence is not established. This checkpoint is Development/source evidence only.
+Recovery-claim boundary
+Everkeep must continue to distinguish Backup Exists from Backup Exists + Integrity Verified + Policy Compliant + Recovery Tested + Recoverable. Missing, stale, malformed, unavailable, or unverified evidence fails closed. Source implementation, simulation, drill execution, presentation state, or a successful backup must never be relabeled as verified recoverability without the required exact-resource and exact-environment evidence.
+Maintenance and synchronization
+This roadmap and the corresponding repository FEATURE-ROADMAP.md must remain materially synchronized with one another and with the authoritative project or service record. Update both copies whenever feature scope, priority, dependency, implementation status, cancellation, supersession, recommendation, or verification state materially changes.
+No feature may be represented as complete or Stable solely because it appears in this roadmap. Completion and lifecycle claims require the applicable authoritative implementation, validation, review, release, and production evidence.
+Reconciliation rule
+At each material feature change, reconcile this roadmap against the current authoritative project record, repository implementation state, applicable platform-system requirements, and GoreeCloud Tasks Management. Missing obligations, stale status, duplicated work, roadmap drift, or undocumented disposition changes are defects to correct.
+Application / Service
+Everkeep
+Authoritative project record
+Project Specification — Everkeep
+Canonical repository
+GoreeCloud/everkeep
+Repository control
+FEATURE-ROADMAP.md
+Drive location
+GoreeCloud/Feature Roadmap/Everkeep/FEATURE-ROADMAP.docx
+ID
+Feature / obligation
+Priority
+Current state
+FR-001
+Reconcile and maintain every current planned or recommended Everkeep feature from the authoritative project record and verified repository evidence in this roadmap.
+High
+Ongoing control
+FR-002
+Move actionable feature obligations into GoreeCloud Tasks Management when required, preserving priority, dependency, and lifecycle disposition.
+High
+Ongoing control
+FR-003
+Do not mark features implemented, complete, cancelled, superseded, production-ready, or Stable without authoritative evidence and synchronized repository/Drive roadmap updates.
+High
+Ongoing control
+FR-004
+Validate real restore operations in isolated environments and bind acceptance to the exact protected resource, deployed target revision, Everkeep source revision, recovery point, environment, evidence freshness, and verified restored state.
+Critical
+Development — restore-verification v1.2 source is integrated on authoritative main through PR #65 / ba2f8cd478187a137edeea0a9826dacdc8e0e154. Exact candidate a39d4b56c037351d9ed6c38a03163af9fab444b0 passed Validate Everkeep run 35456548056 and isolated-restore v1.2 run 35456547944; merged main passed post-merge runs 35456627139 and 35456627096. Real exact-workload production restore evidence remains pending.
+FR-005
+Complete live GoreeCloud Identity, Privacy Shield, and Wardveil authority-provider integrations without Everkeep minting or substituting their authority.
+Critical
+Development — authenticated Everkeep-to-Mesh evidence-delivery hardening is source-integrated through PR #70 / 0f6689af90c0c423f2aa8049c39d771b421d5575. Exact candidate a8163f7bcd8d6b1bb5ba998cf9fa44b160024590 passed Validate Everkeep run 35463517890; merged main passed post-merge run 35463571234. The source validates destination before credential acquisition, supports per-delivery Identity credential injection for service everkeep / audience goreecloud-mesh / scope mesh.evidence.write, suppresses credential-bearing provider/transport exception chains, bounds remote error/receipt handling, and preserves direct-bearer compatibility. Live Identity issuance, Privacy Shield/Wardveil provider acceptance, deployed Mesh delivery, and production integration evidence remain pending.
+FR-006
+Establish accepted production GoreeCloud Monitoring ingestion and GoreeCloud Notify delivery evidence for minimized continuity signals.
+High
+Planned / production acceptance pending
+FR-007
+Advance controlled production recovery, failover, and rollback only with execution-time revalidation of approval, target, dependency, key-material, privacy, security, rollback, and operator gates.
+Critical
+Planned — current controlled execution remains simulation/non-production
+FR-008
+Migrate Continuity Center to the current Stable Glaze UI 1.6.0 consumer target and prove exact-revision rendered, accessibility, resilience, rollback, and production acceptance without altering recovery truth.
+High
+Authoritative main now declares Platform Contract 0.4 and Stable Glaze UI 1.6.0 while remaining applicable-migration-required. The Continuity Center's historical repository-specific 2.1.0 presentation evidence is implementation history only; current 1.6.0 rendered/application/production acceptance remains pending.
+FR-009
+Expand Continuity Center around evidence-backed Recovery Ready, At Risk, Recovery Blocked, Unknown, topology, assurance, drill, and rollback state without implying unsupported readiness.
+High
+Development foundation exists; production evidence pending
+FR-010
+Maintain portability, preservation, and succession/digital-legacy as first-class continuity domains with independent evidence and privacy gates.
+Medium
+Source foundations implemented; runtime/production acceptance incomplete
+FR-011
+Require application-specific Everkeep continuity acceptance for each protected GoreeCloud workload, including recovery objectives, restore tests, retention/privacy obligations, dependency/key-material needs, and exact production evidence.
+High
+Planned / per-workload acceptance incomplete
+FR-012
+Keep recovery evidence freshness, provenance, exact-revision identity, target identity, and non-transfer of external authority machine-verifiable at every consumer boundary.
+Critical
+Development — live-acceptance evidence v1.1 is integrated on authoritative main through PR #67 / d55d6317e084de8732681721eaad073c6bb6e725. Exact candidate 516cde3ce54d3d419514c699d7d37b48385233b9 passed Validate Everkeep run 35458567380; merged implementation revision passed post-merge run 35458609637. The gate binds required checks to provider, environment, exact revisions, unique evidence IDs, freshness, and check-specific proof while rejecting unsupported environments and extra checks. No real staging/production provider acceptance is established.

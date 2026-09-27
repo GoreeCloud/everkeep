@@ -1,10 +1,11 @@
-# Everkeep — Feature Roadmap
+# Everkeep — Planned Features
+
+> **Authority:** Repository-native planned-feature record. The former Drive roadmap is retired after verified migration.
 
 **Status:** Active roadmap control  
 **As of:** 2026-09-21  
 **Authoritative project record:** Project Specification — Everkeep  
 **Canonical repository:** GoreeCloud/everkeep  
-**Drive control:** `GoreeCloud/Feature Roadmap/Everkeep/FEATURE-ROADMAP.docx`
 
 ## Purpose
 
@@ -16,7 +17,7 @@ This file is the repository-side feature roadmap control for Everkeep. It record
 | --- | --- | --- | --- |
 | FR-001 | Reconcile and maintain every current planned or recommended Everkeep feature from the authoritative project record and verified repository evidence in this roadmap. | High | Ongoing control |
 | FR-002 | Move actionable feature obligations into GoreeCloud Tasks Management when required, preserving priority, dependency, and lifecycle disposition. | High | Ongoing control |
-| FR-003 | Do not mark features implemented, complete, cancelled, superseded, production-ready, or Stable without authoritative evidence and synchronized repository/Drive roadmap updates. | High | Ongoing control |
+| FR-003 | Do not mark features implemented, complete, cancelled, superseded, production-ready, or Stable without authoritative evidence and  | High | Ongoing control |
 | FR-004 | Validate real restore operations in isolated environments and bind acceptance to the exact protected resource, deployed target revision, Everkeep source revision, recovery point, environment, evidence freshness, and verified restored state. | Critical | Development — restore-verification v1.2 source is integrated on authoritative main through PR #65 / `ba2f8cd478187a137edeea0a9826dacdc8e0e154`. Exact candidate `a39d4b56c037351d9ed6c38a03163af9fab444b0` passed Validate Everkeep run `35456548056` and isolated-restore v1.2 run `35456547944`; merged main passed post-merge runs `35456627139` and `35456627096`. Real exact-workload production restore evidence remains pending. |
 | FR-005 | Complete live GoreeCloud Identity, Privacy Shield, and Wardveil authority-provider integrations without Everkeep minting or substituting their authority. | Critical | Development — authenticated Everkeep-to-Mesh evidence-delivery hardening is source-integrated through PR #70 / `0f6689af90c0c423f2aa8049c39d771b421d5575`. Exact candidate `a8163f7bcd8d6b1bb5ba998cf9fa44b160024590` passed Validate Everkeep run `35463517890`; merged main passed post-merge run `35463571234`. The source validates destination before credential acquisition, supports per-delivery Identity credential injection for service `everkeep` / audience `goreecloud-mesh` / scope `mesh.evidence.write`, suppresses credential-bearing provider/transport exception chains, bounds remote error/receipt handling, and preserves direct-bearer compatibility. Live Identity issuance, Privacy Shield/Wardveil provider acceptance, deployed Mesh delivery, and production integration evidence remain pending. |
 | FR-006 | Establish accepted production GoreeCloud Monitoring ingestion and GoreeCloud Notify delivery evidence for minimized continuity signals. | High | Planned / production acceptance pending. |
