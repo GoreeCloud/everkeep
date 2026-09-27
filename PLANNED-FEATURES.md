@@ -6,7 +6,6 @@
 **As of:** 2026-09-21  
 **Authoritative project record:** Project Specification — Everkeep  
 **Canonical repository:** GoreeCloud/everkeep  
-**Drive control:** `GoreeCloud/Feature Roadmap/Everkeep/FEATURE-ROADMAP.docx`
 
 ## Purpose
 
