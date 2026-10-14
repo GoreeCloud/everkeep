@@ -52,6 +52,20 @@ jobs:
         run: python3 scripts/validate_live_acceptance.py
       - name: Validate restore verification evidence contract
         run: python3 scripts/validate_restore_verification.py
+      - name: Verify fail-closed Wardveil isolated recovery preflight
+        run: |
+          python3 scripts/test_wardveil_cloudflare_restore_preflight.py
+          python3 scripts/wardveil_cloudflare_restore_preflight.py > /tmp/everkeep-wardveil-restore-preflight.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path('/tmp/everkeep-wardveil-restore-preflight.json').read_text())
+          assert report['planningStatus'] == 'blocked'
+          assert report['restorePerformed'] is False
+          assert report['engineExecutionAuthorized'] is False
+          assert report['sourceMutationAllowed'] is False
+          assert report['authoritativeRestoreEvidenceIssued'] is False
+          PY
       - name: Validate Phase 2 Recovery Center
         run: python3 scripts/validate_phase2_recovery_center.py
       - name: Validate Phase 2 resource evidence timeline
